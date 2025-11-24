@@ -1,25 +1,35 @@
+// Global styles + Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './styles/main.scss';
-import javascriptLogo from './javascript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.js';
 
-document.querySelector('#app').innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-      <img src="${javascriptLogo}" class="logo vanilla" alt="JavaScript logo" />
-    </a>
-    <h1>Hello Vite!</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite logo to learn more
-    </p>
-  </div>
-`;
+// Figure out which page we're on
+const page = document.body.dataset.page;
 
-setupCounter(document.querySelector('#counter'));
+// Page-specific JS
+switch (page) {
+  case 'index':
+    import('./js/pages/indexPage.js').then((m) => m.initIndexPage());
+    break;
+  case 'listing':
+    import('./js/pages/listingPage.js').then((m) => m.initListingPage());
+    break;
+  case 'auth':
+    import('./js/pages/authPage.js').then((m) => m.initAuthPage());
+    break;
+  case 'profile':
+    import('./js/pages/profilePage.js').then((m) => m.initProfilePage());
+    break;
+  case 'listing-edit':
+    import('./js/pages/listingEditPage.js').then((m) => m.initListingEditPage());
+    break;
+  case 'how':
+    import('./js/pages/howPage.js').then((m) => m.initHowPage());
+    break;
+  case 'not-found':
+    import('./js/pages/notFoundPage.js').then((m) => m.initNotFoundPage());
+    break;
+  default:
+    // Optional: no-op or log
+    // console.warn('Unknown page type:', page);
+    break;
+}
