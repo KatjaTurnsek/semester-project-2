@@ -1,0 +1,24 @@
+// === StudioBid theme overrides ===
+// These MUST be configured when loading Bootstrap via @use.
+
+// Helper for font stack (safe for Prettier to wrap)
+$studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
+  "Segoe UI", sans-serif;
+
+// Load Bootstrap with overrides using @use + with()
+@use "bootstrap/scss/bootstrap" as * with (
+  $primary: #ed3d94,
+  $secondary: #000000,
+  $info: #acddd9,
+
+  $body-bg: #ffffff,
+  $body-color: #000000,
+
+  $font-family-sans-serif: $studio-font-stack,
+);
+
+// === Your custom styles can go here ===
+
+body {
+  font-family: $studio-font-stack;
+}
