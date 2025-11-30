@@ -1,6 +1,7 @@
 // Global styles + Bootstrap JS
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './styles/main.scss';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // Figure out which page we're on
 const page = document.body.dataset.page;

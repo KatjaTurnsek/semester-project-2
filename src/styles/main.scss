@@ -1,33 +1,262 @@
-// === StudioBid theme overrides ===
-// These MUST be configured when loading Bootstrap via @use.
+// --------------------------------------------
+// StudioBid: Core Theme Tokens + Button Styles
+// --------------------------------------------
 
+// --------- Color palette (SASS vars) ---------
+$sb-pink: #ed3d94;       // Studio primary - pink accent
+$sb-black: #000000;      // Base black
+$sb-info: #ACDDD9;       // Light teal-ish, info or neutral bg
+$sb-bg: #F8FCFC;         // Main background, very light
+$sb-white: #ffffff;
+
+// Font stack - intentionally sticking with Poppins
 $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
   "Segoe UI", sans-serif;
 
+// ----------------------------------------------
+// Bootstrap override - do this before importing!
+// ----------------------------------------------
+
 @use "bootstrap/scss/bootstrap" as * with (
-  $primary: #ed3d94,
-  $secondary: #000000,
-  $info: #acddd9,
+  $primary: $sb-pink,
+  $secondary: $sb-black,
+  $info: $sb-info,
 
-  $body-bg: #ffffff,
-  $body-color: #000000,
+  $body-bg: $sb-white,
+  $body-color: $sb-black,
 
-  $font-family-sans-serif: $studio-font-stack,
+  $font-family-sans-serif: $studio-font-stack
 );
 
-// Partials
-@use './typography';
-@use './layout';
-@use './header';
-@use './footer';
-@use './hero';
-@use './cards';
-@use './forms';
-@use './profile';
-@use './listing';
+// -------------------------------------------------
+// Importing partials
+// -------------------------------------------------
+@use "./typography";
+@use "./header";
+@use "./hero";
+@use "./cards";
+@use "./forms";
+@use "./profile";
+@use "./footer";
 
-// === custom styles goes here ===
+// -------------------------------------------
+// CSS variables – useful for theming in JS
+// -------------------------------------------
+:root {
+  // Brand colors
+  --sb-color-primary: #{$sb-pink};
+  --sb-color-black: #{$sb-black};
+  --sb-color-info: #{$sb-info};
+  --sb-color-bg: #{$sb-bg};
+  --sb-color-white: #{$sb-white};
+
+  // Border radius
+  --sb-button-radius: 5px;
+
+  // Small button specs
+  --sb-button-font-size-sm: 0.75rem;
+  --sb-button-height-desktop-sm: 33px;
+  --sb-button-height-mobile-sm: 25px;
+
+  // Medium button specs
+  --sb-button-font-size-md: 1rem;
+  --sb-button-height-desktop-md: 50px;
+  --sb-button-height-mobile-md: 45px;
+
+  // "Danger & Delete" states
+  --sb-color-delete: #dc3545;
+  --sb-color-delete-light: #eba8af;
+
+  // "Success" states
+  --sb-color-success: #198754;
+  --sb-color-success-light: #B1CDC0;
+}
+
+// -------------------------------------------
+// Base styling
+// -------------------------------------------
 
 body {
   font-family: $studio-font-stack;
+}
+
+// ----------------------------
+// Small StudioBid Buttons
+// ----------------------------
+.btn-studio-small {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.25rem;
+
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--sb-button-font-size-sm);
+
+  border-radius: var(--sb-button-radius);
+  border-width: 2px;
+
+  height: var(--sb-button-height-desktop-sm);
+  padding-inline: 1.5rem;
+  padding-block: 0;
+
+  @include media-breakpoint-down(md) {
+    height: var(--sb-button-height-mobile-sm);
+    padding-inline: 1rem;
+    font-size: var(--sb-button-font-size-sm);
+  }
+}
+
+// Variant: dark small buttons (used in header actions like login/register)
+.btn.btn-dark.btn-studio-small {
+  background-color: var(--sb-color-black);
+  border-color: var(--sb-color-black);
+  color: var(--sb-color-white);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-white);
+    color: var(--sb-color-black);
+    border-color: var(--sb-color-black);
+    text-decoration: none;
+  }
+
+  &:active {
+    background-color: var(--sb-color-white);
+    color: var(--sb-color-primary);
+    border-color: var(--sb-color-primary);
+    transform: translateY(1px);
+    text-decoration: none;
+  }
+}
+
+// Variant: outline dark small buttons (e.g. "Add another image")
+.btn.btn-outline-dark.btn-studio-small {
+  background-color: transparent;
+  color: var(--sb-color-black);
+  border-color: var(--sb-color-black);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-black);
+    color: var(--sb-color-white);
+    text-decoration: none;
+  }
+
+  &:active {
+    background-color: var(--sb-color-primary);
+    color: var(--sb-color-black);
+    border-color: var(--sb-color-primary);
+    transform: translateY(1px);
+    text-decoration: none;
+  }
+}
+
+.sb-btn-add-image .bi {
+  font-size: 0.875rem; // 14px icon
+}
+
+
+// ----------------------------
+// Medium StudioBid Buttons
+// ----------------------------
+.btn-studio-md {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.35rem;
+
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--sb-button-font-size-md);
+
+  border-radius: var(--sb-button-radius);
+  border-width: 2px;
+
+  height: var(--sb-button-height-desktop-md);
+  padding-inline: 2rem;
+  padding-block: 0;
+
+  @include media-breakpoint-down(md) {
+    height: var(--sb-button-height-mobile-md);
+    padding-inline: 1.5rem;
+    font-size: var(--sb-button-font-size-md);
+  }
+}
+
+// Medium dark button
+.btn.btn-dark.btn-studio-md {
+  background-color: var(--sb-color-black);
+  border-color: var(--sb-color-black);
+  color: var(--sb-color-white);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-white);
+    color: var(--sb-color-black);
+    border-color: var(--sb-color-black);
+    text-decoration: none;
+  }
+
+  &:active {
+    background-color: var(--sb-color-white);
+    color: var(--sb-color-primary);
+    border-color: var(--sb-color-primary);
+    transform: translateY(1px);
+    text-decoration: none;
+  }
+}
+
+// Delete-style medium button (usually used in modals or destructive actions)
+.btn.btn-danger.btn-studio-md {
+  background-color: var(--sb-color-delete);
+  border-color: var(--sb-color-delete);
+  color: var(--sb-color-white);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-white);
+    color: var(--sb-color-delete);
+    border-color: var(--sb-color-delete);
+  }
+
+  &:active {
+    background-color: var(--sb-color-delete-light);
+    color: var(--sb-color-delete);
+    border-color: var(--sb-color-delete);
+    transform: translateY(1px);
+  }
+}
+
+// ----------------------------
+// Header credits badge
+// ----------------------------
+
+.header-credits {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: var(--sb-button-font-size-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+
+  border-radius: var(--sb-button-radius);
+  background-color: var(--sb-color-info);
+  color: var(--sb-color-black);
+
+  height: var(--sb-button-height-desktop-sm);
+  padding-inline: 1.5rem;
+
+  @include media-breakpoint-down(md) {
+    height: var(--sb-button-height-mobile-sm);
+    padding-inline: 1rem;
+    font-size: var(--sb-button-font-size-sm); // reasserting it
+  }
+
+  border: none;
+  cursor: default;
+  pointer-events: none;
 }

@@ -1,0 +1,53 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+.sb-footer {
+  position: relative;
+
+  // Colored stripe at the very top
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 6px;
+    z-index: 1;
+
+    background-image: linear-gradient(
+      to right,
+      var(--sb-color-primary) 0%,
+      var(--sb-color-primary) 37.72%,
+
+      var(--sb-color-white) 37.72%,
+      var(--sb-color-white) 40.08%,
+
+      var(--sb-color-info) 40.08%,
+      var(--sb-color-info) 49.06%,
+
+      var(--sb-color-white) 49.06%,
+      var(--sb-color-white) 58.46%,
+
+      var(--sb-color-info) 58.46%,
+      var(--sb-color-info) 87.40%,
+
+      var(--sb-color-white) 87.40%,
+      var(--sb-color-white) 88.17%,
+
+      var(--sb-color-primary) 88.17%,
+      var(--sb-color-primary) 100%
+    );
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+  }
+
+  .footer-link {
+    color: var(--sb-color-black);
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

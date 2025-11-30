@@ -2,10 +2,319 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>How StudioBid Works</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body data-page="how">
+    <!-- ========== HEADER (LOGGED OUT) ========== -->
+    <header class="header">
+      <nav class="navbar bg-white py-3">
+        <div class="container d-flex align-items-center justify-content-between">
+          <!-- Logo -->
+          <a class="navbar-brand d-flex align-items-center me-auto" href="index.html">
+            <img src="/images/logo/studiobid-logo.svg" alt="StudioBid" class="img-fluid sb-logo" />
+          </a>
+
+          <!-- Right side buttons -->
+          <div class="d-flex align-items-center gap-3">
+            <a href="auth.html#login" class="btn btn-dark btn-studio-small"> Login </a>
+            <a href="auth.html#register" class="btn btn-dark btn-studio-small"> Register </a>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main>
+      <!-- ========= HERO ========= -->
+      <section class="sb-hero">
+        <div class="container py-5 text-center sb-hero__content">
+          <h1 class="mb-3">How StudioBid Works</h1>
+          <p class="sb-body-lg text-body-secondary mb-4">
+            Learn how to browse auctions, create listings and place bids with your student account
+          </p>
+
+          <div class="d-grid gap-3 d-md-flex justify-content-md-center px-4">
+            <a href="auth.html#register" class="btn btn-dark btn-studio-md"> Create an account </a>
+
+            <a href="index.html" class="btn btn-dark btn-studio-md">
+              <span class="text-uppercase fw-semibold">Browse active auctions</span>
+              <span class="fs-5">
+                <i class="bi bi-chevron-down"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <picture class="sb-hero__wave" aria-hidden="true">
+          <source srcset="/images/bids-mobile.svg" media="(max-width: 767.98px)" />
+          <img
+            src="/images/bids.svg"
+            alt="Illustration of bidders raising numbered paddles at a studio auction"
+            loading="lazy"
+          />
+        </picture>
+      </section>
+
+      <!-- ===== WHAT IS STUDIOBID ===== -->
+      <section class="py-5">
+        <div class="container">
+          <h2 class="mb-4">What is StudioBid?</h2>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <article class="h-100 border p-4">
+                <h3 class="mb-3">For active students</h3>
+                <p class="mb-0">
+                  StudioBid is a concept auction platform for creative students. List tools, gear,
+                  art and supplies you no longer use and bid on the pieces that fit your next
+                  project.
+                </p>
+              </article>
+            </div>
+
+            <div class="col-md-6">
+              <article class="h-100 border p-4">
+                <h3 class="mb-3">Safe &amp; simple</h3>
+                <p class="mb-0">
+                  Only @stud.noroff.no accounts can register and bid, so you're trading within a
+                  focused student community. Clear rules, credits and transparent bidding keep
+                  things straightforward.
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STEPS: FOR BIDDERS / FOR SELLERS ===== -->
+      <section class="py-5 border-top">
+        <div class="container">
+          <div class="row g-4">
+            <!-- Bidders steps -->
+            <div class="col-md-6">
+              <h2 class="mb-3">For bidders</h2>
+
+              <article class="border p-4 mb-4">
+                <h3 class="mb-2">1. Create your account</h3>
+                <p class="mb-0">
+                  Sign up with your @stud.noroff.no email to unlock bidding, profile editing and
+                  listing creation.
+                </p>
+              </article>
+
+              <article class="border p-4 mb-4">
+                <h3 class="mb-2">2. Get your starting credits</h3>
+                <p class="mb-0">
+                  Your account shows how many credits you have available. Use them as a guide when
+                  deciding how high you want to bid.
+                </p>
+              </article>
+
+              <article class="border p-4 mb-4">
+                <h3 class="mb-2">3. Browse listings</h3>
+                <p class="mb-0">
+                  Use search and filters on the front page to find tablets, cameras, paints, prints
+                  and more from other students.
+                </p>
+              </article>
+
+              <article class="border p-4">
+                <h3 class="mb-2">4. Place bids &amp; follow your auctions</h3>
+                <p class="mb-0">
+                  Open a listing, place a bid higher than the current one and confirm. Track
+                  everything under <strong>My bids</strong> on your profile.
+                </p>
+              </article>
+            </div>
+
+            <!-- Sellers steps -->
+            <div class="col-md-6">
+              <h2 class="mb-3">For sellers</h2>
+
+              <article class="border p-4 mb-4">
+                <h3 class="mb-2">1. Create a listing</h3>
+                <p class="mb-0">
+                  Click <strong>Create listing</strong> in the header to start a new auction for
+                  your item.
+                </p>
+              </article>
+
+              <article class="border p-4 mb-4">
+                <h3 class="mb-2">2. Add details and images</h3>
+                <p class="mb-0">
+                  Give it a clear title, short description and image URLs that show the item from
+                  its best angles.
+                </p>
+              </article>
+
+              <article class="border p-4 mb-4">
+                <h3 class="mb-2">3. Publish and share</h3>
+                <p class="mb-0">
+                  Set an end date and time, then publish. Your listing appears on the front page and
+                  can be discovered through search.
+                </p>
+              </article>
+
+              <article class="border p-4">
+                <h3 class="mb-2">4. Auction ends automatically</h3>
+                <p class="mb-0">
+                  When the end time is reached, no more bids can be placed. You can review the final
+                  bid history in your listing details.
+                </p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== WITHOUT / WITH ACCOUNT ===== -->
+      <section class="py-5 border-top">
+        <div class="container">
+          <div class="row g-4 align-items-stretch">
+            <!-- Without an account -->
+            <div class="col-md-6">
+              <div class="h-100 d-flex flex-column">
+                <h2 class="mt-0 mb-3">Without an account</h2>
+
+                <article class="border p-4 flex-grow-1">
+                  <ul class="mb-0">
+                    <li>Browse all active auctions.</li>
+                    <li>Search listings by keyword.</li>
+                    <li>Open listings to see images, descriptions and bid history.</li>
+                  </ul>
+                </article>
+              </div>
+            </div>
+
+            <!-- With an account -->
+            <div class="col-md-6">
+              <div class="h-100 d-flex flex-column">
+                <h2 class="mt-0 mb-3">With an account</h2>
+
+                <article class="border p-4 flex-grow-1">
+                  <ul class="mb-0">
+                    <li>Create and manage your own listings.</li>
+                    <li>Place bids on other users’ auctions.</li>
+                    <li>See your credits in the header on every page.</li>
+                    <li>Edit your bio, avatar and banner on your profile.</li>
+                    <li>
+                      Track activity in <strong>My listings</strong>, <strong>My bids</strong> and
+                      <strong>My wins</strong>.
+                    </li>
+                  </ul>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== CREDITS ===== -->
+      <section class="py-5 border-top">
+        <div class="container">
+          <h2 class="mb-3 text-center text-lg-start">Credits</h2>
+          <p class="mb-0">
+            Credits represent how much you can reasonably bid across auctions. When you’re logged
+            in, your current credits are always visible in the header so you can keep track while
+            you browse and bid.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===== BIDDING RULES ===== -->
+      <section class="py-5 border-top">
+        <div class="container">
+          <h2 class="mb-3 text-center text-lg-start">Bidding rules</h2>
+          <ul class="mb-0">
+            <li>You must be logged in with a @stud.noroff.no email to place bids.</li>
+            <li>You can’t bid on your own listings.</li>
+            <li>Your bid must always be higher than the current highest bid.</li>
+            <li>
+              When the end date and time is reached, the auction closes and no new bids can be
+              placed.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===== COMMUNITY & GUIDELINES ===== -->
+      <section class="py-5 border-top">
+        <div class="container">
+          <h2 class="mb-3 text-center text-lg-start">Community &amp; guidelines</h2>
+          <ul class="mb-0">
+            <li>Use clear, respectful language in titles and descriptions.</li>
+            <li>Don’t upload or link to illegal, hateful or harmful content.</li>
+            <li>Only use images and links you have the right to share.</li>
+            <li>
+              Remember there are real people behind each listing and bid – treat other creatives
+              with kindness.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===== READY TO START? ===== -->
+      <section class="py-5 border-top">
+        <div class="container text-center">
+          <h2 class="mb-3">Ready to start?</h2>
+          <p class="sb-body-lg text-body-secondary mb-4">
+            Create your account to list your first item or jump straight into browsing active
+            auctions from other students.
+          </p>
+
+          <div class="d-grid gap-3 d-md-flex justify-content-md-center px-4">
+            <a href="auth.html#register" class="btn btn-dark btn-studio-md"> Create an account </a>
+
+            <a href="index.html" class="btn btn-dark btn-studio-md">
+              <span class="text-uppercase fw-semibold">Browse active auctions</span>
+              <span class="fs-5">
+                <i class="bi bi-chevron-down"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="sb-footer mt-auto py-4">
+      <div class="container">
+        <div class="row align-items-center gy-3">
+          <!-- Left side: logo + text -->
+          <div class="col-12 col-md-auto text-center text-md-start">
+            <a
+              href="index.html"
+              class="d-inline-flex align-items-center mb-2 mb-md-0 text-decoration-none"
+            >
+              <img
+                src="/images/logo/studiobid-logo.svg"
+                alt="StudioBid logo"
+                width="145"
+                height="30"
+                class="img-fluid"
+              />
+            </a>
+
+            <p class="mb-0 sb-body-sm text-center text-md-start">
+              Concept project for Noroff Semester Project 2
+            </p>
+            <p class="mb-0 sb-body-sm text-center text-md-start">
+              &copy; 2025 &middot; Built by Katja Turnsek
+            </p>
+          </div>
+
+          <!-- Right side: links -->
+          <div
+            class="col-12 col-md d-flex flex-column flex-md-row justify-content-center justify-content-md-end text-center text-md-end gap-2 gap-md-4"
+          >
+            <a href="how.html"> How StudioBid works </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Vite entry -->
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

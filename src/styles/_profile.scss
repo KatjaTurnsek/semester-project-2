@@ -1,0 +1,162 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+// ============================
+// Profile banner (top strip)
+// ============================
+.sb-profile-banner {
+  position: relative;
+  background-color: var(--sb-color-info);
+
+  // Mobile
+  height: 123px;
+
+  // Desktop / tablet
+  @include media-breakpoint-up(md) {
+    height: 240px;
+  }
+
+  // Colored stripe at the very bottom (same as hero)
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    z-index: 1; // stripe sits above banner bg, but below avatar
+
+    background-image: linear-gradient(
+      to right,
+      var(--sb-color-primary) 0%,
+      var(--sb-color-primary) 37.72%,
+
+      var(--sb-color-white) 37.72%,
+      var(--sb-color-white) 40.08%,
+
+      var(--sb-color-info) 40.08%,
+      var(--sb-color-info) 49.06%,
+
+      var(--sb-color-white) 49.06%,
+      var(--sb-color-white) 58.46%,
+
+      var(--sb-color-info) 58.46%,
+      var(--sb-color-info) 87.40%,
+
+      var(--sb-color-white) 87.40%,
+      var(--sb-color-white) 88.17%,
+
+      var(--sb-color-primary) 88.17%,
+      var(--sb-color-primary) 100%
+    );
+  }
+}
+
+// ============================
+// Profile info strip
+// (avatar + name + bio)
+// ============================
+.sb-profile-info {
+  background-color: var(--sb-color-bg);
+}
+
+.sb-profile-info-inner {
+  position: relative;
+  min-height: 150px; // as requested
+}
+
+// Profile title (special sizing)
+.sb-profile-title {
+  // Mobile first
+  font-size: 2.1875rem;  // 35px
+  line-height: 2.8125rem; // 45px
+  font-weight: 400;
+
+  // From md and up (desktop/tablet)
+  @include media-breakpoint-up(md) {
+    font-size: 1.5625rem;   // 25px
+    line-height: 2.1875rem; // 35px
+  }
+}
+
+// Text block next to avatar
+.sb-profile-header-text {
+  // On mobile: sits below the avatar, so keep a bit of top spacing
+  margin-top: 3.5rem;
+
+  @include media-breakpoint-up(md) {
+    margin-top: 0;
+    // push text to the right so it clears the 200x200 avatar
+    padding-left: 14rem; // ≈ 224px (200px avatar + some gap)
+  }
+}
+
+// ============================
+// Avatar styling
+// ============================
+.sb-profile-avatar {
+  border-radius: 50%;
+  border: 2px solid var(--sb-color-black);
+  background-color: var(--sb-color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 3; // ensure avatar appears above banner stripe
+}
+
+// Mobile avatar: 100 x 100, centered
+.sb-profile-avatar--mobile {
+  width: 100px;
+  height: 100px;
+  top: -50px; // half above the info strip, half inside
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+// Desktop avatar: 200 x 200, left-aligned
+.sb-profile-avatar--desktop {
+  width: 200px;
+  height: 200px;
+  top: -100px; // overlaps banner + info
+  left: 0;
+}
+
+#editProfileButton {
+  // Base look
+  border-radius: 0; // no corners
+  background-color: var(--sb-color-black);
+  color: var(--sb-color-white);
+  border: 2px solid var(--sb-color-black);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1rem; // 16px
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  // Mobile first
+  height: 25px;
+  padding-inline: 1.25rem;
+
+  // Desktop / tablet
+  @include media-breakpoint-up(md) {
+    height: 40px;
+  }
+
+  // Hover
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-info);
+    color: var(--sb-color-black);
+    border: 2px solid var(--sb-color-black);
+  }
+
+  // Active / clicked
+  &:active,
+  &.active {
+    background-color: var(--sb-color-primary);
+    color: var(--sb-color-black);
+    border: 2px solid var(--sb-color-black);
+  }
+}

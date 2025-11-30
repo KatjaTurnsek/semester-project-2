@@ -1,0 +1,96 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+.sb-hero {
+  position: relative;
+  width: 100%;
+  background-color: var(--sb-color-bg);
+  display: flex;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+
+  // Mobile default
+  min-height: 352px;
+
+  // Desktop
+  @include media-breakpoint-up(md) {
+    min-height: 350px;
+  }
+
+  &__content {
+    position: relative;
+    z-index: 3;
+  }
+
+  // Colored stripe at the very bottom
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    z-index: 2;
+
+    background-image: linear-gradient(
+      to right,
+      var(--sb-color-primary) 0%,
+      var(--sb-color-primary) 37.72%,
+
+      var(--sb-color-white) 37.72%,
+      var(--sb-color-white) 40.08%,
+
+      var(--sb-color-info) 40.08%,
+      var(--sb-color-info) 49.06%,
+
+      var(--sb-color-white) 49.06%,
+      var(--sb-color-white) 58.46%,
+
+      var(--sb-color-info) 58.46%,
+      var(--sb-color-info) 87.40%,
+
+      var(--sb-color-white) 87.40%,
+      var(--sb-color-white) 88.17%,
+
+      var(--sb-color-primary) 88.17%,
+      var(--sb-color-primary) 100%
+    );
+  }
+
+   // SVG background at the bottom (from <picture>)
+&__wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  box-sizing: border-box;
+
+  img {
+    display: block;
+    height: auto;
+  }
+
+  // Mobile (up to md)
+  @include media-breakpoint-down(md) {
+    padding: 2.5rem 1.5rem 0;
+
+    img {
+      width: 80%;
+      margin-left: auto;
+    }
+  }
+
+  // Desktop and up
+  @include media-breakpoint-up(md) {
+    padding: 1rem 1.5rem 0;
+
+    img {
+      width: 100%;
+      margin: 0;
+    }
+  }
+}
+
+
+}

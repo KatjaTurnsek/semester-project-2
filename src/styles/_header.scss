@@ -1,0 +1,186 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+// --- Base header wrapper ---
+.header {
+  border-bottom: 2px solid #000;
+
+  .navbar {
+    background: $body-bg;
+    padding-block: 0;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+
+    @include media-breakpoint-down(md) {
+      min-height: 60px;
+    }
+  }
+
+  .sb-logo {
+    display: block;
+    height: 40px;
+    width: auto;
+
+    @include media-breakpoint-down(md) {
+      height: 30px; // Shrinks on mobile — pretty standard
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    @include media-breakpoint-down(md) {
+      gap: 8px;
+    }
+  }
+}
+
+// --- Logged-in variation of header ---
+// This one gets its own background + layout tweaks
+.header.header--logged-in {
+  background: $body-bg;
+
+  .d-none.d-lg-block > .container {
+    // keeping height consistent with the default .navbar
+    min-height: 90px;
+    padding-block: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  // Mobile view gets a shorter height
+  .d-lg-none > .container,
+  .d-lg-none .border-bottom > .container {
+    min-height: 60px;
+    padding-block: 0;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// === Create listing / Credits button styling ===
+.header--logged-in .btn.btn-dark.btn-studio-small .bi-plus-lg {
+  font-size: 1rem;
+
+  @include media-breakpoint-down(md) {
+    font-size: 0.9rem; // Slightly smaller on mobile, just enough
+  }
+}
+
+// === Avatar button styles ===
+.header--logged-in .dropdown > .btn {
+  gap: 0.5rem; // just enough space between avatar and arrow
+}
+
+.header--logged-in .dropdown span.rounded-circle {
+  width: 33px;
+  height: 33px;
+  border: 2px solid #000 !important; // emphasis border
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  @include media-breakpoint-down(md) {
+    width: 25px;
+    height: 25px;
+  }
+}
+
+// === Dropdown menu for user profile ===
+// Handles animation + spacing + overall layout
+.header--logged-in .dropdown-menu {
+  margin-top: 1.45rem !important;
+  padding: 1rem 1.5rem 0.75rem;
+
+  border-radius: 0;
+  border: 2px solid transparent;
+  border-width: 0 2px 2px;
+  border-color: #000; // heavy border on bottom + sides
+  box-shadow: none !important;
+  background-color: $body-bg;
+  min-width: 220px;
+
+  opacity: 0;
+  transform: translateY(-6px);
+  visibility: hidden;
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+
+  @include media-breakpoint-down(md) {
+    margin-top: 0.75rem !important;
+    padding: 0.75rem 1.25rem 0.5rem;
+    min-width: 200px;
+  }
+}
+
+// Show dropdown menu
+.header--logged-in .dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+// Dropdown items
+.header--logged-in .dropdown-menu .dropdown-item {
+  padding-inline: 0;
+  padding-block: 4px;
+
+  font-size: 12px;
+  font-weight: 600;
+  color: #000 !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: transparent;
+
+  @include media-breakpoint-down(md) {
+    font-size: 12px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: $primary !important;
+    background-color: transparent;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.19em;
+  }
+}
+
+// Icons inside dropdown items
+.header--logged-in .dropdown-menu .dropdown-item i,
+.header--logged-in .dropdown-menu .dropdown-item .bi {
+  font-size: 1rem;
+}
+
+@include media-breakpoint-up(md) {
+  .header--logged-in .dropdown-menu .dropdown-item i,
+  .header--logged-in .dropdown-menu .dropdown-item .bi {
+    font-size: 1.1rem;
+  }
+}
+
+// Logout gets some attention with pink
+.header--logged-in .dropdown-menu .dropdown-item:last-child {
+  color: $primary !important;
+  font-weight: 600;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.19em;
+  }
+}
+
+// Divider between top items and logout
+.header--logged-in .dropdown-menu .dropdown-divider {
+  margin: 0.4rem 0;
+  height: 1px;
+  background-color: var(--sb-color-bg);
+  opacity: 1;
+}

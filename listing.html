@@ -3,8 +3,472 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>StudioBid - Listing details</title>
   </head>
-  <body data-page="listing"></body>
-  <script type="module" src="/src/main.js"></script>
+  <body data-page="listing">
+    <!-- ========== HEADER (LOGGED IN) ========== -->
+    <header class="header header--logged-in">
+      <nav class="bg-white">
+        <!-- ===== MOBILE HEADER (under lg) ===== -->
+        <div class="d-lg-none">
+          <!-- Full-width border under logo/avatar -->
+          <div>
+            <div class="container py-3 d-flex align-items-center justify-content-between">
+              <!-- Logo -->
+              <a class="navbar-brand d-flex align-items-center gap-2 mb-0" href="index.html">
+                <img
+                  src="/images/logo/studiobid-logo.svg"
+                  alt="StudioBid"
+                  class="img-fluid sb-logo"
+                  width="145"
+                  height="30"
+                />
+              </a>
+
+              <!-- Avatar + dropdown -->
+              <div class="dropdown">
+                <button
+                  class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
+                  type="button"
+                  id="userMenuButtonMobile"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="fs-5">
+                    <i class="bi bi-chevron-down"></i>
+                  </span>
+                  <span
+                    class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                    style="width: 40px; height: 40px"
+                  >
+                  </span>
+                </button>
+
+                <ul
+                  class="dropdown-menu dropdown-menu-end shadow-sm"
+                  aria-labelledby="userMenuButtonMobile"
+                >
+                  <li>
+                    <a
+                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                      href="profile.html"
+                    >
+                      <span>Profile</span>
+                      <i class="bi bi-person"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                      href="profile.html#my-listings"
+                    >
+                      <span>My listings</span>
+                      <i class="bi bi-file-earmark-text"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                      href="profile.html#my-bids"
+                    >
+                      <span>My bids</span>
+                      <i class="bi bi-hammer"></i>
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <button
+                      class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
+                      type="button"
+                    >
+                      <span>Logout</span>
+                      <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons row (no border under) -->
+          <div class="container py-3 d-flex justify-content-center gap-3 flex-wrap">
+            <a
+              href="listing-edit.html"
+              class="btn btn-dark btn-lg btn-studio-small d-inline-flex align-items-center gap-2"
+            >
+              <i class="bi bi-plus-lg fs-5"></i>
+              <span>Create listing</span>
+            </a>
+
+            <div class="header-credits">Credits: 1000</div>
+          </div>
+        </div>
+
+        <!-- ===== DESKTOP HEADER (lg and up) ===== -->
+        <div class="d-none d-lg-block">
+          <div class="container py-3 d-flex align-items-center">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="index.html">
+              <img
+                src="/images/logo/studiobid-logo.svg"
+                alt="StudioBid"
+                class="img-fluid sb-logo"
+                width="193"
+                height="40"
+              />
+            </a>
+
+            <!-- Right side actions -->
+            <div class="d-flex align-items-center gap-3">
+              <a
+                href="listing-edit.html"
+                class="btn btn-dark btn-lg btn-studio-small d-inline-flex align-items-center gap-2"
+              >
+                <i class="bi bi-plus-lg fs-5"></i>
+                <span>Create listing</span>
+              </a>
+
+              <div class="header-credits">Credits: 1000</div>
+
+              <!-- Avatar + dropdown -->
+              <div class="dropdown">
+                <button
+                  class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
+                  type="button"
+                  id="userMenuButtonDesktop"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <span class="fs-5">
+                    <i class="bi bi-chevron-down"></i>
+                  </span>
+                  <span
+                    class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                    style="width: 40px; height: 40px"
+                  >
+                  </span>
+                </button>
+
+                <ul
+                  class="dropdown-menu dropdown-menu-end shadow-sm mt-2"
+                  aria-labelledby="userMenuButtonDesktop"
+                >
+                  <li>
+                    <a
+                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                      href="profile.html"
+                    >
+                      <span>Profile</span>
+                      <i class="bi bi-person"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                      href="profile.html#my-listings"
+                    >
+                      <span>My listings</span>
+                      <i class="bi bi-file-earmark-text"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                      href="profile.html#my-bids"
+                    >
+                      <span>My bids</span>
+                      <i class="bi bi-hammer"></i>
+                    </a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <button
+                      class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
+                      type="button"
+                    >
+                      <span>Logout</span>
+                      <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main>
+      <!-- ========= HERO ========= -->
+      <section class="sb-hero">
+        <div class="container py-5 text-center sb-hero__content">
+          <!-- h1 uses typography.scss: centered + correct sizes -->
+          <h1 class="mb-3">Turn your studio into credit</h1>
+
+          <!-- Body L: always centered, custom size -->
+          <p class="sb-body-lg mb-4">Sell the gear you don’t use and bid on what you need next</p>
+        </div>
+
+        <picture class="sb-hero__wave" aria-hidden="true">
+          <source srcset="/images/bids-mobile.svg" media="(max-width: 767.98px)" />
+          <img
+            src="/images/bids.svg"
+            alt="Illustration of bidders raising numbered paddles at a studio auction"
+            loading="lazy"
+          />
+        </picture>
+      </section>
+
+      <!-- ===== LISTING DETAILS ===== -->
+      <section class="py-5">
+        <div class="container">
+          <!-- Page title -->
+          <h2 class="mb-5">Listing details</h2>
+
+          <!-- Top area: images + core info -->
+          <div class="row g-4 mb-5 align-items-start">
+            <!-- IMAGES COLUMN -->
+            <div class="col-12 col-lg-6">
+              <!-- Main image -->
+              <div class="border mb-3">
+                <div
+                  class="ratio ratio-16x9 bg-light d-flex justify-content-center align-items-center"
+                >
+                  <span class="display-3 text-muted opacity-25">
+                    <i class="bi bi-gavel"></i>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Thumbnails row -->
+              <div class="row g-3">
+                <div class="col-3">
+                  <div class="border">
+                    <div
+                      class="ratio ratio-4x3 bg-light d-flex justify-content-center align-items-center"
+                    >
+                      <span class="text-muted opacity-25">
+                        <i class="bi bi-gavel"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="border">
+                    <div
+                      class="ratio ratio-4x3 bg-light d-flex justify-content-center align-items-center"
+                    >
+                      <span class="text-muted opacity-25">
+                        <i class="bi bi-gavel"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="border">
+                    <div
+                      class="ratio ratio-4x3 bg-light d-flex justify-content-center align-items-center"
+                    >
+                      <span class="text-muted opacity-25">
+                        <i class="bi bi-gavel"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <div class="border">
+                    <div
+                      class="ratio ratio-4x3 bg-light d-flex justify-content-center align-items-center"
+                    >
+                      <span class="text-muted opacity-25">
+                        <i class="bi bi-gavel"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- INFO COLUMN -->
+            <div class="col-12 col-lg-6">
+              <!-- Title (special case: will be left on desktop via CSS override if you want) -->
+              <h3 class="listing-heading mb-3">
+                Wacom Intuos Pro Medium, perfect for digital painting
+              </h3>
+
+              <!-- Tags -->
+              <div
+                class="mb-4 d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start"
+              >
+                <span class="badge rounded-pill text-bg-light border">tablet</span>
+                <span class="badge rounded-pill text-bg-light border">wacom</span>
+                <span class="badge rounded-pill text-bg-light border">drawing</span>
+                <span class="badge rounded-pill text-bg-light border">digital art</span>
+                <span class="badge rounded-pill text-bg-light border">illustration</span>
+              </div>
+
+              <!-- Seller block -->
+              <p class="mb-1 fw-semibold text-center text-md-start">Seller:</p>
+              <div
+                class="d-flex flex-column flex-lg-row align-items-center align-items-lg-center gap-3 mb-4 justify-content-center justify-content-lg-start"
+              >
+                <span
+                  class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                  style="width: 64px; height: 64px"
+                >
+                  <i class="bi bi-person fs-3"></i>
+                </span>
+                <div class="mt-2 mt-lg-0 text-center text-lg-start">
+                  <div class="fw-semibold">name</div>
+                  <a href="profile.html" class="text-primary fw-semibold"> View seller profile </a>
+                </div>
+              </div>
+
+              <hr class="my-3" />
+
+              <!-- Listing stats -->
+              <div class="row">
+                <div class="col-6">
+                  <p class="mb-2">Number of bids:</p>
+                  <p class="mb-2">Highest bid</p>
+                  <p class="mb-0">Active:</p>
+                </div>
+                <div class="col-6 text-end">
+                  <p class="mb-2 fw-semibold">1</p>
+                  <p class="mb-2 fw-semibold">20 credits</p>
+                  <p class="mb-0 fw-semibold">Ends in 3h 21m</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== BID AREA ===== -->
+          <div class="row g-4 mb-5">
+            <div class="col-12 col-lg-6">
+              <h3 class="mb-3">Take your shot at this auction</h3>
+
+              <form class="border p-4 rounded-0 bg-light-subtle">
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <label for="bidAmount" class="form-label fw-semibold">Bid amount:</label>
+                  </div>
+                  <div class="col-6 text-end">
+                    <span class="fw-semibold">Your credits:</span>
+                    <span class="badge text-bg-dark rounded-0 ms-2" style="min-width: 72px">
+                      1000
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <input
+                    type="number"
+                    class="form-control rounded-0"
+                    id="bidAmount"
+                    min="1"
+                    step="1"
+                    placeholder="30"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-dark w-100 rounded-0 text-uppercase fw-semibold"
+                >
+                  Place a bid
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <hr class="mb-5" />
+
+          <!-- ===== DESCRIPTION + BID HISTORY ===== -->
+          <div class="row g-5">
+            <div class="col-12 col-lg-6">
+              <h3 class="mb-3">Item description</h3>
+              <p>
+                This Wacom Intuos Pro Medium has been my main tablet for illustration and UI
+                sketches, but I've upgraded to a display tablet and no longer use it regularly.
+              </p>
+              <p>
+                The tablet is in good condition with only light surface wear from normal use – no
+                deep scratches or dead areas. Includes the original pen with extra nibs, USB cable
+                and the small wireless adapter.
+              </p>
+              <p>
+                Works great with Photoshop, Clip Studio Paint, Figma and other creative tools on
+                both Mac and Windows. Ideal if you're studying design, illustration or front-end and
+                want a responsive, professional-grade tablet without paying full retail price.
+              </p>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <h3 class="mb-3">Bid history</h3>
+
+              <div class="border-top">
+                <div class="d-flex justify-content-between py-3 border-bottom">
+                  <div>
+                    <span class="fw-semibold">Seller Name</span>
+                    <span class="ms-1 small text-muted">Jan 14, 1977, 02:30 PM</span>
+                  </div>
+                  <div class="fw-semibold">20 credits</div>
+                </div>
+
+                <!-- Example previous bid -->
+                <div class="d-flex justify-content-between py-3">
+                  <div>
+                    <span class="fw-semibold">Seller Name</span>
+                    <span class="ms-1 small text-muted">Jan 14, 1977, 02:30 PM</span>
+                  </div>
+                  <div class="fw-semibold">18 credits</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="sb-footer mt-auto py-4">
+      <div class="container">
+        <div class="row align-items-center gy-3">
+          <!-- Left side: logo + text -->
+          <div class="col-12 col-md-auto text-center text-md-start">
+            <a
+              href="index.html"
+              class="d-inline-flex align-items-center mb-2 mb-md-0 text-decoration-none"
+            >
+              <img
+                src="/images/logo/studiobid-logo.svg"
+                alt="StudioBid logo"
+                width="145"
+                height="30"
+                class="img-fluid"
+              />
+            </a>
+
+            <p class="mb-0 sb-body-sm text-center text-md-start">
+              Concept project for Noroff Semester Project 2
+            </p>
+            <p class="mb-0 sb-body-sm text-center text-md-start">
+              &copy; 2025 &middot; Built by Katja Turnsek
+            </p>
+          </div>
+
+          <!-- Right side: links -->
+          <div
+            class="col-12 col-md d-flex flex-column flex-md-row justify-content-center justify-content-md-end text-center text-md-end gap-2 gap-md-4"
+          >
+            <a href="how.html"> How StudioBid works </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Vite entry -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

@@ -1,0 +1,155 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+// -----------------------------
+// General heading tweaks
+// -----------------------------
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.1;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+// -----------------------------
+// Paragraphs and Body Text
+// -----------------------------
+
+p {
+  font-weight: 400; // Normal body copy — Poppins Regular
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-align: left; 
+}
+
+.col-6.text-end p {
+  text-align: right !important;
+}
+
+// Larger paragraph styling
+.sb-body-lg {
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+// Smaller text bits
+.sb-body-sm {
+  font-weight: 400;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+// -----------------------------
+// Headings – mobile first
+// -----------------------------
+
+h1 {
+  font-size: 2.5rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+h3 {
+  font-size: 1.75rem;
+  text-align: center;
+}
+
+// Exception: Cards use smaller h3 styling
+.card h3 {
+  font-size: 22px;
+  line-height: 27px;
+  text-align: left; // not center inside cards
+}
+
+h4 {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+h5 {
+  font-size: 1.25rem;
+  text-align: left;
+}
+
+h6 {
+  font-size: 1.125rem;
+  text-align: left;
+}
+
+// -----------------------------
+// Link styling (global)
+// -----------------------------
+
+a {
+  color: var(--sb-color-primary);
+  font-weight: 600;
+  text-decoration: none; 
+
+  text-underline-offset: 0.19em;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: currentColor;
+
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+// Underline only on hover or focus-visible
+a:hover,
+a:focus-visible {
+  text-decoration-line: underline;
+}
+
+// -----------------------------
+// Breakpoints – md and up
+// -----------------------------
+
+@include media-breakpoint-up(md) {
+  h1 {
+    font-size: 3.4375rem;
+  }
+
+  h2 {
+    font-size: 2.8125rem;
+  }
+
+  h3 {
+    font-size: 2.1875rem; 
+    text-align: left; // default to left on desktop — seems more conventional
+  }
+
+  h4 {
+    font-size: 1.875rem; 
+  }
+
+  h5 {
+    font-size: 1.5rem;
+  }
+
+  h6 {
+    font-size: 1.25rem; // 20px
+  }
+
+  .sb-body-lg {
+    font-size: 1.5625rem;
+  }
+
+  .sb-body-sm {
+    font-size: 1rem;
+  }
+}
