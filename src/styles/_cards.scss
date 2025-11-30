@@ -1,0 +1,172 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+/* ============================
+   Listing cards – shared
+   ============================ */
+
+.card.sb-card {
+  border: 2px solid var(--sb-color-black);
+}
+
+.card.sb-card .card-footer {
+  border-top: 0;
+}
+
+/* Username link inside cards */
+.card .card-username-link {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* ============================
+   Index cards – "View listing" footer
+   ============================ */
+
+/* <a> inside the footer */
+.card .card-view-link {
+  border-radius: 0;
+  background-color: var(--sb-color-black);
+  color: var(--sb-color-white);
+  border: 0;
+  border-top: 2px solid var(--sb-color-black);
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 25px;
+  padding-inline: 1.25rem;
+  text-decoration: none;
+
+  @include media-breakpoint-up(md) {
+    height: 40px;
+  }
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-info);
+    color: var(--sb-color-black);
+    border-top: 2px solid var(--sb-color-black);
+    text-decoration: none;
+  }
+
+  &:active,
+  &.active {
+    background-color: var(--sb-color-primary);
+    color: var(--sb-color-black);
+    border-top: 2px solid var(--sb-color-black);
+    text-decoration: none;
+  }
+}
+
+/* ============================
+   Active listings – title + edit icon
+   ============================ */
+
+.card .card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+
+  h3 {
+    margin-bottom: 0;
+  }
+}
+
+/* Small icon-only edit button */
+.card .card-edit-icon-btn {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  line-height: 1;
+  color: var(--sb-color-black);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--sb-color-primary);
+  }
+}
+
+/* ============================
+   Active listings – Edit / Delete / View strip
+   ============================ */
+
+.card .card-actions,
+.card .btn-group.w-100 {
+  width: 100%;
+}
+
+/* Base look for all three buttons in the strip */
+.card .card-action-btn {
+  border-radius: 0;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 0.875rem;
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 25px;
+  padding-inline: 0.75rem;
+  border-width: 2px;
+
+  @include media-breakpoint-up(md) {
+    height: 40px;
+  }
+}
+
+/* Edit + View  */
+.card .card-action-btn--edit,
+.card .card-action-btn--view {
+  background-color: var(--sb-color-black);
+  color: var(--sb-color-white);
+  border: 0;
+  border-top: 2px solid var(--sb-color-black);
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--sb-color-info);
+    color: var(--sb-color-black);
+    border-color: var(--sb-color-black);
+    text-decoration: none;
+  }
+
+  &:active,
+  &.active {
+    background-color: var(--sb-color-primary);
+    color: var(--sb-color-black);
+    border-color: var(--sb-color-black);
+    text-decoration: none;
+  }
+}
+
+/* Delete */
+.card .card-action-btn--delete {
+  background-color: var(--sb-color-delete);
+  color: var(--sb-color-white);
+  border-color: var(--sb-color-delete);
+
+  &:hover,
+  &:focus-visible,
+  &:active,
+  &.active {
+    background-color: var(--sb-color-delete-light);
+    color: var(--sb-color-delete);
+    border-color: var(--sb-color-delete);
+    text-decoration: none;
+  }
+}
