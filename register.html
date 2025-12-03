@@ -2,10 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>StudioBid - Sign up</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StudioBid - Sign up</title>
+    <meta
+      name="description"
+      content="Create your StudioBid account with your Noroff student email to sell creative gear, earn credits, and bid in studio auctions."
+    />
   </head>
-  <body data-page="auth">
+  <body data-page="register">
     <!-- ===== HEADER: LOGGED OUT (same as index) ===== -->
     <header class="header">
       <nav class="navbar bg-white py-3">
@@ -14,18 +18,15 @@
           <a class="navbar-brand d-flex align-items-center me-auto" href="index.html">
             <img src="/images/logo/studiobid-logo.svg" alt="StudioBid" class="img-fluid sb-logo" />
           </a>
-
-          <!-- Right side buttons -->
-          <div class="d-flex align-items-center gap-3">
-            <a href="auth.html#login" class="btn btn-dark btn-studio-small"> Login </a>
-            <a href="auth.html#register" class="btn btn-dark btn-studio-small"> Register </a>
-          </div>
         </div>
       </nav>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
     <main>
+      <!-- Shared auth message (used by JS) -->
+      <p class="alert d-none" data-auth="message"></p>
+
       <!-- ===== SIGN UP HERO + FORM ===== -->
       <section class="py-5" id="register">
         <div class="container">
@@ -51,11 +52,9 @@
             <!-- Sign up card -->
             <article class="card sb-form-card w-100" style="max-width: 520px">
               <div class="card-body p-4 p-md-5">
-                <!-- ========= REGISTER MESSAGES ========= -->
-                <!-- SUCCESS -->
+                <!-- ========= REGISTER MESSAGES (visual only for now) ========= -->
                 <div id="registerSuccess" class="d-none mb-3">
                   <div class="d-flex align-items-stretch rounded-3 overflow-hidden">
-                    <!-- Left color strip + icon -->
                     <div class="d-flex align-items-center px-3 bg-success">
                       <div
                         class="rounded-circle border border-2 border-light d-flex align-items-center justify-content-center bg-success"
@@ -64,14 +63,10 @@
                         <i class="bi bi-check2 text-light fs-5"></i>
                       </div>
                     </div>
-
-                    <!-- Text -->
                     <div class="flex-grow-1 py-3 px-3 bg-success-subtle text-success-emphasis">
                       <p class="fw-bold mb-1">All set!</p>
                       <p class="mb-0">Your account has been created successfully.</p>
                     </div>
-
-                    <!-- Divider + close icon -->
                     <button
                       type="button"
                       class="btn bg-success-subtle text-success-emphasis border-0 rounded-0 px-3 d-flex align-items-center border-start border-success-subtle"
@@ -82,10 +77,8 @@
                   </div>
                 </div>
 
-                <!-- ERROR -->
                 <div id="registerError" class="d-none mb-3">
                   <div class="d-flex align-items-stretch rounded-3 overflow-hidden">
-                    <!-- Left color strip + icon -->
                     <div class="d-flex align-items-center px-3 bg-danger">
                       <div
                         class="rounded-circle border border-2 border-light d-flex align-items-center justify-content-center bg-danger"
@@ -94,14 +87,10 @@
                         <i class="bi bi-x-lg text-light fs-5"></i>
                       </div>
                     </div>
-
-                    <!-- Text -->
                     <div class="flex-grow-1 py-3 px-3 bg-danger-subtle text-danger-emphasis">
                       <p class="fw-bold mb-1">Something went wrong</p>
                       <p class="mb-0">Please check the highlighted fields and try again.</p>
                     </div>
-
-                    <!-- Divider + close icon -->
                     <button
                       type="button"
                       class="btn bg-danger-subtle text-danger-emphasis border-0 rounded-0 px-3 d-flex align-items-center border-start border-danger-subtle"
@@ -113,7 +102,7 @@
                 </div>
 
                 <!-- ========= REGISTER FORM ========= -->
-                <form id="registerForm" novalidate>
+                <form id="registerForm" data-auth="register-form" novalidate>
                   <!-- Name -->
                   <div class="mb-3">
                     <label for="registerName" class="form-label">Name</label>
@@ -154,14 +143,6 @@
                     <div class="form-text">Password must be at least 8 characters.</div>
                   </div>
 
-                  <!-- Show password -->
-                  <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="registerShowPassword" />
-                    <label class="form-check-label" for="registerShowPassword">
-                      Show password
-                    </label>
-                  </div>
-
                   <!-- Submit -->
                   <button
                     type="submit"
@@ -175,130 +156,8 @@
                 <!-- Already have an account -->
                 <p class="mt-3 mb-0 text-center">
                   Already have an account?
-                  <a href="#login" class="fw-semibold text-decoration-none">Sign in</a>
+                  <a href="login.html">Sign in</a>
                 </p>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- ===== LOGIN SECTION ===== -->
-      <section id="login" class="py-5 border-top">
-        <div class="container">
-          <!-- Heading -->
-          <div class="text-center mb-4">
-            <h2 class="mb-0">Sign in</h2>
-          </div>
-
-          <!-- Card wrapper with SVG illustration behind the form -->
-          <div
-            class="auth-form-wrapper sb-form-card-wrap position-relative d-flex justify-content-center"
-          >
-            <!-- SVG background (desktop + mobile) -->
-            <picture
-              class="auth-illustration position-absolute top-0 start-50 translate-middle-x"
-              aria-hidden="true"
-            >
-              <source srcset="/images/form-bg-bids-mobile.svg" media="(max-width: 767.98px)" />
-              <img src="/images/form-bg-bids.svg" alt="" class="img-fluid" />
-            </picture>
-
-            <!-- Sign in card -->
-            <article class="card sb-form-card w-100" style="max-width: 520px">
-              <div class="card-body p-4 p-md-5">
-                <!-- ========= LOGIN MESSAGES ========= -->
-                <div id="loginSuccess" class="d-none mb-3">
-                  <div class="d-flex align-items-stretch rounded-3 overflow-hidden">
-                    <div class="d-flex align-items-center px-3 bg-success">
-                      <div
-                        class="rounded-circle border border-2 border-light d-flex align-items-center justify-content-center bg-success"
-                        style="width: 36px; height: 36px"
-                      >
-                        <i class="bi bi-check2 text-light fs-5"></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1 py-3 px-3 bg-success-subtle text-success-emphasis">
-                      <p class="fw-bold mb-1">All set!</p>
-                      <p class="mb-0">You are now signed in.</p>
-                    </div>
-                    <button
-                      type="button"
-                      class="btn bg-success-subtle text-success-emphasis border-0 rounded-0 px-3 d-flex align-items-center border-start border-success-subtle"
-                      aria-label="Close message"
-                    >
-                      <i class="bi bi-x-lg"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div id="loginError" class="d-none mb-3">
-                  <div class="d-flex align-items-stretch rounded-3 overflow-hidden">
-                    <div class="d-flex align-items-center px-3 bg-danger">
-                      <div
-                        class="rounded-circle border border-2 border-light d-flex align-items-center justify-content-center bg-danger"
-                        style="width: 36px; height: 36px"
-                      >
-                        <i class="bi bi-x-lg text-light fs-5"></i>
-                      </div>
-                    </div>
-                    <div class="flex-grow-1 py-3 px-3 bg-danger-subtle text-danger-emphasis">
-                      <p class="fw-bold mb-1">Something went wrong</p>
-                      <p class="mb-0">Please check your email and password and try again.</p>
-                    </div>
-                    <button
-                      type="button"
-                      class="btn bg-danger-subtle text-danger-emphasis border-0 rounded-0 px-3 d-flex align-items-center border-start border-danger-subtle"
-                      aria-label="Close message"
-                    >
-                      <i class="bi bi-x-lg"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- ========= LOGIN FORM ========= -->
-                <form id="loginForm" novalidate>
-                  <div class="mb-3">
-                    <label for="loginEmail" class="form-label">Email</label>
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="loginEmail"
-                      name="email"
-                      required
-                    />
-                    <div class="form-text">Use the same email you registered with.</div>
-                  </div>
-
-                  <div class="mb-3">
-                    <label for="loginPassword" class="form-label">Password</label>
-                    <input
-                      type="password"
-                      class="form-control"
-                      id="loginPassword"
-                      name="password"
-                      required
-                    />
-                  </div>
-
-                  <!-- Show password -->
-                  <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="loginShowPassword" />
-                    <label class="form-check-label" for="loginShowPassword"> Show password </label>
-                  </div>
-
-                  <button type="submit" id="loginSubmit" class="btn btn-dark btn-studio-md w-100">
-                    Login
-                  </button>
-
-                  <!-- Link back to sign up -->
-                  <p class="mt-3 mb-0 text-center">
-                    New to StudioBid?
-                    <a href="#register" class="fw-semibold text-decoration-none">
-                      Create an account
-                    </a>
-                  </p>
-                </form>
               </div>
             </article>
           </div>
@@ -342,6 +201,14 @@
         </div>
       </div>
     </footer>
+
+    <!-- Global loader -->
+    <div class="sb-loader-backdrop d-none" data-loader="global">
+      <div class="sb-loader-box">
+        <div class="spinner-border text-dark" role="status" aria-hidden="true"></div>
+        <span class="sb-loader-text">Loading…</span>
+      </div>
+    </div>
 
     <!-- Vite entry -->
     <script type="module" src="/src/main.js"></script>

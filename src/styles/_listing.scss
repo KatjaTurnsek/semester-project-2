@@ -1,0 +1,72 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+// =====================================
+// Listing detail page
+// =====================================
+
+// Tag pills
+body[data-page='listing'] [data-listing-tags] .badge {
+  background-color: var(--sb-color-info) !important;
+  border-color: var(--sb-color-info) !important;
+  color: var(--sb-color-black) !important;
+
+  font-size: 0.8rem;
+  font-weight: 400;
+
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 999px;
+}
+
+// Image gallery borders (main + thumbs)
+body[data-page='listing'] [data-listing-image-main],
+body[data-page='listing'] [data-listing-image-main] .border,
+body[data-page='listing'] [data-listing-thumbnails] .border {
+  border-width: 2px !important;
+  border-style: solid;
+  border-color: var(--sb-color-black) !important;
+}
+
+// Seller avatar border
+body[data-page='listing'] [data-listing-seller-avatar] {
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-color: var(--sb-color-black) !important;
+}
+
+// Bid form wrapper
+body[data-page='listing'] .sb-bid-form,
+body[data-page='listing'] [data-bid-form] {
+  border: 0;
+  background-color: transparent;
+  padding: 0;
+}
+
+// User credits badge
+body[data-page='listing'] .sb-bid-credits,
+body[data-page='listing'] [data-user-credits] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 72px;
+  padding: 0.25rem 0.75rem;
+
+  background-color: var(--sb-color-black);
+  color: var(--sb-color-info);
+
+  border-radius: 5px;
+
+  font-size: 1rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+// Strong dividers (e.g. <hr class="sb-divider-strong">)
+body[data-page='listing'] .sb-divider-strong {
+  border: 0 !important;
+  border-top: 2px solid var(--sb-color-black) !important;
+  height: 0 !important;
+  opacity: 1 !important;
+  background-color: transparent !important;
+}

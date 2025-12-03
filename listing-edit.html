@@ -4,122 +4,123 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StudioBid - Create or edit listing</title>
+    <meta
+      name="description"
+      content="Create or edit a StudioBid listing by adding photos, descriptions, starting price, and end time for your creative gear auction."
+    />
   </head>
   <body data-page="listing-edit">
-    <!-- ========== HEADER (LOGGED IN) ========== -->
-    <header class="header header--logged-in">
-      <nav class="bg-white">
-        <!-- ===== MOBILE HEADER (under lg) ===== -->
-        <div class="d-lg-none">
-          <!-- Full-width border under logo/avatar -->
-          <div>
-            <div class="container py-3 d-flex align-items-center justify-content-between">
-              <!-- Logo -->
-              <a class="navbar-brand d-flex align-items-center gap-2 mb-0" href="index.html">
-                <img
-                  src="/images/logo/studiobid-logo.svg"
-                  alt="StudioBid"
-                  class="img-fluid sb-logo"
-                  width="145"
-                  height="30"
-                />
-              </a>
-
-              <!-- Avatar + dropdown -->
-              <div class="dropdown">
-                <button
-                  class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
-                  type="button"
-                  id="userMenuButtonMobile"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <span class="fs-5">
-                    <i class="bi bi-chevron-down"></i>
-                  </span>
-                  <span
-                    class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
-                    style="width: 40px; height: 40px"
-                  >
-                  </span>
-                </button>
-
-                <ul
-                  class="dropdown-menu dropdown-menu-end shadow-sm"
-                  aria-labelledby="userMenuButtonMobile"
-                >
-                  <li>
-                    <a
-                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
-                      href="profile.html"
-                    >
-                      <span>Profile</span>
-                      <i class="bi bi-person"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
-                      href="profile.html#my-listings"
-                    >
-                      <span>My listings</span>
-                      <i class="bi bi-file-earmark-text"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
-                      href="profile.html#my-bids"
-                    >
-                      <span>My bids</span>
-                      <i class="bi bi-hammer"></i>
-                    </a>
-                  </li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <button
-                      class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
-                      type="button"
-                    >
-                      <span>Logout</span>
-                      <i class="bi bi-box-arrow-right"></i>
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Buttons row (no border under) -->
-          <div class="container py-3 d-flex justify-content-center gap-3 flex-wrap">
-            <a
-              href="listing-edit.html"
-              class="btn btn-dark btn-lg btn-studio-small d-inline-flex align-items-center gap-2"
-            >
-              <i class="bi bi-plus-lg fs-5"></i>
-              <span>Create listing</span>
-            </a>
-
-            <div class="header-credits">Credits: 1000</div>
-          </div>
-        </div>
-
-        <!-- ===== DESKTOP HEADER (lg and up) ===== -->
-        <div class="d-none d-lg-block">
-          <div class="container py-3 d-flex align-items-center">
+    <!-- ===== SITE HEADER (one <header>, two variants) ===== -->
+    <header class="header">
+      <!-- ===== HEADER: LOGGED OUT ===== -->
+      <div class="header header--logged-out" data-header="logged-out">
+        <nav class="navbar bg-white py-3">
+          <div class="container d-flex align-items-center justify-content-between">
             <!-- Logo -->
-            <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="index.html">
+            <a class="navbar-brand d-flex align-items-center me-auto" href="index.html">
               <img
                 src="/images/logo/studiobid-logo.svg"
                 alt="StudioBid"
                 class="img-fluid sb-logo"
-                width="193"
-                height="40"
               />
             </a>
 
-            <!-- Right side actions -->
-            <div class="d-flex align-items-center gap-3">
+            <!-- Right side buttons -->
+            <div class="header-actions d-flex align-items-center gap-3">
+              <a href="login.html" class="btn btn-dark btn-studio-small"> Login </a>
+              <a href="register.html" class="btn btn-dark btn-studio-small"> Register </a>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <!-- ===== HEADER: LOGGED IN (toggled by JS) ===== -->
+      <div class="header header--logged-in d-none" data-header="logged-in">
+        <nav class="bg-white">
+          <!-- ===== MOBILE HEADER (under lg) ===== -->
+          <div class="d-lg-none">
+            <!-- Full-width border under logo/avatar -->
+            <div>
+              <div class="container py-3 d-flex align-items-center justify-content-between">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center gap-2 mb-0" href="index.html">
+                  <img
+                    src="/images/logo/studiobid-logo.svg"
+                    alt="StudioBid"
+                    class="img-fluid sb-logo"
+                    width="145"
+                    height="30"
+                  />
+                </a>
+
+                <!-- Avatar + dropdown -->
+                <div class="dropdown">
+                  <button
+                    class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
+                    type="button"
+                    id="userMenuButtonMobile"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span class="fs-5">
+                      <i class="bi bi-chevron-down"></i>
+                    </span>
+                    <span
+                      class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                      style="width: 40px; height: 40px"
+                    >
+                      <!-- Optional: initials/avatar via JS -->
+                    </span>
+                  </button>
+
+                  <ul
+                    class="dropdown-menu dropdown-menu-end shadow-sm"
+                    aria-labelledby="userMenuButtonMobile"
+                  >
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html"
+                      >
+                        <span>Profile</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-listings"
+                      >
+                        <span>My listings</span>
+                        <i class="bi bi-file-earmark-text"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-bids"
+                      >
+                        <span>My bids</span>
+                        <i class="bi bi-hammer"></i>
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                      <button
+                        class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
+                        type="button"
+                        data-auth="logout"
+                      >
+                        <span>Logout</span>
+                        <i class="bi bi-box-arrow-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Buttons row (no border under) -->
+            <div class="container py-3 d-flex justify-content-center gap-3 flex-wrap">
               <a
                 href="listing-edit.html"
                 class="btn btn-dark btn-studio-small d-inline-flex align-items-center gap-2"
@@ -128,74 +129,107 @@
                 <span>Create listing</span>
               </a>
 
-              <div class="header-credits">Credits: 1000</div>
+              <!-- Credits placeholder (mobile) -->
+              <div class="header-credits" data-header-credits>Credits: 0</div>
+            </div>
+          </div>
 
-              <!-- Avatar + dropdown -->
-              <div class="dropdown">
-                <button
-                  class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
-                  type="button"
-                  id="userMenuButtonDesktop"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+          <!-- ===== DESKTOP HEADER (lg and up) ===== -->
+          <div class="d-none d-lg-block">
+            <div class="container py-3 d-flex align-items-center">
+              <!-- Logo -->
+              <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="index.html">
+                <img
+                  src="/images/logo/studiobid-logo.svg"
+                  alt="StudioBid"
+                  class="img-fluid sb-logo"
+                  width="193"
+                  height="40"
+                />
+              </a>
+
+              <!-- Right side actions -->
+              <div class="d-flex align-items-center gap-3">
+                <a
+                  href="listing-edit.html"
+                  class="btn btn-dark btn-studio-small d-inline-flex align-items-center gap-2"
                 >
-                  <span class="fs-5">
-                    <i class="bi bi-chevron-down"></i>
-                  </span>
-                  <span
-                    class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
-                    style="width: 40px; height: 40px"
+                  <i class="bi bi-plus-lg fs-5"></i>
+                  <span>Create listing</span>
+                </a>
+
+                <!-- Credits placeholder (desktop) -->
+                <div class="header-credits" data-header-credits>Credits: 0</div>
+
+                <!-- Avatar + dropdown -->
+                <div class="dropdown">
+                  <button
+                    class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
+                    type="button"
+                    id="userMenuButtonDesktop"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                   >
-                  </span>
-                </button>
+                    <span class="fs-5">
+                      <i class="bi bi-chevron-down"></i>
+                    </span>
+                    <span
+                      class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                      style="width: 40px; height: 40px"
+                    >
+                      <!-- Optional: initials/avatar via JS -->
+                    </span>
+                  </button>
 
-                <ul
-                  class="dropdown-menu dropdown-menu-end shadow-sm mt-2"
-                  aria-labelledby="userMenuButtonDesktop"
-                >
-                  <li>
-                    <a
-                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
-                      href="profile.html"
-                    >
-                      <span>Profile</span>
-                      <i class="bi bi-person"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
-                      href="profile.html#my-listings"
-                    >
-                      <span>My listings</span>
-                      <i class="bi bi-file-earmark-text"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
-                      href="profile.html#my-bids"
-                    >
-                      <span>My bids</span>
-                      <i class="bi bi-hammer"></i>
-                    </a>
-                  </li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li>
-                    <button
-                      class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
-                      type="button"
-                    >
-                      <span>Logout</span>
-                      <i class="bi bi-box-arrow-right"></i>
-                    </button>
-                  </li>
-                </ul>
+                  <ul
+                    class="dropdown-menu dropdown-menu-end shadow-sm"
+                    aria-labelledby="userMenuButtonDesktop"
+                  >
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html"
+                      >
+                        <span>Profile</span>
+                        <i class="bi bi-person"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-listings"
+                      >
+                        <span>My listings</span>
+                        <i class="bi bi-file-earmark-text"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-bids"
+                      >
+                        <span>My bids</span>
+                        <i class="bi bi-hammer"></i>
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                      <button
+                        class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
+                        type="button"
+                        data-auth="logout"
+                      >
+                        <span>Logout</span>
+                        <i class="bi bi-box-arrow-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
     </header>
 
     <!-- ===== MAIN CONTENT ===== -->

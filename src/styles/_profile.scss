@@ -160,3 +160,52 @@
     border: 2px solid var(--sb-color-black);
   }
 }
+
+// ============================
+// Profile tabs bar
+// ============================
+.sb-profile-tabs {
+  width: 100%;
+  border-top: 2px solid var(--sb-color-black);
+  border-bottom: 2px solid var(--sb-color-black);
+}
+
+#profileTabs {
+  margin: 0;
+  padding: 0;
+}
+
+#profileTabs .nav-link {
+  border: 0 !important;
+  background: transparent;
+  color: inherit;
+
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;
+  font-weight: 600;
+}
+
+#profileTabs .nav-item {
+  position: relative;
+}
+
+#profileTabs .nav-item + .nav-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background-color: var(--sb-color-black);
+}
+
+// Active state
+#profileTabs .nav-link.active {
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}

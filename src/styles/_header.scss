@@ -1,7 +1,8 @@
 @use "bootstrap/scss/bootstrap" as *;
 
 // --- Base header wrapper ---
-.header {
+// Only the top-level <header class="header"> gets the bottom border
+header.header {
   border-bottom: 2px solid #000;
 
   .navbar {
@@ -35,6 +36,12 @@
       gap: 8px;
     }
   }
+}
+
+// Inner header variants (logged-out / logged-in) should NOT add their own border
+.header.header--logged-out,
+.header.header--logged-in {
+  border-bottom: 0;
 }
 
 // --- Logged-in variation of header ---

@@ -4,24 +4,234 @@
     <meta charset="UTF-8" />
     <title>StudioBid - Active listings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Browse active StudioBid auctions for creative gear, art, and tools, and see the latest listings, bids, and ending times."
+    />
   </head>
   <body data-page="index">
-    <!-- ===== HEADER: LOGGED OUT ===== -->
+    <!-- ===== SITE HEADER (one <header>, two variants) ===== -->
     <header class="header">
-      <nav class="navbar bg-white py-3">
-        <div class="container d-flex align-items-center justify-content-between">
-          <!-- Logo -->
-          <a class="navbar-brand d-flex align-items-center me-auto" href="index.html">
-            <img src="/images/logo/studiobid-logo.svg" alt="StudioBid" class="img-fluid sb-logo" />
-          </a>
+      <!-- ===== HEADER: LOGGED OUT ===== -->
+      <div class="header header--logged-out" data-header="logged-out">
+        <nav class="navbar bg-white py-3">
+          <div class="container d-flex align-items-center justify-content-between">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center me-auto" href="index.html">
+              <img
+                src="/images/logo/studiobid-logo.svg"
+                alt="StudioBid"
+                class="img-fluid sb-logo"
+              />
+            </a>
 
-          <!-- Right side buttons -->
-          <div class="header-actions d-flex align-items-center gap-3">
-            <a href="auth.html#login" class="btn btn-dark btn-studio-small"> Login </a>
-            <a href="auth.html#register" class="btn btn-dark btn-studio-small"> Register </a>
+            <!-- Right side buttons -->
+            <div class="header-actions d-flex align-items-center gap-3">
+              <a href="login.html" class="btn btn-dark btn-studio-small"> Login </a>
+              <a href="register.html" class="btn btn-dark btn-studio-small"> Register </a>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
+
+      <!-- ===== HEADER: LOGGED IN (toggled by JS) ===== -->
+      <div class="header header--logged-in d-none" data-header="logged-in">
+        <nav class="bg-white">
+          <!-- ===== MOBILE HEADER (under lg) ===== -->
+          <div class="d-lg-none">
+            <!-- Full-width border under logo/avatar -->
+            <div>
+              <div class="container py-3 d-flex align-items-center justify-content-between">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center gap-2 mb-0" href="index.html">
+                  <img
+                    src="/images/logo/studiobid-logo.svg"
+                    alt="StudioBid"
+                    class="img-fluid sb-logo"
+                    width="145"
+                    height="30"
+                  />
+                </a>
+
+                <!-- Avatar + dropdown -->
+                <div class="dropdown">
+                  <button
+                    class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
+                    type="button"
+                    id="userMenuButtonMobile"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span class="fs-5">
+                      <i class="bi bi-chevron-down"></i>
+                    </span>
+                    <span
+                      class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                      style="width: 40px; height: 40px"
+                      data-header-avatar="mobile"
+                    >
+                      <!-- Filled by JS -->
+                    </span>
+                  </button>
+
+                  <ul
+                    class="dropdown-menu dropdown-menu-end shadow-sm"
+                    aria-labelledby="userMenuButtonMobile"
+                  >
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html"
+                      >
+                        <span>Profile</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-listings"
+                      >
+                        <span>My listings</span>
+                        <i class="bi bi-file-earmark-text"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-bids"
+                      >
+                        <span>My bids</span>
+                        <i class="bi bi-hammer"></i>
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                      <button
+                        class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
+                        type="button"
+                        data-auth="logout"
+                      >
+                        <span>Logout</span>
+                        <i class="bi bi-box-arrow-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Buttons row (no border under) -->
+            <div class="container py-3 d-flex justify-content-center gap-3 flex-wrap">
+              <a
+                href="listing-edit.html"
+                class="btn btn-dark btn-studio-small d-inline-flex align-items-center gap-2"
+              >
+                <i class="bi bi-plus-lg fs-5"></i>
+                <span>Create listing</span>
+              </a>
+
+              <!-- Credits placeholder (mobile) -->
+              <div class="header-credits" data-header-credits>Credits: 0</div>
+            </div>
+          </div>
+
+          <!-- ===== DESKTOP HEADER (lg and up) ===== -->
+          <div class="d-none d-lg-block">
+            <div class="container py-3 d-flex align-items-center">
+              <!-- Logo -->
+              <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="index.html">
+                <img
+                  src="/images/logo/studiobid-logo.svg"
+                  alt="StudioBid"
+                  class="img-fluid sb-logo"
+                  width="193"
+                  height="40"
+                />
+              </a>
+
+              <!-- Right side actions -->
+              <div class="d-flex align-items-center gap-3">
+                <a
+                  href="listing-edit.html"
+                  class="btn btn-dark btn-studio-small d-inline-flex align-items-center gap-2"
+                >
+                  <i class="bi bi-plus-lg fs-5"></i>
+                  <span>Create listing</span>
+                </a>
+
+                <!-- Credits placeholder (desktop) -->
+                <div class="header-credits" data-header-credits>Credits: 0</div>
+
+                <!-- Avatar + dropdown -->
+                <div class="dropdown">
+                  <button
+                    class="btn d-flex align-items-center gap-2 p-0 border-0 bg-transparent"
+                    type="button"
+                    id="userMenuButtonDesktop"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <span class="fs-5">
+                      <i class="bi bi-chevron-down"></i>
+                    </span>
+                    <span
+                      class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
+                      style="width: 40px; height: 40px"
+                      data-header-avatar="desktop"
+                    >
+                      <!-- Filled by JS -->
+                    </span>
+                  </button>
+
+                  <ul
+                    class="dropdown-menu dropdown-menu-end shadow-sm"
+                    aria-labelledby="userMenuButtonDesktop"
+                  >
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html"
+                      >
+                        <span>Profile</span>
+                        <i class="bi bi-person"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-listings"
+                      >
+                        <span>My listings</span>
+                        <i class="bi bi-file-earmark-text"></i>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        class="dropdown-item fw-semibold text-primary d-flex align-items-center justify-content-between"
+                        href="profile.html#my-bids"
+                      >
+                        <span>My bids</span>
+                        <i class="bi bi-hammer"></i>
+                      </a>
+                    </li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li>
+                      <button
+                        class="dropdown-item fw-semibold text-danger d-flex align-items-center justify-content-between"
+                        type="button"
+                        data-auth="logout"
+                      >
+                        <span>Logout</span>
+                        <i class="bi bi-box-arrow-right"></i>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
     </header>
 
     <!-- ========== MAIN CONTENT ========== -->
@@ -29,19 +239,16 @@
       <!-- ========= HERO ========= -->
       <section class="sb-hero">
         <div class="container py-5 text-center sb-hero__content">
-          <!-- h1 uses typography.scss: centered + correct sizes -->
           <h1 class="mb-3">Turn your studio into credit</h1>
-
-          <!-- Body L: always centered, custom size -->
           <p class="sb-body-lg mb-4">Sell the gear you don’t use and bid on what you need next</p>
 
           <div class="d-grid d-md-inline-flex">
-            <button type="button" class="btn btn-dark btn-studio-md">
+            <a href="#active-listings" class="btn btn-dark btn-studio-md">
               <span class="text-uppercase fw-semibold">Browse active auctions</span>
               <span class="fs-5">
                 <i class="bi bi-chevron-down"></i>
               </span>
-            </button>
+            </a>
           </div>
         </div>
 
@@ -59,7 +266,7 @@
       <section class="sb-search-strip text-white">
         <div class="container-fluid px-0">
           <div class="row g-0 align-items-center sb-search-strip-row">
-            <!-- Search: full-width on mobile, wider on desktop -->
+            <!-- Search -->
             <div class="col-12 col-lg-9 px-3 py-3">
               <form class="sb-search-form">
                 <div class="input-group sb-search-input-group">
@@ -77,7 +284,7 @@
               </form>
             </div>
 
-            <!-- Sort: second row on mobile, right on desktop -->
+            <!-- Sort -->
             <div class="col-12 col-lg-3 px-3 py-3 d-flex justify-content-lg-end sb-sort-col">
               <div class="w-100 w-lg-auto">
                 <label for="sortBy" class="visually-hidden">Sort listings</label>
@@ -94,174 +301,95 @@
       </section>
 
       <!-- ========= LISTINGS CONTENT ========= -->
-      <section class="py-5">
+      <section id="active-listings" class="py-5">
         <div class="container">
-          <!-- h2 uses typography.scss: centered, correct sizes -->
-          <h2 class="mb-4">Active listings</h2>
+          <h2 class="mb-4">StudioBid listings</h2>
+          <p class="sb-search-summary mb-4 d-none" data-listings-summary></p>
+          <p class="alert alert-danger d-none" data-listings-error></p>
 
-          <!-- Cards grid -->
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-            <!-- CARD START -->
-            <div class="col">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4" data-listings>
+            <!-- TEMPLATE CARD (cloned by JS) -->
+            <div class="col" data-listing-template hidden>
               <article class="card sb-card h-100 rounded-0">
-                <!-- Image / placeholder + NEW badge + caption -->
                 <div class="position-relative">
+                  <!-- Placeholder -->
                   <div
                     class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center"
+                    data-listing-media-fallback
                   >
-                    <!-- Placeholder gavel icon -->
                     <span class="display-5 text-muted opacity-25">
                       <i class="bi bi-gavel"></i>
                     </span>
                   </div>
 
+                  <!-- Real image -->
+                  <img
+                    src=""
+                    alt=""
+                    class="img-fluid w-100 h-100 object-fit-cover d-none"
+                    data-listing-media
+                  />
+
                   <!-- NEW badge -->
                   <span
-                    class="badge bg-primary text-uppercase fw-semibold small position-absolute top-0 end-0 m-2"
+                    class="badge badge-new text-uppercase fw-semibold small position-absolute top-0 end-0 m-2"
+                    data-listing-badge
                   >
                     New
                   </span>
 
-                  <!-- Highest bid caption overlay -->
+                  <!-- Highest bid caption -->
                   <div
                     class="position-absolute bottom-0 start-0 end-0 text-center text-white small fw-semibold py-2 bg-secondary bg-opacity-75"
+                    data-listing-highest-bid
                   >
-                    Highest bid: 120 credits
+                    Highest bid: 0 credits
                   </div>
                 </div>
 
-                <!-- Card body -->
                 <div class="card-body">
-                  <!-- h3: use our h3 styles; we'll left-align via layout if needed -->
-                  <h3 class="mb-2">Listing title</h3>
+                  <h3 class="mb-2" data-listing-title>Listing title</h3>
 
-                  <!-- Username row -->
                   <div class="d-flex align-items-center gap-2 mb-2">
                     <i class="bi bi-person"></i>
-                    <span class="fw-semibold text-primary">Username</span>
+                    <a href="#" class="fw-semibold card-username-link" data-listing-seller>
+                      Username
+                    </a>
                   </div>
 
-                  <p class="mb-1"><span class="fw-semibold">Bids:</span> 5</p>
-                  <p class="mb-0"><span class="fw-semibold">Ends in</span> 3h 21m</p>
+                  <p class="mb-1">
+                    <span class="fw-semibold">Bids:</span>
+                    <span data-listing-bids>0</span>
+                  </p>
+                  <p class="mb-0">
+                    <span class="fw-semibold">Ends in</span>
+                    <span data-listing-ends>3h 21m</span>
+                  </p>
                 </div>
 
-                <!-- View listing strip -->
                 <div class="card-footer bg-black p-0 rounded-0">
-                  <a href="listing.html" class="card-view-link text-center"> View listing </a>
+                  <a href="listing.html" class="card-view-link text-center" data-listing-link>
+                    View listing
+                  </a>
                 </div>
               </article>
             </div>
-            <!-- CARD END -->
-
-            <!-- Extra demo cards (static for now) -->
-            <div class="col">
-              <article class="card sb-card h-100 rounded-0">
-                <div class="position-relative">
-                  <div
-                    class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center"
-                  >
-                    <span class="display-5 text-muted opacity-25">
-                      <i class="bi bi-gavel"></i>
-                    </span>
-                  </div>
-                  <div
-                    class="position-absolute bottom-0 start-0 end-0 text-center text-white small fw-semibold py-2 bg-secondary bg-opacity-75"
-                  >
-                    Highest bid: 120 credits
-                  </div>
-                </div>
-                <div class="card-body">
-                  <h3 class="mb-2">Listing title</h3>
-                  <div class="d-flex align-items-center gap-2 mb-2">
-                    <i class="bi bi-person"></i>
-                    <span class="fw-semibold text-primary">Username</span>
-                  </div>
-                  <p class="mb-1"><span class="fw-semibold">Bids:</span> 5</p>
-                  <p class="mb-0"><span class="fw-semibold">Ends in</span> 3h 21m</p>
-                </div>
-                <div class="card-footer bg-black p-0 rounded-0">
-                  <a href="listing.html" class="card-view-link text-center"> View listing </a>
-                </div>
-              </article>
-            </div>
-
-            <div class="col">
-              <article class="card sb-card h-100 rounded-0">
-                <div class="position-relative">
-                  <div
-                    class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center"
-                  >
-                    <span class="display-5 text-muted opacity-25">
-                      <i class="bi bi-gavel"></i>
-                    </span>
-                  </div>
-                  <div
-                    class="position-absolute bottom-0 start-0 end-0 text-center text-white small fw-semibold py-2 bg-secondary bg-opacity-75"
-                  >
-                    Highest bid: 120 credits
-                  </div>
-                </div>
-                <div class="card-body">
-                  <h3 class="mb-2">Listing title</h3>
-                  <div class="d-flex align-items-center gap-2 mb-2">
-                    <i class="bi bi-person"></i>
-                    <span class="fw-semibold text-primary">Username</span>
-                  </div>
-                  <p class="mb-1"><span class="fw-semibold">Bids:</span> 5</p>
-                  <p class="mb-0"><span class="fw-semibold">Ends in</span> 3h 21m</p>
-                </div>
-                <div class="card-footer bg-black p-0 rounded-0">
-                  <a href="listing.html" class="card-view-link text-center"> View listing </a>
-                </div>
-              </article>
-            </div>
-
-            <div class="col">
-              <article class="card sb-card h-100 rounded-0">
-                <div class="position-relative">
-                  <div
-                    class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center"
-                  >
-                    <span class="display-5 text-muted opacity-25">
-                      <i class="bi bi-gavel"></i>
-                    </span>
-                  </div>
-                  <div
-                    class="position-absolute bottom-0 start-0 end-0 text-center text-white small fw-semibold py-2 bg-secondary bg-opacity-75"
-                  >
-                    Highest bid: 120 credits
-                  </div>
-                </div>
-                <div class="card-body">
-                  <h3 class="mb-2">Listing title</h3>
-                  <div class="d-flex align-items-center gap-2 mb-2">
-                    <i class="bi bi-person"></i>
-                    <span class="fw-semibold text-primary">Username</span>
-                  </div>
-                  <p class="mb-1"><span class="fw-semibold">Bids:</span> 5</p>
-                  <p class="mb-0"><span class="fw-semibold">Ends in</span> 3h 21m</p>
-                </div>
-                <div class="card-footer bg-black p-0 rounded-0">
-                  <a href="listing.html" class="card-view-link text-center"> View listing </a>
-                </div>
-              </article>
-            </div>
-
-            <!-- Add more static cards if you want a fuller grid -->
           </div>
 
-          <!-- View more auctions button -->
           <div class="mt-4 d-flex justify-content-center justify-content-md-end">
-            <a href="#" class="btn btn-dark btn-studio-md"> View more auctions </a>
+            <button type="button" class="btn btn-dark btn-studio-md" data-listings="load-more">
+              View more auctions
+            </button>
+            <p class="text-center mt-3 mb-0 text-muted d-none" data-listings-end></p>
           </div>
         </div>
       </section>
     </main>
 
+    <!-- ========= FOOTER ========= -->
     <footer class="sb-footer mt-auto py-4">
       <div class="container">
         <div class="row align-items-center gy-3">
-          <!-- Left side: logo + text -->
           <div class="col-12 col-md-auto text-center text-md-start">
             <a
               href="index.html"
@@ -284,7 +412,6 @@
             </p>
           </div>
 
-          <!-- Right side: links -->
           <div
             class="col-12 col-md d-flex flex-column flex-md-row justify-content-center justify-content-md-end text-center text-md-end gap-2 gap-md-4"
           >
@@ -293,6 +420,14 @@
         </div>
       </div>
     </footer>
+
+    <!-- Global loader -->
+    <div class="sb-loader-backdrop d-none" data-loader="global">
+      <div class="sb-loader-box">
+        <div class="spinner-border text-dark" role="status" aria-hidden="true"></div>
+        <span class="sb-loader-text">Loading…</span>
+      </div>
+    </div>
 
     <!-- Vite entry -->
     <script type="module" src="/src/main.js"></script>

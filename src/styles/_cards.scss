@@ -15,7 +15,7 @@
 /* Username link inside cards */
 .card .card-username-link {
   font-weight: 600;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* ============================
@@ -169,4 +169,24 @@
     border-color: var(--sb-color-delete);
     text-decoration: none;
   }
+}
+
+/* Listing badge */
+.sb-card .badge-new {
+  background-color: var(--sb-color-primary);
+  color: var(--sb-color-black);
+  border: 2px solid var(--sb-color-black);
+  border-radius: 5px; 
+}
+
+.card .card-username-link {
+  color: var(--sb-color-black);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.card .card-username-link:hover,
+.card .card-username-link:focus-visible {
+  color: var(--sb-color-primary); // your pink
+  text-decoration: underline;
 }

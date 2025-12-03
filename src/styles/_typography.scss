@@ -96,7 +96,7 @@ h6 {
 // -----------------------------
 
 a {
-  color: var(--sb-color-primary);
+  color: var(--sb-color-black);
   font-weight: 600;
   text-decoration: none; 
 
@@ -113,6 +113,7 @@ a {
 a:hover,
 a:focus-visible {
   text-decoration-line: underline;
+  color: var(--sb-color-primary);
 }
 
 // -----------------------------

@@ -3,34 +3,53 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './styles/main.scss';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
-// Figure out which page we're on
-const page = document.body.dataset.page;
+import { clearAuth } from './js/api/httpClient.js';
+import { initHeader } from './js/ui/header.js';
+
+initHeader();
+
+const page = document.body.dataset.page || '';
 
 // Page-specific JS
-switch (page) {
-  case 'index':
-    import('./js/pages/indexPage.js').then((m) => m.initIndexPage());
-    break;
-  case 'listing':
-    import('./js/pages/listingPage.js').then((m) => m.initListingPage());
-    break;
-  case 'auth':
-    import('./js/pages/authPage.js').then((m) => m.initAuthPage());
-    break;
-  case 'profile':
-    import('./js/pages/profilePage.js').then((m) => m.initProfilePage());
-    break;
-  case 'listing-edit':
-    import('./js/pages/listingEditPage.js').then((m) => m.initListingEditPage());
-    break;
-  case 'how':
-    import('./js/pages/howPage.js').then((m) => m.initHowPage());
-    break;
-  case 'not-found':
-    import('./js/pages/notFoundPage.js').then((m) => m.initNotFoundPage());
-    break;
-  default:
-    // Optional: no-op or log
-    // console.warn('Unknown page type:', page);
-    break;
+if (page === 'index') {
+  import('./js/pages/index.js');
 }
+
+if (page === 'listing') {
+  import('./js/pages/listing.js');
+}
+
+if (page === 'auth' || page === 'login' || page === 'register') {
+  import('./js/pages/auth.js');
+}
+
+if (page === 'profile') {
+  import('./js/pages/profile.js');
+}
+
+if (page === 'listing-edit') {
+  import('./js/pages/listingEdit.js');
+}
+
+if (page === 'how') {
+  import('./js/pages/how.js');
+}
+
+if (page === 'not-found') {
+  import('./js/pages/notFound.js');
+}
+
+// Global logout handler
+const logoutButtons = document.querySelectorAll('[data-auth="logout"]');
+
+if (logoutButtons && logoutButtons.length > 0) {
+  logoutButtons.forEach((btn) => {
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      clearAuth();
+      window.location.href = 'login.html';
+    });
+  });
+}
+
+export default {};

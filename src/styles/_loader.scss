@@ -1,0 +1,27 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+.sb-loader-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+
+  .sb-loader-box {
+    background-color: var(--sb-color-bg);
+    border: 2px solid var(--sb-color-black);
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .sb-loader-text {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+  }
+}
