@@ -32,7 +32,9 @@ const editMessageEl = document.querySelector('[data-profile-edit-message]');
 
 // Edit profile inputs
 const avatarUrlInput = document.querySelector('#profileAvatarUrl');
+const avatarAltInput = document.querySelector('#profileAvatarAlt');
 const bannerUrlInput = document.querySelector('#profileBannerUrl');
+const bannerAltInput = document.querySelector('#profileBannerAlt');
 const bioInput = document.querySelector('#profileBio');
 
 // Cancel button inside edit form
@@ -245,21 +247,29 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
     const banner = p.banner || {};
 
     const avatarUrl = avatar.url || '';
+    const avatarAlt = avatar.alt || '';
     const bannerUrl = banner.url || '';
+    const bannerAlt = banner.alt || '';
     const bio = p.bio || '';
 
     if (avatarUrlInput) {
       avatarUrlInput.value = avatarUrl;
     }
+    if (avatarAltInput) {
+      avatarAltInput.value = avatarAlt;
+    }
     if (bannerUrlInput) {
       bannerUrlInput.value = bannerUrl;
+    }
+    if (bannerAltInput) {
+      bannerAltInput.value = bannerAlt;
     }
     if (bioInput) {
       bioInput.value = bio;
     }
   };
 
-  // "Edit profile" → show form + prefill
+  // "Edit profile" - show form + prefill
   editProfileButton.addEventListener('click', (event) => {
     event.preventDefault();
     clearEditMessage();
@@ -267,7 +277,7 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
     showEditSection();
   });
 
-  // Cancel button → hide form, no changes
+  // Cancel button - hide form
   if (editCancelButton) {
     editCancelButton.addEventListener('click', (event) => {
       event.preventDefault();
@@ -288,7 +298,9 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
     }
 
     const avatarUrl = avatarUrlInput ? String(avatarUrlInput.value || '').trim() : '';
+    const avatarAlt = avatarAltInput ? String(avatarAltInput.value || '').trim() : '';
     const bannerUrl = bannerUrlInput ? String(bannerUrlInput.value || '').trim() : '';
+    const bannerAlt = bannerAltInput ? String(bannerAltInput.value || '').trim() : '';
     const bio = bioInput ? String(bioInput.value || '').trim() : '';
 
     const payload = {};
@@ -298,11 +310,23 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
     }
 
     if (avatarUrl) {
-      payload.avatar = { url: avatarUrl };
+      payload.avatar = {
+        url: avatarUrl,
+        alt: avatarAlt || '',
+      };
     }
 
     if (bannerUrl) {
-      payload.banner = { url: bannerUrl };
+      payload.banner = {
+        url: bannerUrl,
+        alt: bannerAlt || '',
+      };
+    }
+
+    // If nothing was changed
+    if (Object.keys(payload).length === 0) {
+      showEditMessage('Please update at least one field before saving.', 'error');
+      return;
     }
 
     showLoader();
@@ -319,13 +343,9 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
         bio: typeof updatedProfile.bio === 'string' ? updatedProfile.bio : profile.bio,
       };
 
-      // Update hero + overlapping avatars
       updateProfileHero(mergedProfile);
-
-      // Hide form again
       hideEditSection();
 
-      // Optional success feedback
       showEditMessage('Profile updated successfully.', 'success');
 
       // Replace original profile reference so next edit has latest values
