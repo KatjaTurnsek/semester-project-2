@@ -10,7 +10,7 @@
     />
   </head>
   <body data-page="login">
-    <!-- ===== HEADER: LOGGED OUT (same as index) ===== -->
+    <!-- ===== HEADER: LOGGED OUT ===== -->
     <header class="header">
       <nav class="navbar bg-white py-3">
         <div class="container d-flex align-items-center justify-content-between">
@@ -24,7 +24,6 @@
 
     <!-- ========== MAIN CONTENT ========== -->
     <main>
-      <!-- Shared auth message (used by JS) -->
       <p class="alert d-none" data-auth="message"></p>
 
       <!-- ===== LOGIN SECTION ===== -->
@@ -32,11 +31,10 @@
         <div class="container">
           <!-- Heading -->
           <div class="text-center mb-4">
-            <h1 class="mb-2">Welcome back to StudioBid</h1>
+            <h1 class="mb-5">Welcome back to StudioBid</h1>
             <h2 class="mb-0">Sign in</h2>
           </div>
 
-          <!-- Card wrapper with SVG illustration behind the form -->
           <div
             class="auth-form-wrapper sb-form-card-wrap position-relative d-flex justify-content-center"
           >
@@ -52,7 +50,7 @@
             <!-- Sign in card -->
             <article class="card sb-form-card w-100" style="max-width: 520px">
               <div class="card-body p-4 p-md-5">
-                <!-- ========= LOGIN MESSAGES (visual only for now) ========= -->
+                <!-- ========= LOGIN MESSAGES ========= -->
                 <div id="loginSuccess" class="d-none mb-3">
                   <div class="d-flex align-items-stretch rounded-3 overflow-hidden">
                     <div class="d-flex align-items-center px-3 bg-success">

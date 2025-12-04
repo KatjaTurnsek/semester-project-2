@@ -191,7 +191,7 @@
     <!-- ===== MAIN CONTENT ===== -->
     <main>
       <!-- HERO -->
-      <section class="sb-hero">
+      <section class="sb-hero mb-5">
         <div class="container py-5 text-center sb-hero__content">
           <h1 class="mb-3">Every listing, fully unpacked</h1>
           <p class="sb-body-lg mb-4">
@@ -215,7 +215,6 @@
             <!-- IMAGES COLUMN -->
             <div class="col-12 col-lg-6">
               <div class="border mb-3" data-listing-image-main>
-                <!-- JS injects main image -->
                 <div
                   class="ratio ratio-16x9 bg-light d-flex justify-content-center align-items-center"
                 >
@@ -223,9 +222,7 @@
                 </div>
               </div>
 
-              <div class="row g-3" data-listing-thumbnails>
-                <!-- JS injects thumbnails -->
-              </div>
+              <div class="row g-3" data-listing-thumbnails></div>
             </div>
 
             <!-- INFO COLUMN -->
@@ -247,7 +244,7 @@
                   style="width: 64px; height: 64px"
                   data-listing-seller-avatar
                 >
-                  <!-- Fallback icon for no-JS / no avatar -->
+                  <!-- Fallback icon for no-JS, no avatar -->
                   <i class="bi bi-person fs-3"></i>
                 </span>
 
@@ -322,9 +319,7 @@
 
             <div class="col-12 col-lg-6">
               <h3 class="mb-3">Bid history</h3>
-              <div class="border-top" data-bid-history>
-                <!-- JS injects bid list -->
-              </div>
+              <div class="border-top" data-bid-history></div>
             </div>
           </div>
         </div>

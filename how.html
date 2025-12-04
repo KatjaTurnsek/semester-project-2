@@ -68,8 +68,8 @@
                     <span
                       class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
                       style="width: 40px; height: 40px"
+                      data-header-avatar="mobile"
                     >
-                      <!-- Optional: initials/avatar via JS -->
                     </span>
                   </button>
 
@@ -176,8 +176,8 @@
                     <span
                       class="d-inline-flex justify-content-center align-items-center rounded-circle border border-2"
                       style="width: 40px; height: 40px"
+                      data-header-avatar="desktop"
                     >
-                      <!-- Optional: initials/avatar via JS -->
                     </span>
                   </button>
 
@@ -235,7 +235,7 @@
     <!-- ========== MAIN CONTENT ========== -->
     <main>
       <!-- ========= HERO ========= -->
-      <section class="sb-hero">
+      <section class="sb-hero mb-4">
         <div class="container py-5 text-center sb-hero__content">
           <h1 class="mb-3">How StudioBid Works</h1>
           <p class="sb-body-lg text-body-secondary mb-4">
@@ -265,13 +265,13 @@
       </section>
 
       <!-- ===== WHAT IS STUDIOBID ===== -->
-      <section class="py-5">
+      <section class="py-4">
         <div class="container">
-          <h2 class="mb-4">What is StudioBid?</h2>
+          <h2 class="mb-5">What is StudioBid?</h2>
 
           <div class="row g-4">
             <div class="col-md-6">
-              <article class="h-100 border p-4">
+              <article class="h-100 border p-4 sb-how-card">
                 <h3 class="mb-3">For active students</h3>
                 <p class="mb-0">
                   StudioBid is a concept auction platform for creative students. List tools, gear,
@@ -282,7 +282,7 @@
             </div>
 
             <div class="col-md-6">
-              <article class="h-100 border p-4">
+              <article class="h-100 border p-4 sb-how-card">
                 <h3 class="mb-3">Safe &amp; simple</h3>
                 <p class="mb-0">
                   Only @stud.noroff.no accounts can register and bid, so you're trading within a
@@ -296,14 +296,14 @@
       </section>
 
       <!-- ===== STEPS: FOR BIDDERS / FOR SELLERS ===== -->
-      <section class="py-5 border-top">
+      <section class="py-4">
         <div class="container">
           <div class="row g-4">
             <!-- Bidders steps -->
             <div class="col-md-6">
-              <h2 class="mb-3">For bidders</h2>
+              <h2 class="mb-4">For bidders</h2>
 
-              <article class="border p-4 mb-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="1.">
                 <h3 class="mb-2">1. Create your account</h3>
                 <p class="mb-0">
                   Sign up with your @stud.noroff.no email to unlock bidding, profile editing and
@@ -311,7 +311,7 @@
                 </p>
               </article>
 
-              <article class="border p-4 mb-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="2.">
                 <h3 class="mb-2">2. Get your starting credits</h3>
                 <p class="mb-0">
                   Your account shows how many credits you have available. Use them as a guide when
@@ -319,7 +319,7 @@
                 </p>
               </article>
 
-              <article class="border p-4 mb-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="3.">
                 <h3 class="mb-2">3. Browse listings</h3>
                 <p class="mb-0">
                   Use search and filters on the front page to find tablets, cameras, paints, prints
@@ -327,7 +327,7 @@
                 </p>
               </article>
 
-              <article class="border p-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="4.">
                 <h3 class="mb-2">4. Place bids &amp; follow your auctions</h3>
                 <p class="mb-0">
                   Open a listing, place a bid higher than the current one and confirm. Track
@@ -338,9 +338,9 @@
 
             <!-- Sellers steps -->
             <div class="col-md-6">
-              <h2 class="mb-3">For sellers</h2>
+              <h2 class="mb-4">For sellers</h2>
 
-              <article class="border p-4 mb-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="1.">
                 <h3 class="mb-2">1. Create a listing</h3>
                 <p class="mb-0">
                   Click <strong>Create listing</strong> in the header to start a new auction for
@@ -348,7 +348,7 @@
                 </p>
               </article>
 
-              <article class="border p-4 mb-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="2.">
                 <h3 class="mb-2">2. Add details and images</h3>
                 <p class="mb-0">
                   Give it a clear title, short description and image URLs that show the item from
@@ -356,7 +356,7 @@
                 </p>
               </article>
 
-              <article class="border p-4 mb-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="3.">
                 <h3 class="mb-2">3. Publish and share</h3>
                 <p class="mb-0">
                   Set an end date and time, then publish. Your listing appears on the front page and
@@ -364,7 +364,7 @@
                 </p>
               </article>
 
-              <article class="border p-4">
+              <article class="border p-4 mb-4 sb-how-card sb-how-step" data-step="4.">
                 <h3 class="mb-2">4. Auction ends automatically</h3>
                 <p class="mb-0">
                   When the end time is reached, no more bids can be placed. You can review the final
@@ -377,16 +377,16 @@
       </section>
 
       <!-- ===== WITHOUT / WITH ACCOUNT ===== -->
-      <section class="py-5 border-top">
+      <section class="py-4">
         <div class="container">
-          <div class="row g-4 align-items-stretch">
+          <div class="row g-3 align-items-stretch">
             <!-- Without an account -->
             <div class="col-md-6">
               <div class="h-100 d-flex flex-column">
-                <h2 class="mt-0 mb-3">Without an account</h2>
+                <h2 class="mt-0 mb-4">Without an account</h2>
 
-                <article class="border p-4 flex-grow-1">
-                  <ul class="mb-0">
+                <article class="border p-4 flex-grow-1 sb-how-card">
+                  <ul class="mb-0 lh-lg">
                     <li>Browse all active auctions.</li>
                     <li>Search listings by keyword.</li>
                     <li>Open listings to see images, descriptions and bid history.</li>
@@ -398,10 +398,10 @@
             <!-- With an account -->
             <div class="col-md-6">
               <div class="h-100 d-flex flex-column">
-                <h2 class="mt-0 mb-3">With an account</h2>
+                <h2 class="mt-0 mb-4">With an account</h2>
 
-                <article class="border p-4 flex-grow-1">
-                  <ul class="mb-0">
+                <article class="border p-4 flex-grow-1 sb-how-card">
+                  <ul class="mb-0 lh-lg">
                     <li>Create and manage your own listings.</li>
                     <li>Place bids on other users’ auctions.</li>
                     <li>See your credits in the header on every page.</li>
@@ -419,9 +419,9 @@
       </section>
 
       <!-- ===== CREDITS ===== -->
-      <section class="py-5 border-top">
+      <section class="py-4">
         <div class="container">
-          <h2 class="mb-3 text-center text-lg-start">Credits</h2>
+          <h2 class="mb-4 text-center text-lg-start">Credits</h2>
           <p class="mb-0">
             Credits represent how much you can reasonably bid across auctions. When you’re logged
             in, your current credits are always visible in the header so you can keep track while
@@ -431,10 +431,10 @@
       </section>
 
       <!-- ===== BIDDING RULES ===== -->
-      <section class="py-5 border-top">
+      <section class="py-4">
         <div class="container">
-          <h2 class="mb-3 text-center text-lg-start">Bidding rules</h2>
-          <ul class="mb-0">
+          <h2 class="mb-4 text-center text-lg-start">Bidding rules</h2>
+          <ul class="mb-0 lh-lg">
             <li>You must be logged in with a @stud.noroff.no email to place bids.</li>
             <li>You can’t bid on your own listings.</li>
             <li>Your bid must always be higher than the current highest bid.</li>
@@ -447,10 +447,10 @@
       </section>
 
       <!-- ===== COMMUNITY & GUIDELINES ===== -->
-      <section class="py-5 border-top">
+      <section class="py-4 border-top">
         <div class="container">
-          <h2 class="mb-3 text-center text-lg-start">Community &amp; guidelines</h2>
-          <ul class="mb-0">
+          <h2 class="mb-4 text-center text-lg-start">Community &amp; guidelines</h2>
+          <ul class="mb-0 lh-lg">
             <li>Use clear, respectful language in titles and descriptions.</li>
             <li>Don’t upload or link to illegal, hateful or harmful content.</li>
             <li>Only use images and links you have the right to share.</li>
@@ -465,14 +465,14 @@
       <!-- ===== READY TO START? ===== -->
       <section class="py-5 border-top">
         <div class="container text-center">
-          <h2 class="mb-3">Ready to start?</h2>
+          <h2 class="mb-4">Ready to start?</h2>
           <p class="sb-body-lg text-body-secondary mb-4">
             Create your account to list your first item or jump straight into browsing active
             auctions from other students.
           </p>
 
           <div class="d-grid gap-3 d-md-flex justify-content-md-center px-4">
-            <a href="auth.html#register" class="btn btn-dark btn-studio-md"> Create an account </a>
+            <a href="register.html" class="btn btn-dark btn-studio-md"> Create an account </a>
 
             <a href="index.html" class="btn btn-dark btn-studio-md">
               <span class="text-uppercase fw-semibold">Browse active auctions</span>

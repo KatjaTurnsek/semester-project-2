@@ -1,7 +1,6 @@
 @use "bootstrap/scss/bootstrap" as *;
 
-// --- Base header wrapper ---
-// Only the top-level <header class="header"> gets the bottom border
+// Base header wrapper
 header.header {
   border-bottom: 2px solid #000;
 
@@ -23,7 +22,7 @@ header.header {
     width: auto;
 
     @include media-breakpoint-down(md) {
-      height: 30px; // Shrinks on mobile — pretty standard
+      height: 30px;
     }
   }
 
@@ -38,19 +37,17 @@ header.header {
   }
 }
 
-// Inner header variants (logged-out / logged-in) should NOT add their own border
+// Inner header variants (logged-out / logged-in)
 .header.header--logged-out,
 .header.header--logged-in {
   border-bottom: 0;
 }
 
-// --- Logged-in variation of header ---
-// This one gets its own background + layout tweaks
+// Logged-in variation of header
 .header.header--logged-in {
   background: $body-bg;
 
   .d-none.d-lg-block > .container {
-    // keeping height consistent with the default .navbar
     min-height: 90px;
     padding-block: 0;
     display: flex;
@@ -65,26 +62,33 @@ header.header {
     display: flex;
     align-items: center;
   }
+
+  // MOBILE: border between row 1 (logo + avatar)
+  @include media-breakpoint-down(md) {
+    .d-lg-none > div:first-child {
+      border-bottom: 2px solid #000;
+    }
+  }
 }
 
-// === Create listing / Credits button styling ===
+// Create listing / Credits button styling
 .header--logged-in .btn.btn-dark.btn-studio-small .bi-plus-lg {
   font-size: 1rem;
 
   @include media-breakpoint-down(md) {
-    font-size: 0.9rem; // Slightly smaller on mobile, just enough
+    font-size: 0.9rem;
   }
 }
 
-// === Avatar button styles ===
+// Avatar button styles
 .header--logged-in .dropdown > .btn {
-  gap: 0.5rem; // just enough space between avatar and arrow
+  gap: 0.5rem;
 }
 
 .header--logged-in .dropdown span.rounded-circle {
   width: 33px;
   height: 33px;
-  border: 2px solid #000 !important; // emphasis border
+  border: 2px solid #000 !important;
 
   display: inline-flex;
   align-items: center;
@@ -96,16 +100,14 @@ header.header {
   }
 }
 
-// === Dropdown menu for user profile ===
-// Handles animation + spacing + overall layout
+// Dropdown menu for user profile
 .header--logged-in .dropdown-menu {
   margin-top: 1.45rem !important;
   padding: 1rem 1.5rem 0.75rem;
 
   border-radius: 0;
-  border: 2px solid transparent;
-  border-width: 0 2px 2px;
-  border-color: #000; // heavy border on bottom + sides
+  border: 2px solid #000;
+  border-top-width: 0; 
   box-shadow: none !important;
   background-color: $body-bg;
   min-width: 220px;
@@ -116,7 +118,7 @@ header.header {
   transition: opacity 150ms ease-out, transform 150ms ease-out;
 
   @include media-breakpoint-down(md) {
-    margin-top: 0.75rem !important;
+    margin-top: 0.88rem !important;
     padding: 0.75rem 1.25rem 0.5rem;
     min-width: 200px;
   }

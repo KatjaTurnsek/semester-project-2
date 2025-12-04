@@ -1,0 +1,66 @@
+@use "bootstrap/scss/bootstrap" as *;
+
+[data-page="how"] main {
+
+  .border {
+    border: 2px solid var(--sb-color-black) !important;
+  }
+
+  .border-top {
+    border-top: 2px solid var(--sb-color-black) !important;
+  }
+
+  .border-bottom {
+    border-bottom: 2px solid var(--sb-color-black) !important;
+  }
+
+  .border-start {
+    border-left: 2px solid var(--sb-color-black) !important;
+  }
+
+  .border-end {
+    border-right: 2px solid var(--sb-color-black) !important;
+  }
+
+  hr {
+    border-top: 2px solid var(--sb-color-black);
+    opacity: 1;
+  }
+
+  /* --- Cards: 2px border, 4px bottom, bg = --sb-color-bg --- */
+
+  .border.sb-how-card {
+    border: 2px solid var(--sb-color-black) !important;
+    border-bottom-width: 4px !important;
+    background-color: var(--sb-color-bg);
+  }
+
+  /* --- Step cards: big number behind text, centered vertically, right aligned --- */
+
+  .sb-how-step {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: attr(data-step);
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: 700;
+      line-height: 1;
+      font-size: clamp(3rem, 8vw, 5rem);
+      color: #D0EBE9;
+      opacity: 1;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* Make actual content appear above the number */
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}
