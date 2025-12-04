@@ -31,14 +31,6 @@ if (page === 'listing-edit') {
   import('./js/pages/listingEdit.js');
 }
 
-if (page === 'how') {
-  import('./js/pages/how.js');
-}
-
-if (page === 'not-found') {
-  import('./js/pages/notFound.js');
-}
-
 // Global logout handler
 const logoutButtons = document.querySelectorAll('[data-auth="logout"]');
 
@@ -46,7 +38,21 @@ if (logoutButtons && logoutButtons.length > 0) {
   logoutButtons.forEach((btn) => {
     btn.addEventListener('click', (event) => {
       event.preventDefault();
+
       clearAuth();
+
+      // Store a one-time alert payload to be shown on the next page (login)
+      try {
+        const payload = {
+          type: 'success',
+          title: 'Logged out',
+          message: 'You have been logged out of StudioBid.',
+        };
+        window.localStorage.setItem('sbAuthAlert', JSON.stringify(payload));
+      } catch {
+        // Ignore storage errors, just continue redirect
+      }
+
       window.location.href = 'login.html';
     });
   });

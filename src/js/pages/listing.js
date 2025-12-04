@@ -2,6 +2,7 @@ import { getListingById, placeBid } from '../api/listingsApi.js';
 import { getAuth } from '../api/httpClient.js';
 import { getProfile } from '../api/profilesApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
+import { showAlert } from '../ui/alerts.js';
 
 /* ------------------------
    Init
@@ -9,13 +10,17 @@ import { showLoader, hideLoader } from '../ui/loader.js';
 
 export async function initListingDetailsPage() {
   const titleEl = document.querySelector('[data-listing-title]');
-
   const id = getListingIdFromQuery();
 
   if (!id) {
     if (titleEl) {
       titleEl.textContent = 'No listing ID provided';
     }
+    showAlert(
+      'error',
+      'Something went wrong',
+      'No listing ID was provided. Please go back and open a listing again.',
+    );
     return;
   }
 
@@ -28,15 +33,32 @@ export async function initListingDetailsPage() {
       if (titleEl) {
         titleEl.textContent = 'Listing not found';
       }
+      showAlert(
+        'error',
+        'Listing not found',
+        'We could not find this listing. It may have been removed.',
+      );
       return;
     }
 
     renderListing(listing);
     setupBidForm(listing);
+
+    // Show a success toast if we just placed a bid and reloaded
+    const lastBidSuccess = window.sessionStorage.getItem('sbLastBidSuccess');
+    if (lastBidSuccess === '1') {
+      window.sessionStorage.removeItem('sbLastBidSuccess');
+      showAlert('success', 'Bid placed', 'Your bid has been placed successfully.');
+    }
   } catch {
     if (titleEl) {
       titleEl.textContent = 'Failed to load listing';
     }
+    showAlert(
+      'error',
+      'Something went wrong',
+      'We could not load this listing right now. Please try again.',
+    );
   } finally {
     hideLoader();
   }
@@ -355,6 +377,7 @@ function setupBidForm(listing) {
   // Logged out → cannot bid
   if (!auth || !auth.name) {
     disableBidForm('Login to place a bid.');
+    showAlert('info', 'Login required', 'Log in with your student account to place a bid.');
     return;
   }
 
@@ -362,6 +385,7 @@ function setupBidForm(listing) {
   const sellerName = listing.seller && listing.seller.name ? listing.seller.name : null;
   if (sellerName && auth.name === sellerName) {
     disableBidForm('You cannot bid on your own listing.');
+    showAlert('info', 'You are the seller', 'You can’t place bids on your own listing.');
     return;
   }
 
@@ -369,6 +393,11 @@ function setupBidForm(listing) {
   const endsAt = listing.endsAt ? new Date(listing.endsAt) : null;
   if (!endsAt || endsAt <= new Date()) {
     disableBidForm('This auction has ended.');
+    showAlert(
+      'info',
+      'Auction ended',
+      'This auction has already ended and no new bids can be placed.',
+    );
     return;
   }
 
@@ -381,6 +410,7 @@ function setupBidForm(listing) {
 
     if (!rawValue || Number.isNaN(amount) || amount <= 0) {
       errorEl.textContent = 'Please enter a valid bid amount.';
+      showAlert('error', 'Invalid bid', 'Please enter a valid positive bid amount.');
       return;
     }
 
@@ -391,9 +421,17 @@ function setupBidForm(listing) {
 
     try {
       await placeBid(listing.id, amount);
+
+      // Remember success so we can show a toast after reload
+      window.sessionStorage.setItem('sbLastBidSuccess', '1');
       window.location.reload();
     } catch {
       errorEl.textContent = 'Failed to place bid. Please try again.';
+      showAlert(
+        'error',
+        'Something went wrong',
+        'We could not place your bid right now. Please try again.',
+      );
       submitBtn.disabled = false;
       submitBtn.textContent = 'Place a bid';
     }

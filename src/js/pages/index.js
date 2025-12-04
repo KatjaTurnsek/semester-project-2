@@ -1,5 +1,6 @@
 import { getListings, searchListings } from '../api/listingsApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
+import { showAlert } from '../ui/alerts.js';
 
 const listingsContainer = document.querySelector('[data-listings]');
 const listingTemplateCol = document.querySelector('[data-listing-template]');
@@ -36,12 +37,13 @@ const sortConfig = {
 ------------------------- */
 
 const showError = (message) => {
-  if (!errorEl) {
-    return;
+  if (errorEl) {
+    errorEl.textContent = message;
+    errorEl.classList.remove('d-none');
   }
 
-  errorEl.textContent = message;
-  errorEl.classList.remove('d-none');
+  // Floating alert on top-right
+  showAlert('error', 'Could not load listings', message);
 };
 
 const clearError = () => {
@@ -640,6 +642,20 @@ if (loadMoreBtn) {
     offset = offset + PAGE_SIZE;
     await fetchListings(true);
   });
+}
+
+/* ------------------------
+   Post-login welcome toast
+------------------------- */
+
+const justLoggedInFlag = window.sessionStorage.getItem('sbAuthJustLoggedIn');
+if (justLoggedInFlag === '1') {
+  window.sessionStorage.removeItem('sbAuthJustLoggedIn');
+  showAlert(
+    'success',
+    'Welcome back',
+    'You are now logged in. Your credits and profile are available in the header.',
+  );
 }
 
 /* ------------------------

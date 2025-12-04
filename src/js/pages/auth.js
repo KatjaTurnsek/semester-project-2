@@ -1,44 +1,34 @@
-/* global FormData */
-
 import { registerUser, loginUser } from '../api/authApi.js';
 import { saveAuth } from '../api/httpClient.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
+import { showAlert } from '../ui/alerts.js';
 
 const registerForm = document.querySelector('[data-auth="register-form"]');
 const loginForm = document.querySelector('[data-auth="login-form"]');
-const messageEl = document.querySelector('[data-auth="message"]');
 
 /* ------------------------
-   Helpers: messages
+   One-time logout alert
 ------------------------- */
 
-const showMessage = (text, type) => {
-  if (!messageEl) {
+(() => {
+  const raw = window.localStorage.getItem('sbAuthAlert');
+  if (!raw) {
     return;
   }
 
-  let extraClass = 'alert-info';
+  try {
+    const data = JSON.parse(raw) || {};
+    const type = data.type || 'success';
+    const title = data.title || 'Logged out';
+    const message = data.message || 'You have been logged out of StudioBid.';
 
-  if (type === 'error') {
-    extraClass = 'alert-danger';
-  } else if (type === 'success') {
-    extraClass = 'alert-success';
+    showAlert(message, type, title);
+  } catch {
+    // ignore parse errors
+  } finally {
+    window.localStorage.removeItem('sbAuthAlert');
   }
-
-  messageEl.textContent = text;
-  messageEl.className = 'alert ' + extraClass;
-  messageEl.classList.remove('d-none');
-  messageEl.setAttribute('role', 'alert');
-};
-
-const clearMessage = () => {
-  if (!messageEl) {
-    return;
-  }
-
-  messageEl.textContent = '';
-  messageEl.className = 'alert d-none';
-};
+})();
 
 /* ------------------------
    Helpers: form & validation
@@ -90,9 +80,8 @@ const buildAvatarPayload = (url, alt) => {
 if (registerForm) {
   registerForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    clearMessage();
 
-    const formData = new FormData(registerForm);
+    const formData = new globalThis.FormData(registerForm);
     const name = getTrimmedField(formData, 'name');
     const email = getTrimmedField(formData, 'email');
     const password = getTrimmedField(formData, 'password');
@@ -100,17 +89,21 @@ if (registerForm) {
     const avatarAlt = getTrimmedField(formData, 'avatarAlt');
 
     if (!name || !email || !password) {
-      showMessage('Please fill in name, email and password.', 'error');
+      showAlert('Please fill in name, email and password.', 'error', 'Missing fields');
       return;
     }
 
     if (!validateNoroffEmail(email)) {
-      showMessage('Email must be a Noroff student address (…@stud.noroff.no).', 'error');
+      showAlert(
+        'Email must be a Noroff student address (…@stud.noroff.no).',
+        'error',
+        'Invalid email',
+      );
       return;
     }
 
     if (password.length < 8) {
-      showMessage('Password must be at least 8 characters long.', 'error');
+      showAlert('Password must be at least 8 characters long.', 'error', 'Weak password');
       return;
     }
 
@@ -129,11 +122,14 @@ if (registerForm) {
 
     try {
       await registerUser(payload);
-      showMessage('Account created. You can now log in.', 'success');
+
+      showAlert('Account created. You can now log in.', 'success', 'Account created');
+
+      // Go to login page after successful registration
       window.location.href = 'login.html';
     } catch (error) {
       const msg = error && error.message ? error.message : 'Could not register. Please try again.';
-      showMessage(msg, 'error');
+      showAlert(msg, 'error', 'Registration failed');
     } finally {
       hideLoader();
     }
@@ -147,14 +143,13 @@ if (registerForm) {
 if (loginForm) {
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    clearMessage();
 
-    const formData = new FormData(loginForm);
+    const formData = new globalThis.FormData(loginForm);
     const email = String(formData.get('email') || '').trim();
     const password = String(formData.get('password') || '').trim();
 
     if (!email || !password) {
-      showMessage('Please enter email and password.', 'error');
+      showAlert('Please enter email and password.', 'error', 'Missing fields');
       return;
     }
 
@@ -163,15 +158,15 @@ if (loginForm) {
     try {
       const auth = await loginUser({ email, password });
 
-      // Save auth exactly as returned from the API
       saveAuth(auth);
 
-      // Redirect to index – header.js will take care of header state
+      showAlert('You are now logged in.', 'success', 'Welcome back');
+
       window.location.href = 'index.html';
     } catch (error) {
       const msg =
         error && error.message ? error.message : 'Could not log in. Please check your details.';
-      showMessage(msg, 'error');
+      showAlert(msg, 'error', 'Login failed');
     } finally {
       hideLoader();
     }

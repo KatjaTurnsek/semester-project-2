@@ -1,6 +1,7 @@
 import { getAuth, clearAuth } from '../api/httpClient.js';
 import { getProfile, updateProfile } from '../api/profilesApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
+import { showAlert } from '../ui/alerts.js';
 
 /* ------------------------
    DOM references
@@ -169,20 +170,24 @@ const clearEditMessage = () => {
 };
 
 const showEditMessage = (text, type) => {
-  if (!editMessageEl) {
-    return;
+  // Hide the inline alert (we use floating alerts instead)
+  if (editMessageEl) {
+    editMessageEl.textContent = '';
+    editMessageEl.className = 'alert d-none';
   }
 
-  let extraClass = 'alert-info';
-  if (type === 'error') {
-    extraClass = 'alert-danger';
-  } else if (type === 'success') {
-    extraClass = 'alert-success';
+  let alertType = 'info';
+  let title = 'Notice';
+
+  if (type === 'success') {
+    alertType = 'success';
+    title = 'All set!';
+  } else if (type === 'error') {
+    alertType = 'error';
+    title = 'Something went wrong';
   }
 
-  editMessageEl.textContent = text;
-  editMessageEl.className = 'alert ' + extraClass;
-  editMessageEl.classList.remove('d-none');
+  showAlert(alertType, title, text);
 };
 
 const showEditSection = () => {
@@ -346,7 +351,7 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
       updateProfileHero(mergedProfile);
       hideEditSection();
 
-      showEditMessage('Profile updated successfully.', 'success');
+      showEditMessage('Your profile has been updated successfully.', 'success');
 
       // Replace original profile reference so next edit has latest values
       profile.name = mergedProfile.name;
