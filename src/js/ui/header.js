@@ -1,37 +1,23 @@
-import { getAuth } from '../api/httpClient.js';
+import { getAuth, saveAuth } from '../api/httpClient.js';
 import { getProfile } from '../api/profilesApi.js';
 
-// Two header variants
 const headerLoggedOut = document.querySelector('[data-header="logged-out"]');
 const headerLoggedIn = document.querySelector('[data-header="logged-in"]');
 
-// Credits (mobile + desktop)
 const headerCreditsEls = document.querySelectorAll('[data-header-credits]');
-
-// Avatar circles in header (mobile + desktop)
 const headerAvatarEls = document.querySelectorAll('[data-header-avatar]');
 
-/* ------------------------
-   Helpers
-------------------------- */
-
 const getInitials = (name) => {
-  if (!name) {
-    return '?';
-  }
+  if (!name) return '?';
 
   const trimmed = String(name).trim();
-  if (!trimmed) {
-    return '?';
-  }
+  if (!trimmed) return '?';
 
   const parts = trimmed.split(/[\s_]+/).filter(Boolean);
 
   if (parts.length === 1) {
     const single = parts[0];
-    if (single.length === 1) {
-      return single[0].toUpperCase();
-    }
+    if (single.length === 1) return single[0].toUpperCase();
     return (single[0] + single[1]).toUpperCase();
   }
 
@@ -41,9 +27,7 @@ const getInitials = (name) => {
 };
 
 const renderHeaderAvatarFrom = (el, source) => {
-  if (!el || !source) {
-    return;
-  }
+  if (!el || !source) return;
 
   el.innerHTML = '';
 
@@ -78,86 +62,72 @@ const updateHeaderCredits = (value) => {
   }
 
   headerCreditsEls.forEach((el) => {
-    if (!el) {
-      return;
-    }
+    if (!el) return;
     el.textContent = 'Credits: ' + credits;
   });
 };
 
-const refineHeaderWithProfile = (auth) => {
-  if (!auth || !auth.name) {
-    return;
+const fetchAndApplyProfile = async (authOverride) => {
+  const auth = authOverride || getAuth();
+
+  if (!auth || !auth.name) return null;
+
+  let profile;
+
+  try {
+    profile = await getProfile(auth.name, '');
+  } catch {
+    // If the request fails completely, fall back to auth.credits and avatar
+    updateHeaderCredits(auth.credits);
+    headerAvatarEls.forEach((el) => renderHeaderAvatarFrom(el, auth));
+    return null;
   }
 
-  (async () => {
-    try {
-      // profilesApi expects the profile name in the path
-      const profileName = auth.name;
-      const profile = await getProfile(profileName);
+  if (!profile) {
+    updateHeaderCredits(auth.credits);
+    headerAvatarEls.forEach((el) => renderHeaderAvatarFrom(el, auth));
+    return null;
+  }
 
-      if (!profile) {
-        return;
-      }
+  if (typeof profile.credits === 'number' || typeof profile.credits === 'string') {
+    updateHeaderCredits(profile.credits);
 
-      // Update credits from profile if present
-      if (typeof profile.credits === 'number' || typeof profile.credits === 'string') {
-        updateHeaderCredits(profile.credits);
-      }
-
-      // Update avatar from profile, if it has one
-      if (profile.avatar) {
-        headerAvatarEls.forEach((el) => {
-          renderHeaderAvatarFrom(el, profile);
-        });
-      }
-    } catch {
-      // Silent: if profile fetch fails, we keep the auth-based header.
+    const currentAuth = getAuth();
+    if (currentAuth) {
+      saveAuth({
+        ...currentAuth,
+        credits: profile.credits,
+      });
     }
-  })();
+  }
+
+  headerAvatarEls.forEach((el) => renderHeaderAvatarFrom(el, profile));
+
+  return profile;
 };
 
-/* ------------------------
-   Init
-------------------------- */
-
 export const initHeader = () => {
-  // If page has no header, do nothing
-  if (!headerLoggedOut && !headerLoggedIn) {
-    return;
-  }
+  if (!headerLoggedOut && !headerLoggedIn) return;
 
   const auth = getAuth();
 
-  // Not logged in → show logged-out header, hide logged-in
   if (!auth) {
-    if (headerLoggedOut) {
-      headerLoggedOut.classList.remove('d-none');
-    }
-    if (headerLoggedIn) {
-      headerLoggedIn.classList.add('d-none');
-    }
+    if (headerLoggedOut) headerLoggedOut.classList.remove('d-none');
+    if (headerLoggedIn) headerLoggedIn.classList.add('d-none');
+    updateHeaderCredits(0);
     return;
   }
 
-  // Logged in → show logged-in header, hide logged-out
-  if (headerLoggedOut) {
-    headerLoggedOut.classList.add('d-none');
+  if (headerLoggedOut) headerLoggedOut.classList.add('d-none');
+  if (headerLoggedIn) headerLoggedIn.classList.remove('d-none');
+
+  fetchAndApplyProfile(auth);
+};
+
+export const refreshHeaderFromProfile = async () => {
+  try {
+    await fetchAndApplyProfile();
+  } catch {
+    // If it fails, keep whatever is currently shown
   }
-  if (headerLoggedIn) {
-    headerLoggedIn.classList.remove('d-none');
-  }
-
-  // --- Initial render from auth object (fast) ---
-
-  // Credits: might be missing in auth → default to 0
-  updateHeaderCredits(auth.credits);
-
-  // Avatar circles from auth (avatar or initials)
-  headerAvatarEls.forEach((el) => {
-    renderHeaderAvatarFrom(el, auth);
-  });
-
-  // --- Then refine from profile (credits + avatar from /auction/profiles/:name) ---
-  refineHeaderWithProfile(auth);
 };

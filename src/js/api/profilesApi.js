@@ -11,14 +11,24 @@ const buildProfileMediaUrl = (name) => {
   return '/auction/profiles/' + encodedName + '/media';
 };
 
-// Get a single profile.
+const buildProfileBidsUrl = (name, queryString) => {
+  const encodedName = encodeURIComponent(String(name || ''));
+  const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : '';
+  return '/auction/profiles/' + encodedName + '/bids' + qs;
+};
+
+const buildProfileWinsUrl = (name, queryString) => {
+  const encodedName = encodeURIComponent(String(name || ''));
+  const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : '';
+  return '/auction/profiles/' + encodedName + '/wins' + qs;
+};
+
 export const getProfile = async (name, queryString) => {
   const url = buildProfileUrl(name, queryString);
   const data = await request(url, { auth: true });
   return data;
 };
 
-// Update only the avatar (media endpoint).
 export const updateAvatar = async (name, avatar) => {
   const url = buildProfileMediaUrl(name);
   const data = await request(url, {
@@ -29,7 +39,6 @@ export const updateAvatar = async (name, avatar) => {
   return data;
 };
 
-// Update profile fields (bio, avatar, banner, etc.)
 export const updateProfile = async (name, payload) => {
   const url = buildProfileUrl(name, '');
   const data = await request(url, {
@@ -37,5 +46,17 @@ export const updateProfile = async (name, payload) => {
     json: payload,
     auth: true,
   });
+  return data;
+};
+
+export const getProfileBids = async (name, queryString) => {
+  const url = buildProfileBidsUrl(name, queryString);
+  const data = await request(url, { auth: true });
+  return data;
+};
+
+export const getProfileWins = async (name, queryString) => {
+  const url = buildProfileWinsUrl(name, queryString);
+  const data = await request(url, { auth: true });
   return data;
 };

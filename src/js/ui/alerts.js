@@ -24,8 +24,11 @@ export const showAlert = (type, title, message, options = {}) => {
   const container = ensureAlertContainer();
   const timeout = typeof options.timeout === 'number' ? options.timeout : 5000;
 
+  const validTypes = ['success', 'error'];
+  const safeType = validTypes.includes(type) ? type : 'success';
+
   const el = document.createElement('div');
-  el.className = 'sb-alert sb-alert--' + type;
+  el.className = 'sb-alert sb-alert--' + safeType;
 
   const icon = document.createElement('div');
   icon.className = 'sb-alert__icon';

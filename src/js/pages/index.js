@@ -14,9 +14,9 @@ const summaryEl = document.querySelector('[data-listings-summary]');
 
 const PAGE_SIZE = 12;
 
-let offset = 0;
+let currentPage = 1;
 let currentSearch = '';
-let currentSort = '';
+let currentSort = 'newest';
 let isLoading = false;
 
 // Track which listings
@@ -42,7 +42,6 @@ const showError = (message) => {
     errorEl.classList.remove('d-none');
   }
 
-  // Floating alert on top-right
   showAlert('error', 'Could not load listings', message);
 };
 
@@ -103,7 +102,6 @@ const clearListings = () => {
     }
   });
 
-  // Reset dedupe and end-of-results when starting fresh
   loadedListingIds.clear();
   hideEndOfResults();
 };
@@ -134,7 +132,7 @@ const buildListingsQueryString = () => {
   parts.push('_seller=true');
   parts.push('_bids=true');
   parts.push('limit=' + PAGE_SIZE);
-  parts.push('offset=' + offset);
+  parts.push('page=' + currentPage);
 
   addSortParams(parts);
 
@@ -153,7 +151,7 @@ const buildSearchQueryString = () => {
   parts.push('_bids=true');
   parts.push('_active=true');
   parts.push('limit=' + PAGE_SIZE);
-  parts.push('offset=' + offset);
+  parts.push('page=' + currentPage);
 
   addSortParams(parts);
 
@@ -172,7 +170,7 @@ const buildTagQueryString = () => {
   parts.push('_seller=true');
   parts.push('_bids=true');
   parts.push('limit=' + PAGE_SIZE);
-  parts.push('offset=' + offset);
+  parts.push('page=' + currentPage);
 
   addSortParams(parts);
 
@@ -249,7 +247,6 @@ const isNewListing = (listing) => {
   const diffMs = now.getTime() - createdDate.getTime();
   const diffHours = diffMs / (1000 * 60 * 60);
 
-  // New if created within last 24 hours
   return diffHours <= 24;
 };
 
@@ -275,14 +272,12 @@ const getRelevanceScore = (listing, query) => {
 
   let score = 0;
 
-  // Title
   if (title === q) {
     score = score + 100;
   } else if (title.indexOf(q) !== -1) {
     score = score + 60;
   }
 
-  // Tags
   for (let i = 0; i < tags.length; i++) {
     const tag = tags[i];
     const tagStr = tag ? String(tag).toLowerCase() : '';
@@ -297,12 +292,10 @@ const getRelevanceScore = (listing, query) => {
     }
   }
 
-  // Description
   if (description && description.indexOf(q) !== -1) {
     score = score + 20;
   }
 
-  // Seller name
   if (sellerName && sellerName.indexOf(q) !== -1) {
     score = score + 10;
   }
@@ -318,7 +311,7 @@ const sortComparators = {
   'highest-bid': function (a, b) {
     const aMax = getHighestBidAmount(a);
     const bMax = getHighestBidAmount(b);
-    return bMax - aMax; // highest first
+    return bMax - aMax;
   },
   newest: function (a, b) {
     const aTime = a && a.created ? new Date(a.created).getTime() : NaN;
@@ -328,7 +321,7 @@ const sortComparators = {
       return 0;
     }
 
-    return bTime - aTime; // newest first
+    return bTime - aTime;
   },
   'ending-soon': function (a, b) {
     const aEnd = a && a.endsAt ? new Date(a.endsAt).getTime() : NaN;
@@ -338,11 +331,10 @@ const sortComparators = {
       return 0;
     }
 
-    return aEnd - bEnd; // ending soonest first
+    return aEnd - bEnd;
   },
 };
 
-// Apply relevance + optional secondary sort when searching
 const sortSearchResults = (listings, query, sortKey) => {
   if (!listings || !listings.length || !query) {
     return;
@@ -354,12 +346,10 @@ const sortSearchResults = (listings, query, sortKey) => {
     const scoreA = getRelevanceScore(a, query);
     const scoreB = getRelevanceScore(b, query);
 
-    // 1) Relevance first
     if (scoreA !== scoreB) {
-      return scoreB - scoreA; // higher score first
+      return scoreB - scoreA;
     }
 
-    // 2) If relevance is tied, apply secondary sort if available
     if (comparator) {
       return comparator(a, b);
     }
@@ -368,7 +358,6 @@ const sortSearchResults = (listings, query, sortKey) => {
   });
 };
 
-// Apply sort when NOT searching (only needed for "highest bid")
 const sortNonSearchResults = (listings, sortKey) => {
   if (!listings || !listings.length) {
     return;
@@ -450,7 +439,6 @@ const createListingCard = (listing) => {
     }
   }
 
-  // Media handling
   if (mediaImg && mediaFallback) {
     let hasImage = false;
 
@@ -496,7 +484,6 @@ const renderListings = (listings, append) => {
   listings.forEach(function (listing) {
     const listingId = listing && listing.id ? listing.id : null;
 
-    // When appending: skip already-rendered listings
     if (append && listingId && loadedListingIds.has(listingId)) {
       return;
     }
@@ -513,7 +500,6 @@ const renderListings = (listings, append) => {
     }
   });
 
-  // For search summary
   updateSummary(listings.length);
 
   return newlyRenderedCount;
@@ -534,7 +520,6 @@ const fetchSearchListings = async () => {
     return fromSearch;
   }
 
-  // Single word, no matches
   const tagQs = buildTagQueryString();
   const tagData = await getListings(tagQs);
   return Array.isArray(tagData) ? tagData : [];
@@ -585,7 +570,7 @@ const fetchListings = async (append) => {
     if (newlyRenderedCount < PAGE_SIZE) {
       loadMoreBtn.classList.add('d-none');
 
-      if (offset === 0 && newlyRenderedCount === 0) {
+      if (currentPage === 1 && newlyRenderedCount === 0) {
         showEndOfResults('No listings found.');
       } else {
         showEndOfResults('No more listings to show.');
@@ -621,7 +606,7 @@ if (searchForm && searchInput) {
 
     const value = String(searchInput.value || '').trim();
     currentSearch = value;
-    offset = 0;
+    currentPage = 1;
 
     await fetchListings(false);
   });
@@ -631,7 +616,7 @@ if (sortSelect) {
   sortSelect.addEventListener('change', async function () {
     const value = sortSelect.value || '';
     currentSort = value;
-    offset = 0;
+    currentPage = 1;
 
     await fetchListings(false);
   });
@@ -639,7 +624,7 @@ if (sortSelect) {
 
 if (loadMoreBtn) {
   loadMoreBtn.addEventListener('click', async function () {
-    offset = offset + PAGE_SIZE;
+    currentPage = currentPage + 1;
     await fetchListings(true);
   });
 }

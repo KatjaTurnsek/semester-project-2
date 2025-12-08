@@ -400,21 +400,3 @@ body {
 .sb-alert--error::before {
   background-color: var(--sb-color-delete);
 }
-
-.sb-alert--info {
-  background-color: var(--sb-color-bg);
-  color: var(--sb-color-info);
-}
-
-.sb-alert--info::before {
-  background-color: var(--sb-color-info);
-}
-
-.sb-alert--warning {
-  background-color: #fff3cd;
-  color: #664d03;
-}
-
-.sb-alert--warning::before {
-  background-color: #664d03;
-}

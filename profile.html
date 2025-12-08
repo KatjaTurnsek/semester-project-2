@@ -34,7 +34,7 @@
         </nav>
       </div>
 
-      <!-- ===== HEADER: LOGGED IN (toggled by JS) ===== -->
+      <!-- ===== HEADER: LOGGED IN ===== -->
       <div class="header header--logged-in d-none" data-header="logged-in">
         <nav class="bg-white">
           <!-- ===== MOBILE HEADER (under lg) ===== -->
@@ -119,7 +119,7 @@
               </div>
             </div>
 
-            <!-- Buttons row (no border under) -->
+            <!-- Buttons row -->
             <div class="container py-3 d-flex justify-content-center gap-3 flex-wrap">
               <a
                 href="listing-edit.html"
@@ -253,12 +253,12 @@
         <!-- Profile info strip -->
         <div class="sb-profile-info">
           <div class="container sb-profile-info-inner py-3 py-md-5 text-center text-md-start">
-            <!-- Avatar overlapping: centered on mobile -->
+            <!-- Avatar overlapping -->
             <div
               class="sb-profile-avatar sb-profile-avatar--mobile d-flex d-md-none align-items-center justify-content-center"
             ></div>
 
-            <!-- Avatar overlapping: left on desktop -->
+            <!-- Avatar overlapping -->
             <div
               class="sb-profile-avatar sb-profile-avatar--desktop d-none d-md-flex align-items-center justify-content-center"
             ></div>
@@ -438,12 +438,14 @@
             <h2 class="mb-5">Active listings</h2>
 
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-              <div class="col">
+              <!-- Template card -->
+              <div class="col d-none" data-my-listing-template>
                 <article class="card sb-card h-100 rounded-0">
                   <!-- Image / caption -->
                   <div class="position-relative">
                     <div
                       class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center"
+                      data-listing-image-wrapper
                     >
                       <span class="display-5 text-muted opacity-25">
                         <i class="bi bi-gavel"></i>
@@ -452,47 +454,74 @@
 
                     <div
                       class="position-absolute bottom-0 start-0 end-0 text-center text-white small fw-semibold py-2 bg-secondary bg-opacity-75"
+                      data-listing-highest-bid
                     >
-                      Highest bid: 100 credits
+                      Highest bid: 0 credits
                     </div>
                   </div>
 
                   <div class="card-body">
                     <!-- Title + edit icon row -->
                     <div class="card-title-row">
-                      <h3 class="mb-2">Listing title</h3>
-                      <button type="button" class="card-edit-icon-btn" aria-label="Edit listing">
+                      <h3 class="mb-2" data-listing-title>Listing title</h3>
+                      <button
+                        type="button"
+                        class="card-edit-icon-btn"
+                        aria-label="Edit listing"
+                        data-edit-listing-btn
+                      >
                         <i class="bi bi-pencil-square"></i>
                       </button>
                     </div>
 
                     <div class="d-flex align-items-center gap-2 mb-2">
                       <i class="bi bi-person"></i>
-                      <a href="profile.html" class="card-username-link">Username</a>
+                      <a href="#" class="card-username-link" data-listing-username> Username </a>
                     </div>
-                    <p class="mb-1"><span class="fw-semibold">Bids:</span> 2</p>
-                    <p class="mb-0"><span class="fw-semibold">Ends in</span> 3h 21m</p>
+                    <p class="mb-1">
+                      <span class="fw-semibold">Bids:</span>
+                      <span data-listing-bids-count>0</span>
+                    </p>
+                    <p class="mb-0">
+                      <span class="fw-semibold">Ends in</span>
+                      <span data-listing-ends-in>3h 21m</span>
+                    </p>
                   </div>
 
                   <!-- Edit / delete / view strip -->
                   <div class="card-footer border-0 p-0 rounded-0">
                     <div class="btn-group w-100 card-actions" role="group">
-                      <button type="button" class="btn card-action-btn card-action-btn--edit">
+                      <button
+                        type="button"
+                        class="btn card-action-btn card-action-btn--edit"
+                        data-listing-edit-link
+                      >
                         Edit
                       </button>
-                      <button type="button" class="btn card-action-btn card-action-btn--delete">
+                      <button
+                        type="button"
+                        class="btn card-action-btn card-action-btn--delete"
+                        data-listing-delete-btn
+                      >
                         Delete
                       </button>
-                      <a href="listing.html" class="btn card-action-btn card-action-btn--view">
+                      <a
+                        href="#"
+                        class="btn card-action-btn card-action-btn--view"
+                        data-listing-view-link
+                      >
                         View
                       </a>
                     </div>
                   </div>
                 </article>
               </div>
-
-              <!-- Duplicate .col for more listings; later render with JS -->
             </div>
+
+            <!-- Empty state -->
+            <p class="text-muted d-none mt-3" data-my-listings-empty>
+              You have no active listings right now.
+            </p>
           </div>
         </div>
 
@@ -500,6 +529,9 @@
         <div class="tab-pane fade" id="tab-bids" role="tabpanel" aria-labelledby="tab-bids-tab">
           <div class="container" id="my-bids">
             <h2 class="mb-4">My bids</h2>
+            <p class="text-muted d-none mt-3" data-my-bids-empty>
+              You haven't placed any bids yet.
+            </p>
           </div>
         </div>
 
@@ -507,6 +539,9 @@
         <div class="tab-pane fade" id="tab-wins" role="tabpanel" aria-labelledby="tab-wins-tab">
           <div class="container" id="my-wins">
             <h2 class="mb-4">My wins</h2>
+            <p class="text-muted d-none mt-3" data-my-wins-empty>
+              You haven't won any auctions yet.
+            </p>
           </div>
         </div>
       </section>

@@ -351,17 +351,21 @@ function setupBidForm(listing) {
     return;
   }
 
-  // --- Show credits if available on auth ---
-  if (userCreditsEl) {
-    if (auth && typeof auth.credits === 'number') {
-      userCreditsEl.textContent = String(auth.credits);
-    } else {
+  // --- Logged out → cannot bid ---
+  if (!auth || !auth.name) {
+    if (userCreditsEl) {
       userCreditsEl.textContent = '-';
     }
+
+    disableBidForm('Login to place a bid.');
+    showAlert('error', 'Login required', 'Log in with your student account to place a bid.');
+    return;
   }
 
-  // --- Refine credits from profile (authoritative) ---
-  if (auth && auth.name && userCreditsEl) {
+  // --- Always show credits from LIVE profile, not auth.credits ---
+  if (userCreditsEl) {
+    userCreditsEl.textContent = '-';
+
     (async () => {
       try {
         const profile = await getProfile(auth.name);
@@ -369,23 +373,16 @@ function setupBidForm(listing) {
           userCreditsEl.textContent = String(profile.credits);
         }
       } catch {
-        // silently ignore, keep existing value
+        // silently ignore, keep '-'
       }
     })();
-  }
-
-  // Logged out → cannot bid
-  if (!auth || !auth.name) {
-    disableBidForm('Login to place a bid.');
-    showAlert('info', 'Login required', 'Log in with your student account to place a bid.');
-    return;
   }
 
   // Cannot bid on own listing
   const sellerName = listing.seller && listing.seller.name ? listing.seller.name : null;
   if (sellerName && auth.name === sellerName) {
     disableBidForm('You cannot bid on your own listing.');
-    showAlert('info', 'You are the seller', 'You can’t place bids on your own listing.');
+    showAlert('error', 'You are the seller', 'You can’t place bids on your own listing.');
     return;
   }
 
@@ -394,7 +391,7 @@ function setupBidForm(listing) {
   if (!endsAt || endsAt <= new Date()) {
     disableBidForm('This auction has ended.');
     showAlert(
-      'info',
+      'error',
       'Auction ended',
       'This auction has already ended and no new bids can be placed.',
     );

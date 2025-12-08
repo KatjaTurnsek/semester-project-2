@@ -22,7 +22,7 @@ const loginForm = document.querySelector('[data-auth="login-form"]');
     const title = data.title || 'Logged out';
     const message = data.message || 'You have been logged out of StudioBid.';
 
-    showAlert(message, type, title);
+    showAlert(type, title, message);
   } catch {
     // ignore parse errors
   } finally {
@@ -89,21 +89,24 @@ if (registerForm) {
     const avatarAlt = getTrimmedField(formData, 'avatarAlt');
 
     if (!name || !email || !password) {
-      showAlert('Please fill in name, email and password.', 'error', 'Missing fields');
+      // error: Missing fields
+      showAlert('error', 'Missing fields', 'Please fill in name, email and password.');
       return;
     }
 
     if (!validateNoroffEmail(email)) {
+      // error: Invalid email
       showAlert(
-        'Email must be a Noroff student address (…@stud.noroff.no).',
         'error',
         'Invalid email',
+        'Email must be a Noroff student address (…@stud.noroff.no).',
       );
       return;
     }
 
     if (password.length < 8) {
-      showAlert('Password must be at least 8 characters long.', 'error', 'Weak password');
+      // error: Weak password
+      showAlert('error', 'Weak password', 'Password must be at least 8 characters long.');
       return;
     }
 
@@ -123,13 +126,15 @@ if (registerForm) {
     try {
       await registerUser(payload);
 
-      showAlert('Account created. You can now log in.', 'success', 'Account created');
+      // success: Account created
+      showAlert('success', 'Account created', 'Account created. You can now log in.');
 
       // Go to login page after successful registration
       window.location.href = 'login.html';
     } catch (error) {
       const msg = error && error.message ? error.message : 'Could not register. Please try again.';
-      showAlert(msg, 'error', 'Registration failed');
+      // error: Registration failed
+      showAlert('error', 'Registration failed', msg);
     } finally {
       hideLoader();
     }
@@ -149,7 +154,8 @@ if (loginForm) {
     const password = String(formData.get('password') || '').trim();
 
     if (!email || !password) {
-      showAlert('Please enter email and password.', 'error', 'Missing fields');
+      // error: Missing fields
+      showAlert('error', 'Missing fields', 'Please enter email and password.');
       return;
     }
 
@@ -160,13 +166,15 @@ if (loginForm) {
 
       saveAuth(auth);
 
-      showAlert('You are now logged in.', 'success', 'Welcome back');
+      // success: Welcome back
+      showAlert('success', 'Welcome back', 'You are now logged in.');
 
       window.location.href = 'index.html';
     } catch (error) {
       const msg =
         error && error.message ? error.message : 'Could not log in. Please check your details.';
-      showAlert(msg, 'error', 'Login failed');
+      // error: Login failed
+      showAlert('error', 'Login failed', msg);
     } finally {
       hideLoader();
     }
