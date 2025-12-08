@@ -333,7 +333,13 @@ const renderMyListings = (profile, isOwnProfile) => {
     const imageWrapper = col.querySelector('[data-listing-image-wrapper]');
 
     if (titleEl) titleEl.textContent = listing.title || 'Untitled listing';
-    if (usernameEl) usernameEl.textContent = (listing.seller && listing.seller.name) || 'Unknown';
+    const sellerName =
+      (listing.seller && listing.seller.name) || (profile && profile.name) || 'Unknown';
+
+    if (usernameEl) {
+      usernameEl.textContent = sellerName;
+      usernameEl.href = `profile.html?name=${encodeURIComponent(sellerName)}`;
+    }
 
     const bids = Array.isArray(listing.bids) ? listing.bids : [];
     const highestAmount = bids.reduce(

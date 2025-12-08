@@ -3,6 +3,7 @@ import { getAuth } from '../api/httpClient.js';
 import { getProfile } from '../api/profilesApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
 import { showAlert } from '../ui/alerts.js';
+import { refreshHeaderFromProfile } from '../ui/header.js';
 
 /* ------------------------
    Init
@@ -43,13 +44,6 @@ export async function initListingDetailsPage() {
 
     renderListing(listing);
     setupBidForm(listing);
-
-    // Show a success toast if we just placed a bid and reloaded
-    const lastBidSuccess = window.sessionStorage.getItem('sbLastBidSuccess');
-    if (lastBidSuccess === '1') {
-      window.sessionStorage.removeItem('sbLastBidSuccess');
-      showAlert('success', 'Bid placed', 'Your bid has been placed successfully.');
-    }
   } catch {
     if (titleEl) {
       titleEl.textContent = 'Failed to load listing';
@@ -105,7 +99,6 @@ function renderListing(listing) {
   const timeLeftEl = document.querySelector('[data-listing-time-left]');
   const historyEl = document.querySelector('[data-bid-history]');
 
-  // ===== BASIC FIELDS =====
   if (titleEl) {
     titleEl.textContent = listing.title || 'Untitled listing';
   }
@@ -117,7 +110,6 @@ function renderListing(listing) {
     descriptionEl.appendChild(p);
   }
 
-  // ===== TAGS =====
   if (tagsEl) {
     clearElement(tagsEl);
     const tags = Array.isArray(listing.tags) ? listing.tags.filter(Boolean) : [];
@@ -138,7 +130,6 @@ function renderListing(listing) {
     }
   }
 
-  // ===== SELLER =====
   const sellerName = listing.seller && listing.seller.name ? listing.seller.name : 'Unknown seller';
 
   if (sellerNameEl) {
@@ -150,10 +141,8 @@ function renderListing(listing) {
   }
 
   if (sellerAvatarEl) {
-    // Clear whatever was there
     clearElement(sellerAvatarEl);
 
-    // Make sure the correct classes are applied
     sellerAvatarEl.classList.add(
       'd-inline-flex',
       'justify-content-center',
@@ -176,14 +165,12 @@ function renderListing(listing) {
       img.className = 'img-fluid rounded-circle';
       sellerAvatarEl.appendChild(img);
     } else {
-      // Fallback icon if no avatar set
       const icon = document.createElement('i');
       icon.className = 'bi bi-person fs-3';
       sellerAvatarEl.appendChild(icon);
     }
   }
 
-  // ===== IMAGES =====
   if (mainImgEl && thumbsEl) {
     clearElement(mainImgEl);
     clearElement(thumbsEl);
@@ -207,7 +194,6 @@ function renderListing(listing) {
       .filter(Boolean);
 
     if (media.length > 0) {
-      // Main image
       const main = media[0];
 
       const mainImg = document.createElement('img');
@@ -216,7 +202,6 @@ function renderListing(listing) {
       mainImg.className = 'img-fluid w-100';
       mainImgEl.appendChild(mainImg);
 
-      // Thumbnails
       for (let i = 0; i < media.length; i += 1) {
         const item = media[i];
 
@@ -246,7 +231,6 @@ function renderListing(listing) {
         thumbsEl.appendChild(col);
       }
     } else {
-      // Fallback gavel placeholder
       const ratio = document.createElement('div');
       ratio.className =
         'ratio ratio-16x9 bg-light d-flex justify-content-center align-items-center';
@@ -263,7 +247,10 @@ function renderListing(listing) {
     }
   }
 
-  // ===== STATS =====
+  /* ------------------------
+   Stats
+------------------------- */
+
   const bidsRaw = Array.isArray(listing.bids) ? listing.bids : [];
   const bids = bidsRaw.slice().sort((a, b) => b.amount - a.amount);
   const highestBid = bids.length > 0 ? bids[0].amount : null;
@@ -286,14 +273,16 @@ function renderListing(listing) {
       timeLeftEl.textContent = 'Auction ended';
       disableBidForm('This auction has ended.');
     } else {
-      const diff = endsAt.getTime() - now.getTime();
-      const hours = Math.floor(diff / 3600000);
-      const minutes = Math.floor((diff % 3600000) / 60000);
-      timeLeftEl.textContent = 'Ends in ' + hours + 'h ' + minutes + 'm';
+      const diffMs = endsAt.getTime() - now.getTime();
+      const totalMinutes = Math.floor(diffMs / 60000);
+      const days = Math.floor(totalMinutes / (60 * 24));
+      const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
+      const minutes = totalMinutes % 60;
+
+      timeLeftEl.textContent = `Ends in ${days}d ${hours}h ${minutes}m`;
     }
   }
 
-  // ===== BID HISTORY =====
   if (historyEl) {
     clearElement(historyEl);
 
@@ -351,7 +340,6 @@ function setupBidForm(listing) {
     return;
   }
 
-  // --- Logged out → cannot bid ---
   if (!auth || !auth.name) {
     if (userCreditsEl) {
       userCreditsEl.textContent = '-';
@@ -362,7 +350,6 @@ function setupBidForm(listing) {
     return;
   }
 
-  // --- Always show credits from LIVE profile, not auth.credits ---
   if (userCreditsEl) {
     userCreditsEl.textContent = '-';
 
@@ -373,12 +360,11 @@ function setupBidForm(listing) {
           userCreditsEl.textContent = String(profile.credits);
         }
       } catch {
-        // silently ignore, keep '-'
+        // keep '-'
       }
     })();
   }
 
-  // Cannot bid on own listing
   const sellerName = listing.seller && listing.seller.name ? listing.seller.name : null;
   if (sellerName && auth.name === sellerName) {
     disableBidForm('You cannot bid on your own listing.');
@@ -386,7 +372,6 @@ function setupBidForm(listing) {
     return;
   }
 
-  // Ended auction
   const endsAt = listing.endsAt ? new Date(listing.endsAt) : null;
   if (!endsAt || endsAt <= new Date()) {
     disableBidForm('This auction has ended.');
@@ -419,20 +404,74 @@ function setupBidForm(listing) {
     try {
       await placeBid(listing.id, amount);
 
-      // Remember success so we can show a toast after reload
-      window.sessionStorage.setItem('sbLastBidSuccess', '1');
-      window.location.reload();
-    } catch {
-      errorEl.textContent = 'Failed to place bid. Please try again.';
-      showAlert(
-        'error',
-        'Something went wrong',
-        'We could not place your bid right now. Please try again.',
-      );
+      // 1) Refetch and redraw listing (bids + highest bid)
+      const updatedListing = await getListingById(listing.id, '?_seller=true&_bids=true');
+      if (updatedListing) {
+        renderListing(updatedListing);
+      }
+
+      // 2) Refresh credits under the form from profile
+      if (userCreditsEl && auth && auth.name) {
+        try {
+          const profile = await getProfile(auth.name);
+          if (profile && typeof profile.credits === 'number') {
+            userCreditsEl.textContent = String(profile.credits);
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      // 3) Refresh header credits from latest profile
+      await refreshHeaderFromProfile();
+
+      input.value = '';
+      showAlert('success', 'Bid placed', 'Your bid has been placed successfully.');
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Place a bid';
+    } catch (error) {
+      const message = extractBidErrorMessage(error);
+
+      errorEl.textContent = message;
+      showAlert('error', 'Bid not accepted', message);
+
       submitBtn.disabled = false;
       submitBtn.textContent = 'Place a bid';
     }
   });
+}
+
+/* ------------------------
+   Error message helper
+------------------------- */
+
+function extractBidErrorMessage(error) {
+  let rawMessage = '';
+
+  if (error && typeof error === 'object') {
+    if (typeof error.message === 'string') {
+      rawMessage = error.message;
+    } else if (Array.isArray(error.errors) && error.errors[0]?.message) {
+      rawMessage = error.errors[0].message;
+    }
+  }
+
+  const lower = rawMessage.toLowerCase();
+
+  if (lower.includes('higher') || lower.includes('too low') || lower.includes('maximum bid')) {
+    return 'Your bid is too low. Please place a higher bid than the current highest bid.';
+  }
+
+  if (lower.includes('credit')) {
+    return 'You do not have enough credits to place this bid.';
+  }
+
+  if (lower) {
+    return rawMessage;
+  }
+
+  return 'Failed to place bid. Please try again.';
 }
 
 /* ------------------------
