@@ -1,10 +1,10 @@
 import { getAuth, clearAuth } from '../api/httpClient.js';
 import { getProfile, getProfileBids, getProfileWins, updateProfile } from '../api/profilesApi.js';
-import { deleteListing } from '../api/listingsApi.js';
+import { deleteListing, getListingById } from '../api/listingsApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
 import { showAlert } from '../ui/alerts.js';
 
-/* DOM references */
+// DOM references
 
 const headerLoggedOut = document.querySelector('[data-header="logged-out"]');
 const headerLoggedIn = document.querySelector('[data-header="logged-in"]');
@@ -30,10 +30,31 @@ const bioInput = document.querySelector('#profileBio');
 
 const editCancelButton = document.querySelector('[data-profile-edit="cancel"]');
 
-/* Helpers */
+// Small helpers
 
 const redirectToLogin = () => {
   window.location.href = 'login.html';
+};
+
+const parseDate = (value) => {
+  if (!value) return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+};
+
+const createEndedBadge = () => {
+  const span = document.createElement('span');
+  span.className = 'badge-ended position-absolute top-0 start-0 m-2';
+  span.textContent = 'ENDED';
+  return span;
+};
+
+const createWonBadge = (position = 'end') => {
+  const side = position === 'start' ? 'start' : 'end';
+  const span = document.createElement('span');
+  span.className = `badge-won position-absolute top-0 ${side}-0 m-2`;
+  span.textContent = 'WON';
+  return span;
 };
 
 const getInitials = (name) => {
@@ -110,7 +131,7 @@ const updateProfileHero = (profile) => {
     const bannerUrl = banner.url || '';
 
     if (bannerUrl) {
-      bannerEl.style.backgroundImage = 'url("' + bannerUrl + '")';
+      bannerEl.style.backgroundImage = `url("${bannerUrl}")`;
       bannerEl.style.backgroundSize = 'cover';
       bannerEl.style.backgroundPosition = 'center';
     } else {
@@ -124,7 +145,6 @@ const updateProfileHero = (profile) => {
 
 const clearEditMessage = () => {
   if (!editMessageEl) return;
-
   editMessageEl.textContent = '';
   editMessageEl.className = 'alert d-none';
 };
@@ -150,15 +170,11 @@ const showEditMessage = (text, type) => {
 };
 
 const showEditSection = () => {
-  if (editProfileSection) {
-    editProfileSection.classList.remove('d-none');
-  }
+  if (editProfileSection) editProfileSection.classList.remove('d-none');
 };
 
 const hideEditSection = () => {
-  if (editProfileSection) {
-    editProfileSection.classList.add('d-none');
-  }
+  if (editProfileSection) editProfileSection.classList.add('d-none');
 };
 
 const getProfileNameFromQuery = () => {
@@ -167,11 +183,7 @@ const getProfileNameFromQuery = () => {
   const pairs = withoutQuestionMark.split('&').filter(Boolean);
 
   for (let i = 0; i < pairs.length; i += 1) {
-    const pair = pairs[i];
-    const parts = pair.split('=');
-    const key = parts[0];
-    const value = parts[1];
-
+    const [key, value] = pairs[i].split('=');
     if (key === 'name') {
       return decodeURIComponent(value || '');
     }
@@ -180,13 +192,11 @@ const getProfileNameFromQuery = () => {
   return null;
 };
 
-/* Tabs helper: activate correct tab from hash */
+// Tabs helper: activate correct tab from hash
 
 const activateTab = (paneId) => {
   const panes = document.querySelectorAll('.tab-pane');
-  panes.forEach((pane) => {
-    pane.classList.remove('show', 'active');
-  });
+  panes.forEach((pane) => pane.classList.remove('show', 'active'));
 
   const links = document.querySelectorAll('#profileTabs .nav-link');
   links.forEach((link) => {
@@ -225,7 +235,7 @@ const activateTabFromHash = () => {
   }
 };
 
-/* Active listings – card actions */
+// Active listings – card actions
 
 const setupMyListingCardActions = (cardColEl, listingId) => {
   if (!cardColEl || !listingId) return;
@@ -262,44 +272,53 @@ const setupMyListingCardActions = (cardColEl, listingId) => {
     });
   }
 
-  if (deleteBtn) {
-    deleteBtn.addEventListener('click', async (event) => {
-      event.preventDefault();
+  if (!deleteBtn) return;
 
-      const confirmed = window.confirm('Are you sure you want to delete this listing?');
-      if (!confirmed) return;
+  deleteBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
 
-      showLoader();
+    const confirmed = window.confirm('Are you sure you want to delete this listing?');
+    if (!confirmed) return;
 
-      try {
-        await deleteListing(listingId);
-        cardColEl.remove();
+    showLoader();
 
-        showAlert('success', 'Listing deleted', 'Your listing has been deleted.');
+    try {
+      await deleteListing(listingId);
+      cardColEl.remove();
 
-        const row = document.querySelector('#my-listings .row');
-        const remainingCards = row
-          ? row.querySelectorAll('.col:not([data-my-listing-template])')
-          : [];
-        const emptyMessage = document.querySelector('[data-my-listings-empty]');
+      showAlert('success', 'Listing deleted', 'Your listing has been deleted.');
 
-        if (emptyMessage && (!remainingCards || remainingCards.length === 0)) {
-          emptyMessage.classList.remove('d-none');
-        }
-      } catch (error) {
-        const msg =
-          error && error.message
-            ? error.message
-            : 'Could not delete this listing. Please try again.';
-        showAlert('error', 'Delete failed', msg);
-      } finally {
-        hideLoader();
+      const row = document.querySelector('#my-listings .row');
+      const remainingCards = row
+        ? row.querySelectorAll('.col:not([data-my-listing-template])')
+        : [];
+      const emptyMessage = document.querySelector('[data-my-listings-empty]');
+
+      if (emptyMessage && (!remainingCards || remainingCards.length === 0)) {
+        emptyMessage.classList.remove('d-none');
       }
-    });
-  }
+    } catch (error) {
+      const msg =
+        error && error.message ? error.message : 'Could not delete this listing. Please try again.';
+      showAlert('error', 'Delete failed', msg);
+    } finally {
+      hideLoader();
+    }
+  });
 };
 
-const renderMyListings = (profile, isOwnProfile) => {
+const getHighestBidAmount = (listing) => {
+  if (!listing || !Array.isArray(listing.bids) || !listing.bids.length) return 0;
+
+  return listing.bids.reduce((max, bid) => {
+    const amount = bid && typeof bid.amount === 'number' ? bid.amount : 0;
+    return amount > max ? amount : max;
+  }, 0);
+};
+
+// My listings
+
+const renderMyListings = async (profile, isOwnProfile) => {
   const container = document.querySelector('#my-listings');
   if (!container) return;
 
@@ -311,16 +330,40 @@ const renderMyListings = (profile, isOwnProfile) => {
 
   const listings = Array.isArray(profile.listings) ? profile.listings : [];
 
+  // Clear previous rendered cards (keep template)
   row.querySelectorAll('.col:not([data-my-listing-template])').forEach((col) => col.remove());
 
-  if (listings.length === 0) {
+  if (!listings.length) {
     if (emptyMessage) emptyMessage.classList.remove('d-none');
     return;
   }
 
   if (emptyMessage) emptyMessage.classList.add('d-none');
 
-  listings.forEach((listing) => {
+  // Fetch detailed info (bids, endsAt)
+  const detailedListings = await Promise.all(
+    listings.map(async (listing) => {
+      if (!listing || !listing.id) return listing;
+      try {
+        const detailed = await getListingById(listing.id, '?_bids=true');
+        if (!detailed) return listing;
+        return {
+          ...listing,
+          bids: Array.isArray(detailed.bids) ? detailed.bids : listing.bids,
+          _count: detailed._count || listing._count,
+          endsAt: detailed.endsAt || listing.endsAt,
+        };
+      } catch {
+        return listing;
+      }
+    }),
+  );
+
+  const now = new Date();
+
+  detailedListings.forEach((listing) => {
+    if (!listing) return;
+
     const col = templateCol.cloneNode(true);
     col.classList.remove('d-none');
     col.removeAttribute('data-my-listing-template');
@@ -328,11 +371,15 @@ const renderMyListings = (profile, isOwnProfile) => {
     const titleEl = col.querySelector('[data-listing-title]');
     const usernameEl = col.querySelector('[data-listing-username]');
     const bidsCountEl = col.querySelector('[data-listing-bids-count]');
-    const highestBidEl = col.querySelector('[data-listing-highest-bid]');
+    const highestBidStripEl = col.querySelector('[data-listing-highest-bid]');
     const endsInEl = col.querySelector('[data-listing-ends-in]');
     const imageWrapper = col.querySelector('[data-listing-image-wrapper]');
+    const mediaWrapper = imageWrapper ? imageWrapper.parentElement : null;
 
-    if (titleEl) titleEl.textContent = listing.title || 'Untitled listing';
+    if (titleEl) {
+      titleEl.textContent = listing.title || 'Untitled listing';
+    }
+
     const sellerName =
       (listing.seller && listing.seller.name) || (profile && profile.name) || 'Unknown';
 
@@ -341,18 +388,43 @@ const renderMyListings = (profile, isOwnProfile) => {
       usernameEl.href = `profile.html?name=${encodeURIComponent(sellerName)}`;
     }
 
-    const bids = Array.isArray(listing.bids) ? listing.bids : [];
-    const highestAmount = bids.reduce(
-      (max, bid) => (typeof bid.amount === 'number' && bid.amount > max ? bid.amount : max),
-      0,
-    );
+    const totalBids =
+      listing._count && typeof listing._count.bids === 'number'
+        ? listing._count.bids
+        : Array.isArray(listing.bids)
+          ? listing.bids.length
+          : 0;
 
-    if (bidsCountEl) bidsCountEl.textContent = bids.length.toString();
-    if (highestBidEl) highestBidEl.textContent = `Highest bid: ${highestAmount} credits`;
+    if (bidsCountEl) {
+      bidsCountEl.textContent = String(totalBids);
+    }
 
-    if (endsInEl && listing.endsAt) {
-      const endsDate = new Date(listing.endsAt);
-      endsInEl.textContent = endsDate.toLocaleString();
+    const highestAmount = getHighestBidAmount(listing);
+
+    if (highestBidStripEl) {
+      if (highestAmount > 0) {
+        highestBidStripEl.textContent = `Highest bid: ${highestAmount} credits`;
+      } else if (totalBids > 0) {
+        highestBidStripEl.textContent = 'Highest bid: view listing';
+      } else {
+        highestBidStripEl.textContent = 'Highest bid: 0 credits';
+      }
+    }
+
+    const endsDate = parseDate(listing.endsAt);
+    const isEnded = !!endsDate && endsDate <= now;
+
+    if (endsInEl) {
+      if (isEnded) {
+        endsInEl.textContent = 'Auction ended';
+      } else if (endsDate) {
+        endsInEl.textContent = endsDate.toLocaleString();
+      }
+    }
+
+    // ENDED badge for own ended listings
+    if (mediaWrapper && isEnded) {
+      mediaWrapper.appendChild(createEndedBadge());
     }
 
     if (imageWrapper) {
@@ -368,6 +440,16 @@ const renderMyListings = (profile, isOwnProfile) => {
         img.style.objectFit = 'cover';
         imageWrapper.appendChild(img);
       }
+    }
+
+    const viewLink = col.querySelector('[data-listing-view-link]');
+    if (viewLink && listing.id) {
+      const url = `listing.html?id=${encodeURIComponent(listing.id)}`;
+      viewLink.href = url;
+      viewLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.location.href = url;
+      });
     }
 
     if (!isOwnProfile) {
@@ -386,19 +468,22 @@ const renderMyListings = (profile, isOwnProfile) => {
   });
 };
 
-/* My bids */
+// My bids
 
-const renderMyBids = (bids) => {
+const renderMyBids = (bids, wins) => {
   const container = document.querySelector('#my-bids');
   if (!container) return;
 
   const emptyMessage = container.querySelector('[data-my-bids-empty]');
   const existingList = container.querySelector('[data-my-bids-list]');
-  if (existingList) {
-    existingList.remove();
-  }
+  if (existingList) existingList.remove();
 
   const safeBids = Array.isArray(bids) ? bids : [];
+  const winsArray = Array.isArray(wins) ? wins : [];
+
+  const wonListingIds = new Set(
+    winsArray.map((listing) => (listing && listing.id ? listing.id : null)).filter(Boolean),
+  );
 
   if (!safeBids.length) {
     if (emptyMessage) emptyMessage.classList.remove('d-none');
@@ -411,6 +496,8 @@ const renderMyBids = (bids) => {
   listWrapper.setAttribute('data-my-bids-list', '');
   listWrapper.className = 'row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
 
+  const now = new Date();
+
   safeBids.forEach((bid) => {
     const col = document.createElement('div');
     col.className = 'col';
@@ -419,8 +506,8 @@ const renderMyBids = (bids) => {
     card.className = 'card sb-card h-100 rounded-0';
 
     const listing = bid && bid.listing && typeof bid.listing === 'object' ? bid.listing : null;
-    const listingTitle = listing && listing.title ? listing.title : 'Unknown listing';
-    const listingId = listing && listing.id ? listing.id : null;
+    const listingTitle = (listing && listing.title) || 'Unknown listing';
+    const listingId = (listing && listing.id) || null;
     const media = listing && Array.isArray(listing.media) ? listing.media : [];
     const firstMedia = media[0];
 
@@ -436,7 +523,6 @@ const renderMyBids = (bids) => {
       img.alt = firstMedia.alt || listingTitle || 'Listing image';
       img.className = 'img-fluid w-100 h-100';
       img.style.objectFit = 'cover';
-      ratio.innerHTML = '';
       ratio.appendChild(img);
     } else {
       const span = document.createElement('span');
@@ -449,6 +535,18 @@ const renderMyBids = (bids) => {
 
     mediaWrapper.appendChild(ratio);
 
+    const endsDate = listing ? parseDate(listing.endsAt) : null;
+    const isEnded = !!endsDate && endsDate <= now;
+    const isWon = listingId && wonListingIds.has(listingId);
+
+    if (isEnded) {
+      mediaWrapper.appendChild(createEndedBadge());
+    }
+
+    if (isWon) {
+      mediaWrapper.appendChild(createWonBadge('end'));
+    }
+
     const body = document.createElement('div');
     body.className = 'card-body';
 
@@ -460,16 +558,14 @@ const renderMyBids = (bids) => {
     amountP.className = 'mb-1';
     amountP.innerHTML =
       '<span class="fw-semibold">Your bid:</span> ' +
-      (typeof bid.amount === 'number' ? bid.amount + ' credits' : '-');
+      (typeof bid.amount === 'number' ? `${bid.amount} credits` : '-');
 
     const timeP = document.createElement('p');
     timeP.className = 'mb-0 text-muted small';
 
-    if (bid.created) {
-      const createdDate = new Date(bid.created);
-      if (!Number.isNaN(createdDate.getTime())) {
-        timeP.textContent = 'Placed on ' + createdDate.toLocaleString();
-      }
+    const createdDate = parseDate(bid.created);
+    if (createdDate) {
+      timeP.textContent = 'Placed on ' + createdDate.toLocaleString();
     }
 
     body.appendChild(titleEl);
@@ -481,6 +577,7 @@ const renderMyBids = (bids) => {
 
     const footerInner = document.createElement('div');
     footerInner.className = 'btn-group w-100';
+
     const viewLink = document.createElement('a');
     viewLink.className = 'btn card-action-btn card-action-btn--view';
     viewLink.textContent = 'View listing';
@@ -500,7 +597,7 @@ const renderMyBids = (bids) => {
   container.appendChild(listWrapper);
 };
 
-/* My wins */
+// My wins
 
 const renderMyWins = (wins) => {
   const container = document.querySelector('#my-wins');
@@ -508,9 +605,7 @@ const renderMyWins = (wins) => {
 
   const emptyMessage = container.querySelector('[data-my-wins-empty]');
   const existingList = container.querySelector('[data-my-wins-list]');
-  if (existingList) {
-    existingList.remove();
-  }
+  if (existingList) existingList.remove();
 
   const safeWins = Array.isArray(wins) ? wins : [];
 
@@ -524,6 +619,8 @@ const renderMyWins = (wins) => {
   const listWrapper = document.createElement('div');
   listWrapper.setAttribute('data-my-wins-list', '');
   listWrapper.className = 'row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4';
+
+  const now = new Date();
 
   safeWins.forEach((listing) => {
     if (!listing) return;
@@ -551,7 +648,6 @@ const renderMyWins = (wins) => {
       img.alt = firstMedia.alt || listingTitle || 'Listing image';
       img.className = 'img-fluid w-100 h-100';
       img.style.objectFit = 'cover';
-      ratio.innerHTML = '';
       ratio.appendChild(img);
     } else {
       const span = document.createElement('span');
@@ -564,6 +660,15 @@ const renderMyWins = (wins) => {
 
     mediaWrapper.appendChild(ratio);
 
+    const endsDate = parseDate(listing.endsAt);
+    const isEnded = !!endsDate && endsDate <= now;
+
+    if (isEnded) {
+      mediaWrapper.appendChild(createEndedBadge());
+    }
+
+    mediaWrapper.appendChild(createWonBadge('end'));
+
     const body = document.createElement('div');
     body.className = 'card-body';
 
@@ -574,11 +679,8 @@ const renderMyWins = (wins) => {
     const infoP = document.createElement('p');
     infoP.className = 'mb-0 text-muted small';
 
-    if (listing.endsAt) {
-      const endDate = new Date(listing.endsAt);
-      if (!Number.isNaN(endDate.getTime())) {
-        infoP.textContent = 'Ended on ' + endDate.toLocaleString();
-      }
+    if (endsDate) {
+      infoP.textContent = 'Ended on ' + endsDate.toLocaleString();
     }
 
     body.appendChild(titleEl);
@@ -589,6 +691,7 @@ const renderMyWins = (wins) => {
 
     const footerInner = document.createElement('div');
     footerInner.className = 'btn-group w-100';
+
     const viewLink = document.createElement('a');
     viewLink.className = 'btn card-action-btn card-action-btn--view';
     viewLink.textContent = 'View listing';
@@ -608,7 +711,7 @@ const renderMyWins = (wins) => {
   container.appendChild(listWrapper);
 };
 
-/* Edit form wiring */
+// Edit form wiring
 
 const setupEditProfileForm = (profile, authName, isOwnProfile) => {
   if (!isOwnProfile) {
@@ -625,17 +728,11 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
     const avatar = p.avatar || {};
     const banner = p.banner || {};
 
-    const avatarUrl = avatar.url || '';
-    const avatarAlt = avatar.alt || '';
-    const bannerUrl = banner.url || '';
-    const bannerAlt = banner.alt || '';
-    const bio = p.bio || '';
-
-    if (avatarUrlInput) avatarUrlInput.value = avatarUrl;
-    if (avatarAltInput) avatarAltInput.value = avatarAlt;
-    if (bannerUrlInput) bannerUrlInput.value = bannerUrl;
-    if (bannerAltInput) bannerAltInput.value = bannerAlt;
-    if (bioInput) bioInput.value = bio;
+    if (avatarUrlInput) avatarUrlInput.value = avatar.url || '';
+    if (avatarAltInput) avatarAltInput.value = avatar.alt || '';
+    if (bannerUrlInput) bannerUrlInput.value = banner.url || '';
+    if (bannerAltInput) bannerAltInput.value = banner.alt || '';
+    if (bioInput) bioInput.value = p.bio || '';
   };
 
   editProfileButton.addEventListener('click', (event) => {
@@ -724,7 +821,7 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
   });
 };
 
-/* Main init */
+// Main init
 
 const initProfilePage = async () => {
   const auth = getAuth();
@@ -766,13 +863,12 @@ const initProfilePage = async () => {
     }
 
     updateProfileHero(profile);
-    renderMyListings(profile, isOwnProfile);
-    renderMyBids(bids);
+    await renderMyListings(profile, isOwnProfile);
+    renderMyBids(bids, wins);
     renderMyWins(wins);
 
     setupEditProfileForm(profile, isOwnProfile ? auth.name : null, isOwnProfile);
 
-    // Activate correct tab if URL has #my-listings / #my-bids / #my-wins
     activateTabFromHash();
   } catch {
     if (isOwnProfile) {

@@ -27,6 +27,23 @@ body[data-page='listing'] [data-listing-thumbnails] .border {
   border-color: var(--sb-color-black) !important;
 }
 
+// Thumbnail gallery
+body[data-page='listing'] [data-listing-thumbnails] .border {
+  height: 100px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body[data-page='listing'] [data-listing-thumbnails] img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 // Seller avatar border
 body[data-page='listing'] [data-listing-seller-avatar] {
   border-width: 2px !important;
@@ -69,4 +86,12 @@ body[data-page='listing'] .sb-divider-strong {
   height: 0 !important;
   opacity: 1 !important;
   background-color: transparent !important;
+}
+
+// Index page – listing card thumbnails
+body[data-page='index'] [data-listing-media] {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
 }

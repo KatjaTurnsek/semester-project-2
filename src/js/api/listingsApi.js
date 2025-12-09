@@ -1,6 +1,7 @@
 import { request } from './httpClient.js';
 
-// Get listings, with a good default query for the index page
+// Get listings, with a default query for the index page
+
 export const getListings = (queryString) => {
   const defaultQuery = '?_active=true&_seller=true&_bids=true&sort=created&sortOrder=desc';
 
@@ -10,6 +11,7 @@ export const getListings = (queryString) => {
 };
 
 // Search listings by title/description
+
 export const searchListings = (queryString) => {
   const qs = typeof queryString == 'string' && queryString.length > 0 ? queryString : '';
 

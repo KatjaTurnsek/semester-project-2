@@ -5,9 +5,7 @@ export const NOROFF_API_KEY = '3e0a65ee-1d88-4fb0-9962-797226b01b32';
 
 const AUTH_KEY = 'studiobid-auth';
 
-/* ------------------------
-   Helpers: errors
-------------------------- */
+// Helpers: errors
 
 const errorMessageFrom = (json, fallback) => {
   if (json && typeof json === 'object') {
@@ -30,9 +28,7 @@ const errorMessageFrom = (json, fallback) => {
   return fallback || 'Request failed';
 };
 
-/* ------------------------
-   Helpers: auth token
-------------------------- */
+// Helpers: auth token
 
 const normalizeToken = (raw) => {
   if (!raw) {
@@ -47,9 +43,7 @@ const normalizeToken = (raw) => {
   return trimmed;
 };
 
-/* ------------------------
-   Helpers: storage
-------------------------- */
+// Helpers: storage
 
 const safeJsonStringify = (value) => {
   try {
@@ -101,9 +95,7 @@ export const getAccessToken = () => {
   return '';
 };
 
-/* ------------------------
-   Helpers: request setup
-------------------------- */
+// Helpers: request setup
 
 const buildApiUrl = (path) => {
   const isAbsolute = /^https?:\/\//i.test(path);
@@ -153,9 +145,7 @@ const safeJsonParseResponse = async (res) => {
   }
 };
 
-/* ------------------------
-   Core request helper
-------------------------- */
+// Core request helper
 
 export const request = async (path, options = {}) => {
   const { json: jsonBody, auth, headers: optHeaders, body: optBody, ...rest } = options;
@@ -196,9 +186,7 @@ export const request = async (path, options = {}) => {
   return json;
 };
 
-/* ------------------------
-   Generic localStorage helpers
-------------------------- */
+// Generic localStorage helpers
 
 export const addToLocalStorage = (key, value) => {
   localStorage.setItem(key, value);

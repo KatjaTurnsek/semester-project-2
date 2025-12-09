@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/semester-project-2/',
   css: {
     preprocessorOptions: {
       scss: {

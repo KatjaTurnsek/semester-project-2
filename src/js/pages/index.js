@@ -22,9 +22,7 @@ let isLoading = false;
 // Track which listings
 const loadedListingIds = new Set();
 
-/* ------------------------
-   Config for sort options
-------------------------- */
+// Config for sort options
 
 const sortConfig = {
   newest: { sort: 'created', sortOrder: 'desc' },
@@ -32,9 +30,7 @@ const sortConfig = {
   'highest-bid': { sort: 'created', sortOrder: 'desc' },
 };
 
-/* ------------------------
-   Helpers: errors & summary
-------------------------- */
+// Helpers: errors & summary
 
 const showError = (message) => {
   if (errorEl) {
@@ -96,7 +92,7 @@ const clearListings = () => {
   }
 
   const cols = listingsContainer.querySelectorAll('.col');
-  cols.forEach(function (col) {
+  cols.forEach((col) => {
     if (col !== listingTemplateCol) {
       col.remove();
     }
@@ -106,15 +102,11 @@ const clearListings = () => {
   hideEndOfResults();
 };
 
-/* ------------------------
-   Query builders
-------------------------- */
+// Query builders
 
 const addSortParams = (parts) => {
   const cfg = sortConfig[currentSort];
-  if (!cfg) {
-    return;
-  }
+  if (!cfg) return;
 
   if (cfg.sort) {
     parts.push('sort=' + cfg.sort);
@@ -124,80 +116,56 @@ const addSortParams = (parts) => {
   }
 };
 
-// Main listings (active, seller, bids, paging, sort)
-const buildListingsQueryString = () => {
-  const parts = [];
-
+const addBaseListingParams = (parts) => {
   parts.push('_active=true');
   parts.push('_seller=true');
   parts.push('_bids=true');
   parts.push('limit=' + PAGE_SIZE);
   parts.push('page=' + currentPage);
-
   addSortParams(parts);
+};
 
+// Main listings (active, seller, bids, paging, sort)
+const buildListingsQueryString = () => {
+  const parts = [];
+  addBaseListingParams(parts);
   return '?' + parts.join('&');
 };
 
-// Search endpoint (/auction/listings/search?q=…)
+// Search endpoint (/auction/listings/search)
 const buildSearchQueryString = () => {
   const parts = [];
-
   const trimmedSearch = currentSearch ? currentSearch.trim() : '';
   const encoded = encodeURIComponent(trimmedSearch);
 
   parts.push('q=' + encoded);
-  parts.push('_seller=true');
-  parts.push('_bids=true');
-  parts.push('_active=true');
-  parts.push('limit=' + PAGE_SIZE);
-  parts.push('page=' + currentPage);
-
-  addSortParams(parts);
+  addBaseListingParams(parts);
 
   return '?' + parts.join('&');
 };
 
-// Fallback for tag search on /auction/listings?_tag=…
+// Fallback for tag search on /auction/listings?
 const buildTagQueryString = () => {
   const parts = [];
-
   const trimmedSearch = currentSearch ? currentSearch.trim() : '';
   const encoded = encodeURIComponent(trimmedSearch);
 
   parts.push('_tag=' + encoded);
-  parts.push('_active=true');
-  parts.push('_seller=true');
-  parts.push('_bids=true');
-  parts.push('limit=' + PAGE_SIZE);
-  parts.push('page=' + currentPage);
-
-  addSortParams(parts);
+  addBaseListingParams(parts);
 
   return '?' + parts.join('&');
 };
 
-/* ------------------------
-   Helpers: bids, time, new
-------------------------- */
+// Helpers: bids, time, new
 
 const getHighestBidAmount = (listing) => {
-  if (!listing || !listing.bids || !listing.bids.length) {
-    return 0;
-  }
+  const bids = listing && Array.isArray(listing.bids) ? listing.bids : [];
+  if (!bids.length) return 0;
 
-  let max = 0;
-
-  for (let i = 0; i < listing.bids.length; i++) {
-    const bid = listing.bids[i];
+  return bids.reduce((max, bid) => {
     const amount = bid && typeof bid.amount === 'number' ? bid.amount : 0;
-
-    if (amount > max) {
-      max = amount;
-    }
-  }
-
-  return max;
+    return amount > max ? amount : max;
+  }, 0);
 };
 
 const formatEndsIn = (endsAt) => {
@@ -206,7 +174,7 @@ const formatEndsIn = (endsAt) => {
   }
 
   const endDate = new Date(endsAt);
-  if (isNaN(endDate.getTime())) {
+  if (Number.isNaN(endDate.getTime())) {
     return 'Unknown';
   }
 
@@ -239,7 +207,7 @@ const isNewListing = (listing) => {
   }
 
   const createdDate = new Date(listing.created);
-  if (isNaN(createdDate.getTime())) {
+  if (Number.isNaN(createdDate.getTime())) {
     return false;
   }
 
@@ -250,9 +218,14 @@ const isNewListing = (listing) => {
   return diffHours <= 24;
 };
 
-/* ------------------------
-   Relevance scoring
-------------------------- */
+const isListingEnded = (listing) => {
+  if (!listing || !listing.endsAt) return false;
+  const endDate = new Date(listing.endsAt);
+  if (Number.isNaN(endDate.getTime())) return false;
+  return endDate.getTime() <= Date.now();
+};
+
+// Relevance scoring
 
 const getRelevanceScore = (listing, query) => {
   if (!query) {
@@ -303,9 +276,7 @@ const getRelevanceScore = (listing, query) => {
   return score;
 };
 
-/* ------------------------
-   Sorting helpers
-------------------------- */
+// Sorting helpers
 
 const sortComparators = {
   'highest-bid': function (a, b) {
@@ -317,7 +288,7 @@ const sortComparators = {
     const aTime = a && a.created ? new Date(a.created).getTime() : NaN;
     const bTime = b && b.created ? new Date(b.created).getTime() : NaN;
 
-    if (isNaN(aTime) || isNaN(bTime) || aTime === bTime) {
+    if (Number.isNaN(aTime) || Number.isNaN(bTime) || aTime === bTime) {
       return 0;
     }
 
@@ -327,7 +298,7 @@ const sortComparators = {
     const aEnd = a && a.endsAt ? new Date(a.endsAt).getTime() : NaN;
     const bEnd = b && b.endsAt ? new Date(b.endsAt).getTime() : NaN;
 
-    if (isNaN(aEnd) || isNaN(bEnd) || aEnd === bEnd) {
+    if (Number.isNaN(aEnd) || Number.isNaN(bEnd) || aEnd === bEnd) {
       return 0;
     }
 
@@ -342,7 +313,7 @@ const sortSearchResults = (listings, query, sortKey) => {
 
   const comparator = sortKey ? sortComparators[sortKey] : null;
 
-  listings.sort(function (a, b) {
+  listings.sort((a, b) => {
     const scoreA = getRelevanceScore(a, query);
     const scoreB = getRelevanceScore(b, query);
 
@@ -368,9 +339,7 @@ const sortNonSearchResults = (listings, sortKey) => {
   }
 };
 
-/* ------------------------
-   Rendering
-------------------------- */
+// Rendering
 
 const createListingCard = (listing) => {
   if (!listingTemplateCol) {
@@ -390,21 +359,23 @@ const createListingCard = (listing) => {
   const highestBidEl = clone.querySelector('[data-listing-highest-bid]');
   const mediaImg = clone.querySelector('[data-listing-media]');
   const mediaFallback = clone.querySelector('[data-listing-media-fallback]');
+  const mediaWrapper = clone.querySelector('.position-relative');
 
   const title = listing && listing.title ? listing.title : 'Untitled listing';
   const sellerName =
     listing && listing.seller && listing.seller.name ? listing.seller.name : 'Unknown seller';
 
-  let totalBids = 0;
-  if (listing && listing._count && typeof listing._count.bids === 'number') {
-    totalBids = listing._count.bids;
-  } else if (listing && listing.bids && listing.bids.length) {
-    totalBids = listing.bids.length;
-  }
+  const totalBids =
+    listing && listing._count && typeof listing._count.bids === 'number'
+      ? listing._count.bids
+      : listing && listing.bids && listing.bids.length
+        ? listing.bids.length
+        : 0;
 
   const endsIn = formatEndsIn(listing && listing.endsAt ? listing.endsAt : null);
   const highestBid = getHighestBidAmount(listing);
   const listingId = listing && listing.id ? listing.id : '';
+  const ended = isListingEnded(listing);
 
   if (titleEl) {
     titleEl.textContent = title;
@@ -432,31 +403,32 @@ const createListingCard = (listing) => {
   }
 
   if (badgeEl) {
-    if (isNewListing(listing)) {
+    if (!ended && isNewListing(listing)) {
       badgeEl.classList.remove('d-none');
     } else {
       badgeEl.classList.add('d-none');
     }
   }
 
+  if (mediaWrapper && ended) {
+    const endedBadge = document.createElement('span');
+    endedBadge.className = 'badge-ended position-absolute top-0 start-0 m-2';
+    endedBadge.textContent = 'ENDED';
+    mediaWrapper.appendChild(endedBadge);
+  }
+
   if (mediaImg && mediaFallback) {
-    let hasImage = false;
+    const media = listing && Array.isArray(listing.media) ? listing.media : [];
+    const first = media[0];
+    const url = first && first.url ? first.url : '';
+    const alt = first && first.alt ? first.alt : title;
 
-    if (listing && listing.media && listing.media.length) {
-      const first = listing.media[0];
-      const url = first && first.url ? first.url : '';
-      const alt = first && first.alt ? first.alt : title;
-
-      if (url) {
-        mediaImg.src = url;
-        mediaImg.alt = alt;
-        mediaImg.classList.remove('d-none');
-        mediaFallback.classList.add('d-none');
-        hasImage = true;
-      }
-    }
-
-    if (!hasImage) {
+    if (url) {
+      mediaImg.src = url;
+      mediaImg.alt = alt;
+      mediaImg.classList.remove('d-none');
+      mediaFallback.classList.add('d-none');
+    } else {
       mediaImg.classList.add('d-none');
       mediaFallback.classList.remove('d-none');
     }
@@ -481,7 +453,7 @@ const renderListings = (listings, append) => {
 
   let newlyRenderedCount = 0;
 
-  listings.forEach(function (listing) {
+  listings.forEach((listing) => {
     const listingId = listing && listing.id ? listing.id : null;
 
     if (append && listingId && loadedListingIds.has(listingId)) {
@@ -505,9 +477,7 @@ const renderListings = (listings, append) => {
   return newlyRenderedCount;
 };
 
-/* ------------------------
-   Search fetch (with tag fallback)
-------------------------- */
+// Search fetch (with tag fallback)
 
 const fetchSearchListings = async () => {
   const trimmedSearch = currentSearch ? currentSearch.trim() : '';
@@ -525,9 +495,7 @@ const fetchSearchListings = async () => {
   return Array.isArray(tagData) ? tagData : [];
 };
 
-/* ------------------------
-   Loading data
-------------------------- */
+// Loading data
 
 const fetchListings = async (append) => {
   if (!listingsContainer || !listingTemplateCol) {
@@ -554,6 +522,8 @@ const fetchListings = async (append) => {
     }
 
     let listings = Array.isArray(data) ? data : [];
+
+    listings = listings.filter((listing) => !isListingEnded(listing));
 
     if (currentSearch) {
       sortSearchResults(listings, currentSearch, currentSort);
@@ -596,12 +566,10 @@ const fetchListings = async (append) => {
   }
 };
 
-/* ------------------------
-   Event wiring
-------------------------- */
+// Event wiring
 
 if (searchForm && searchInput) {
-  searchForm.addEventListener('submit', async function (event) {
+  searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const value = String(searchInput.value || '').trim();
@@ -613,7 +581,7 @@ if (searchForm && searchInput) {
 }
 
 if (sortSelect) {
-  sortSelect.addEventListener('change', async function () {
+  sortSelect.addEventListener('change', async () => {
     const value = sortSelect.value || '';
     currentSort = value;
     currentPage = 1;
@@ -623,15 +591,13 @@ if (sortSelect) {
 }
 
 if (loadMoreBtn) {
-  loadMoreBtn.addEventListener('click', async function () {
+  loadMoreBtn.addEventListener('click', async () => {
     currentPage = currentPage + 1;
     await fetchListings(true);
   });
 }
 
-/* ------------------------
-   Post-login welcome toast
-------------------------- */
+// Post-login welcome toast
 
 const justLoggedInFlag = window.sessionStorage.getItem('sbAuthJustLoggedIn');
 if (justLoggedInFlag === '1') {
@@ -643,9 +609,7 @@ if (justLoggedInFlag === '1') {
   );
 }
 
-/* ------------------------
-   Initial load
-------------------------- */
+// Initial load
 
 (async () => {
   await fetchListings(false);

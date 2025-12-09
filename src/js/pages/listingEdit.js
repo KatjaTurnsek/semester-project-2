@@ -5,9 +5,7 @@ import { createListing, updateListing, getListingById, deleteListing } from '../
 import { showLoader, hideLoader } from '../ui/loader.js';
 import { showAlert } from '../ui/alerts.js';
 
-/* ------------------------
-   Helpers: URL + DOM
-------------------------- */
+// URL + small helpers
 
 const getListingIdFromQuery = () => {
   const search = window.location.search || '';
@@ -35,9 +33,7 @@ const getTrimmedInputValue = (input) => {
   return String(input.value || '').trim();
 };
 
-/* ------------------------
-   Helpers: tags + media
-------------------------- */
+// Tags + media helpers
 
 const buildTagsArray = (tagsRaw) => {
   if (!tagsRaw) return undefined;
@@ -78,9 +74,7 @@ const buildMediaArrayFromForm = (form) => {
   return media;
 };
 
-/* ------------------------
-   Helpers: dates
-------------------------- */
+// Date helper
 
 const toDateTimeLocalValue = (isoString) => {
   if (!isoString) return '';
@@ -99,9 +93,7 @@ const toDateTimeLocalValue = (isoString) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-/* ------------------------
-   Inline form message
-------------------------- */
+// Inline form message
 
 const inlineMessageEl = qs('[data-listing-edit-message]');
 
@@ -129,9 +121,7 @@ const showInlineMessage = (text, type) => {
   inlineMessageEl.setAttribute('role', 'alert');
 };
 
-/* ------------------------
-   Redirect helpers
-------------------------- */
+// Simple redirects
 
 const redirectToLogin = () => {
   window.location.href = 'login.html';
@@ -145,9 +135,47 @@ const goBackOrHome = () => {
   }
 };
 
-/* ------------------------
-   Prefill form in edit mode
-------------------------- */
+// Media group helper (used by add button + prefill)
+
+const createMediaGroup = (container, templateGroup, index, mediaItem) => {
+  if (!container || !templateGroup || !index) return null;
+
+  const clone = templateGroup.cloneNode(true);
+  clone.setAttribute('data-media-group', String(index));
+
+  const urlInput = clone.querySelector('[data-media-url]');
+  const altInput = clone.querySelector('[data-media-alt]');
+
+  const urlLabel = clone.querySelector('label[for^="mediaUrl"]');
+  const altLabel = clone.querySelector('label[for^="mediaAlt"]');
+
+  const urlId = 'mediaUrl' + index;
+  const altId = 'mediaAlt' + index;
+
+  if (urlInput) {
+    urlInput.id = urlId;
+    urlInput.name = 'mediaUrl' + index;
+    urlInput.value = mediaItem && mediaItem.url ? mediaItem.url : '';
+  }
+
+  if (altInput) {
+    altInput.id = altId;
+    altInput.name = 'mediaAlt' + index;
+    altInput.value = mediaItem && mediaItem.alt ? mediaItem.alt : '';
+  }
+
+  if (urlLabel) {
+    urlLabel.setAttribute('for', urlId);
+  }
+  if (altLabel) {
+    altLabel.setAttribute('for', altId);
+  }
+
+  container.appendChild(clone);
+  return clone;
+};
+
+// Prefill form when editing
 
 const prefillFormFromListing = (listing) => {
   if (!listing) return;
@@ -168,21 +196,45 @@ const prefillFormFromListing = (listing) => {
     endsAtInput.value = toDateTimeLocalValue(listing.endsAt);
   }
 
-  // Only prefill first media pair (rest user can add manually)
-  const media = Array.isArray(listing.media) ? listing.media : [];
-  if (media.length > 0) {
-    const first = media[0] || {};
-    const mediaUrl1Input = qs('#mediaUrl1');
-    const mediaAlt1Input = qs('#mediaAlt1');
+  // Prefill ALL media items
 
-    if (mediaUrl1Input) mediaUrl1Input.value = first.url || '';
-    if (mediaAlt1Input) mediaAlt1Input.value = first.alt || '';
+  const media = Array.isArray(listing.media) ? listing.media.filter(Boolean) : [];
+  const container = qs('#mediaFieldsContainer');
+  const firstGroup = container ? container.querySelector('.sb-media-group') : null;
+
+  if (!container || !firstGroup) return;
+
+  if (!media.length) {
+    // No media: leave first group empty
+    const urlInput = firstGroup.querySelector('[data-media-url]');
+    const altInput = firstGroup.querySelector('[data-media-alt]');
+    if (urlInput) urlInput.value = '';
+    if (altInput) altInput.value = '';
+    return;
+  }
+
+  // Fill first group with first media item
+
+  const firstItem = media[0] || {};
+  const firstUrlInput = firstGroup.querySelector('[data-media-url]');
+  const firstAltInput = firstGroup.querySelector('[data-media-alt]');
+  if (firstUrlInput) firstUrlInput.value = firstItem.url || '';
+  if (firstAltInput) firstAltInput.value = firstItem.alt || '';
+
+  // Remove any extra groups that may be present from previous usage
+
+  const extraGroups = container.querySelectorAll('.sb-media-group:not(:first-child)');
+  extraGroups.forEach((group) => group.remove());
+
+  // Add remaining media items as new groups
+
+  for (let i = 1; i < media.length; i += 1) {
+    const index = i + 1; // since first is 1
+    createMediaGroup(container, firstGroup, index, media[i]);
   }
 };
 
-/* ------------------------
-   Button wiring (create vs edit)
-------------------------- */
+// Button layout (create vs edit)
 
 const setupButtonsForMode = (isEditMode) => {
   const createButtonsRow = qs('#createModeButtons');
@@ -196,9 +248,7 @@ const setupButtonsForMode = (isEditMode) => {
   }
 };
 
-/* ------------------------
-   Delete listing
-------------------------- */
+// Delete listing
 
 const setupDeleteInEditMode = (listingId) => {
   const editButtonsRow = qs('#editModeButtons');
@@ -233,9 +283,7 @@ const setupDeleteInEditMode = (listingId) => {
   });
 };
 
-/* ------------------------
-   Cancel buttons
-------------------------- */
+// Cancel buttons
 
 const setupCancelButtons = () => {
   const createButtonsRow = qs('#createModeButtons');
@@ -262,9 +310,7 @@ const setupCancelButtons = () => {
   }
 };
 
-/* ------------------------
-   Media: "Add another image"
-------------------------- */
+// Add extra media fields
 
 const setupMediaAddButton = () => {
   const container = qs('#mediaFieldsContainer');
@@ -274,45 +320,15 @@ const setupMediaAddButton = () => {
   const firstGroup = container.querySelector('.sb-media-group');
   if (!firstGroup) return;
 
-  let count = 1;
+  let count = container.querySelectorAll('.sb-media-group').length || 1;
 
   addBtn.addEventListener('click', () => {
     count += 1;
-    const clone = firstGroup.cloneNode(true);
-    clone.setAttribute('data-media-group', String(count));
-
-    const urlInput = clone.querySelector('[data-media-url]');
-    const altInput = clone.querySelector('[data-media-alt]');
-    const urlLabel = clone.querySelector('label[for="mediaUrl1"]');
-    const altLabel = clone.querySelector('label[for="mediaAlt1"]');
-
-    const urlId = 'mediaUrl' + count;
-    const altId = 'mediaAlt' + count;
-
-    if (urlInput) {
-      urlInput.id = urlId;
-      urlInput.name = 'mediaUrl' + count;
-      urlInput.value = '';
-    }
-    if (altInput) {
-      altInput.id = altId;
-      altInput.name = 'mediaAlt' + count;
-      altInput.value = '';
-    }
-    if (urlLabel) {
-      urlLabel.setAttribute('for', urlId);
-    }
-    if (altLabel) {
-      altLabel.setAttribute('for', altId);
-    }
-
-    container.appendChild(clone);
+    createMediaGroup(container, firstGroup, count, null);
   });
 };
 
-/* ------------------------
-   Live preview (title + image)
-------------------------- */
+// Live preview (title + first image)
 
 const setupPreview = (auth) => {
   const titleInput = qs('#listingTitle');
@@ -374,13 +390,45 @@ const setupPreview = (auth) => {
     firstAltInput.addEventListener('input', updatePreviewImage);
   }
 
-  // Run once on init (useful in edit mode after prefill)
+  // For edit mode after prefill
   updatePreviewImage();
 };
 
-/* ------------------------
-   Form submit (create + update)
-------------------------- */
+// Form helpers: read + validate
+
+const getListingFormData = () => {
+  const titleInput = qs('#listingTitle');
+  const descriptionInput = qs('#listingDescription');
+  const tagsInput = qs('#listingTags');
+  const endsAtInput = qs('#listingEndsAt');
+
+  const title = getTrimmedInputValue(titleInput);
+  const description = getTrimmedInputValue(descriptionInput);
+  const tagsRaw = getTrimmedInputValue(tagsInput);
+  const endsAtRaw = getTrimmedInputValue(endsAtInput);
+
+  return { title, description, tagsRaw, endsAtRaw };
+};
+
+const validateListingData = ({ title, description, endsAtRaw }) => {
+  if (!title || !description || !endsAtRaw) {
+    return 'Please fill in title, description and end date/time.';
+  }
+
+  const endsAtDate = new Date(endsAtRaw);
+  if (Number.isNaN(endsAtDate.getTime())) {
+    return 'Please choose a valid end date and time.';
+  }
+
+  const now = new Date();
+  if (endsAtDate <= now) {
+    return 'Auction end time must be in the future.';
+  }
+
+  return null;
+};
+
+// Form submit (create + update)
 
 const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
   const form = qs('[data-listing-edit-form]');
@@ -404,38 +452,20 @@ const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
       return;
     }
 
-    // In edit mode, make sure this is still the owner
     if (isEditMode && listingOwnerName && listingOwnerName !== currentAuth.name) {
       showAlert('error', 'Not allowed', 'You can only edit your own listings.');
       return;
     }
 
-    const titleInput = qs('#listingTitle');
-    const descriptionInput = qs('#listingDescription');
-    const tagsInput = qs('#listingTags');
-    const endsAtInput = qs('#listingEndsAt');
+    const { title, description, tagsRaw, endsAtRaw } = getListingFormData();
+    const validationError = validateListingData({ title, description, endsAtRaw });
 
-    const title = getTrimmedInputValue(titleInput);
-    const description = getTrimmedInputValue(descriptionInput);
-    const tagsRaw = getTrimmedInputValue(tagsInput);
-    const endsAtRaw = getTrimmedInputValue(endsAtInput);
-
-    if (!title || !description || !endsAtRaw) {
-      showInlineMessage('Please fill in title, description and end date/time.', 'error');
+    if (validationError) {
+      showInlineMessage(validationError, 'error');
       return;
     }
 
     const endsAtDate = new Date(endsAtRaw);
-    if (Number.isNaN(endsAtDate.getTime())) {
-      showInlineMessage('Please choose a valid end date and time.', 'error');
-      return;
-    }
-
-    const now = new Date();
-    if (endsAtDate <= now) {
-      showInlineMessage('Auction end time must be in the future.', 'error');
-      return;
-    }
 
     const payload = {
       title,
@@ -501,9 +531,7 @@ const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
   });
 };
 
-/* ------------------------
-   Main init
-------------------------- */
+// Init
 
 const initListingEditPage = async () => {
   const auth = getAuth();
@@ -530,13 +558,13 @@ const initListingEditPage = async () => {
   setupMediaAddButton();
 
   if (!isEditMode) {
-    // Create mode only
     setupPreview(auth);
     setupFormSubmit(false, null, null);
     return;
   }
 
-  // Edit mode: load listing, ensure ownership, prefill form
+  // Edit mode: load listing and check owner
+
   showLoader();
 
   try {
@@ -572,8 +600,6 @@ const initListingEditPage = async () => {
   }
 };
 
-/* ------------------------
-   Run on load
-------------------------- */
+// Run
 
 initListingEditPage();

@@ -1,9 +1,6 @@
 @use "bootstrap/scss/bootstrap" as *;
 
-/* ============================
-   Listing cards – shared
-   ============================ */
-
+// Listing cards – shared
 .card.sb-card {
   border: 2px solid var(--sb-color-black);
 }
@@ -12,17 +9,13 @@
   border-top: 0;
 }
 
-/* Username link inside cards */
+// Username link inside cards
 .card .card-username-link {
   font-weight: 600;
   text-decoration: none;
 }
 
-/* ============================
-   Index cards – "View listing" footer
-   ============================ */
-
-/* <a> inside the footer */
+// Index cards – "View listing" footer
 .card .card-view-link {
   border-radius: 0;
   background-color: var(--sb-color-black);
@@ -63,10 +56,7 @@
   }
 }
 
-/* ============================
-   Active listings – title + edit icon
-   ============================ */
-
+// Active listings – title + edit icon
 .card .card-title-row {
   display: flex;
   align-items: flex-start;
@@ -79,8 +69,8 @@
   }
 }
 
-/* Small icon-only edit button */
-.card .card-edit-icon-btn {
+// Small icon-only edit button
+.card-edit-icon-btn {
   border: 0;
   padding: 0;
   background: transparent;
@@ -100,16 +90,13 @@
   }
 }
 
-/* ============================
-   Active listings – Edit / Delete / View strip
-   ============================ */
-
+// Active listings – Edit / Delete / View strip
 .card .card-actions,
 .card .btn-group.w-100 {
   width: 100%;
 }
 
-/* Base look for all three buttons in the strip */
+// Base look for all three buttons in the strip
 .card .card-action-btn {
   border-radius: 0;
   text-transform: uppercase;
@@ -129,7 +116,7 @@
   }
 }
 
-/* Edit + View  */
+// Edit + View
 .card .card-action-btn--edit,
 .card .card-action-btn--view {
   background-color: var(--sb-color-black);
@@ -154,7 +141,7 @@
   }
 }
 
-/* Delete */
+// Delete
 .card .card-action-btn--delete {
   background-color: var(--sb-color-delete);
   color: var(--sb-color-white);
@@ -171,14 +158,38 @@
   }
 }
 
-/* Listing badge */
+// Listing badges on cards
+.sb-card .badge-new,
+.sb-card .badge-ended,
+.sb-card .badge-won {
+  border-radius: 5px;
+  border: 2px solid var(--sb-color-black);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.6rem;
+}
+
+// NEW badge
 .sb-card .badge-new {
   background-color: var(--sb-color-primary);
   color: var(--sb-color-black);
-  border: 2px solid var(--sb-color-black);
-  border-radius: 5px; 
 }
 
+// ENDED badge
+.sb-card .badge-ended {
+  background-color: var(--sb-color-info);
+  color: var(--sb-color-black);
+}
+
+// WON badge
+.sb-card .badge-won {
+  background-color: var(--sb-color-black);
+  color: var(--sb-color-white);
+}
+
+// Username link styling
 .card .card-username-link {
   color: var(--sb-color-black);
   font-weight: 600;
@@ -187,6 +198,6 @@
 
 .card .card-username-link:hover,
 .card .card-username-link:focus-visible {
-  color: var(--sb-color-primary); // your pink
+  color: var(--sb-color-primary);
   text-decoration: underline;
 }

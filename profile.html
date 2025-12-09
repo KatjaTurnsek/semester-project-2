@@ -10,9 +10,9 @@
     />
   </head>
   <body data-page="profile">
-    <!-- ===== SITE HEADER (one <header>, two variants) ===== -->
+    <!-- SITE HEADER (one header, two variants) -->
     <header class="header">
-      <!-- ===== HEADER: LOGGED OUT ===== -->
+      <!-- HEADER: LOGGED OUT -->
       <div class="header header--logged-out" data-header="logged-out">
         <nav class="navbar bg-white py-3">
           <div class="container d-flex align-items-center justify-content-between">
@@ -34,10 +34,10 @@
         </nav>
       </div>
 
-      <!-- ===== HEADER: LOGGED IN ===== -->
+      <!-- HEADER: LOGGED IN -->
       <div class="header header--logged-in d-none" data-header="logged-in">
         <nav class="bg-white">
-          <!-- ===== MOBILE HEADER (under lg) ===== -->
+          <!-- MOBILE HEADER -->
           <div class="d-lg-none">
             <!-- Full-width border under logo/avatar -->
             <div>
@@ -134,7 +134,7 @@
             </div>
           </div>
 
-          <!-- ===== DESKTOP HEADER (lg and up) ===== -->
+          <!-- DESKTOP HEADER -->
           <div class="d-none d-lg-block">
             <div class="container py-3 d-flex align-items-center">
               <!-- Logo -->
@@ -232,9 +232,9 @@
       </div>
     </header>
 
-    <!-- ===== MAIN CONTENT ===== -->
+    <!-- MAIN CONTENT -->
     <main>
-      <!-- ===== PROFILE BANNER + HEADER ===== -->
+      <!-- PROFILE BANNER + HEADER -->
       <section>
         <!-- Banner area -->
         <div class="sb-profile-banner">
@@ -265,16 +265,14 @@
 
             <!-- Name + bio -->
             <div class="sb-profile-header-text">
-              <h1 class="mb-1 sb-profile-title text-center text-md-start">My Profile Name</h1>
-              <p class="mb-0 text-muted text-center text-md-start">
-                This is a very short bio about me.
-              </p>
+              <h1 class="mb-1 sb-profile-title text-center text-md-start">Loading profile…</h1>
+              <p class="mb-0 text-muted text-center text-md-start">Loading bio…</p>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- ===== EDIT PROFILE (on-page form) ===== -->
+      <!-- EDIT PROFILE (on-page form) -->
       <section class="border-bottom py-5 d-none" id="edit-profile" data-profile-edit-section>
         <div class="container">
           <h2 class="mb-5 text-center">Edit profile</h2>
@@ -371,7 +369,7 @@
         </div>
       </section>
 
-      <!-- ===== TABS BAR (Active listings / My bids / My wins) ===== -->
+      <!-- TABS BAR (Active listings / My bids / My wins) -->
       <section class="sb-profile-tabs">
         <div class="container">
           <ul
@@ -390,7 +388,7 @@
                 aria-controls="tab-active"
                 aria-selected="true"
               >
-                Active listings
+                My listings
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -425,7 +423,7 @@
         </div>
       </section>
 
-      <!-- ===== TAB CONTENT ===== -->
+      <!-- TAB CONTENT -->
       <section class="tab-content py-5">
         <!-- Active listings tab -->
         <div
@@ -435,7 +433,7 @@
           aria-labelledby="tab-active-tab"
         >
           <div class="container" id="my-listings">
-            <h2 class="mb-5">Active listings</h2>
+            <h2 class="mb-5">My listings</h2>
 
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
               <!-- Template card -->
@@ -443,6 +441,14 @@
                 <article class="card sb-card h-100 rounded-0">
                   <!-- Image / caption -->
                   <div class="position-relative">
+                    <!-- ENDED badge -->
+                    <span
+                      class="badge-ended position-absolute top-0 start-0 m-2 d-none"
+                      data-listing-badge-ended
+                    >
+                      ENDED
+                    </span>
+
                     <div
                       class="ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center"
                       data-listing-image-wrapper
@@ -547,7 +553,7 @@
       </section>
     </main>
 
-    <!-- ========== FOOTER ========== -->
+    <!-- FOOTER -->
     <footer class="sb-footer mt-auto py-4">
       <div class="container">
         <div class="row align-items-center gy-3">

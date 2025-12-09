@@ -2,7 +2,7 @@
 // StudioBid: Core Theme Tokens + Button Styles
 // --------------------------------------------
 
-// --------- Color palette (SASS vars) ---------
+// Color palette (SASS vars)
 $sb-pink: #ed3d94;       // Studio primary - pink accent
 $sb-black: #000000;      // Base black
 $sb-info: #ACDDD9;       // Light teal-ish, info or neutral bg
@@ -13,10 +13,7 @@ $sb-white: #ffffff;
 $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
   "Segoe UI", sans-serif;
 
-// ----------------------------------------------
-// Bootstrap override - do this before importing!
-// ----------------------------------------------
-
+// Bootstrap override 
 @use "bootstrap/scss/bootstrap" as * with (
   $primary: $sb-pink,
   $secondary: $sb-black,
@@ -28,9 +25,7 @@ $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
   $font-family-sans-serif: $studio-font-stack
 );
 
-// -------------------------------------------------
 // Importing partials
-// -------------------------------------------------
 @use "./typography";
 @use "./header";
 @use "./hero";
@@ -46,9 +41,7 @@ $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
 @use "./loader";
 
 
-// -------------------------------------------
-// CSS variables – useful for theming in JS
-// -------------------------------------------
+// CSS variables
 :root {
   // Brand colors
   --sb-color-primary: #{$sb-pink};
@@ -79,17 +72,12 @@ $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
   --sb-color-success-light: #B1CDC0;
 }
 
-// -------------------------------------------
 // Base styling
-// -------------------------------------------
-
 body {
   font-family: $studio-font-stack;
 }
 
-// ----------------------------
 // Small StudioBid Buttons
-// ----------------------------
 .btn-studio-small {
   display: inline-flex;
   align-items: center;
@@ -161,13 +149,10 @@ body {
 }
 
 .sb-btn-add-image .bi {
-  font-size: 0.875rem; // 14px icon
+  font-size: 0.875rem;
 }
 
-
-// ----------------------------
 // Medium StudioBid Buttons
-// ----------------------------
 .btn-studio-md {
   display: inline-flex;
   align-items: center;
@@ -237,10 +222,7 @@ body {
   }
 }
 
-// ----------------------------
 // Header credits badge
-// ----------------------------
-
 .header-credits {
   display: inline-flex;
   align-items: center;
@@ -260,7 +242,7 @@ body {
   @include media-breakpoint-down(md) {
     height: var(--sb-button-height-mobile-sm);
     padding-inline: 1rem;
-    font-size: var(--sb-button-font-size-sm); // reasserting it
+    font-size: var(--sb-button-font-size-sm);
   }
 
   border: none;
@@ -268,10 +250,7 @@ body {
   pointer-events: none;
 }
 
-/* ============================
-   Floating alerts (top-right)
-   ============================ */
-
+// Floating alerts (top-right)
 .sb-alert-container {
   position: fixed;
   top: 1rem;
@@ -282,7 +261,7 @@ body {
   gap: 0.75rem;
 }
 
-/* Base alert box */
+// Base alert box
 .sb-alert {
   display: flex;
   align-items: center;
@@ -291,7 +270,7 @@ body {
   min-width: 280px;
   max-width: 360px;
 
-  /* Less vertical padding */
+  // Less vertical padding
   padding: 0.6rem 0.9rem;
   border-radius: 0.5rem;
   position: relative;
@@ -301,7 +280,7 @@ body {
   transition: opacity 0.2s ease-out, transform 0.2s ease-out;
 }
 
-/* Left color bar */
+// Left color bar
 .sb-alert::before {
   content: "";
   position: absolute;
@@ -312,7 +291,7 @@ body {
   border-radius: 0.5rem 0 0 0.5rem;
 }
 
-/* Icon circle */
+// Icon circle
 .sb-alert__icon {
   flex: 0 0 auto;
   width: 32px;
@@ -326,7 +305,6 @@ body {
   position: relative;
 }
 
-/* ✓ and ✕ via pseudo-elements depending on type */
 .sb-alert--success .sb-alert__icon::before {
   content: "✓";
 }
@@ -335,7 +313,7 @@ body {
   content: "✕";
 }
 
-/* Content */
+// Content
 .sb-alert__content {
   flex: 1 1 auto;
 }
@@ -350,7 +328,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Close button + vertical divider */
+// Close button + vertical divider
 .sb-alert__close {
   border: none;
   background: transparent;
@@ -360,8 +338,6 @@ body {
   font-size: 1.1rem;
   line-height: 1;
   position: relative;
-
-  /* Match text color (success/danger/info/warning) */
   color: inherit;
 }
 
@@ -372,17 +348,16 @@ body {
   top: 0.15rem;
   bottom: 0.15rem;
   width: 1px;
-  /* Divider uses the same color as the text/icon */
   background-color: currentColor;
 }
 
-/* Visible state */
+// Visible state
 .sb-alert--visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Type colors – adjust to taste */
+// Type colors
 .sb-alert--success {
   background-color: var(--sb-color-success-light);
   color: var(--sb-color-success);

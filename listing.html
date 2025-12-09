@@ -11,9 +11,9 @@
   </head>
 
   <body data-page="listing">
-    <!-- ===== SITE HEADER ===== -->
+    <!-- SITE HEADER -->
     <header class="header">
-      <!-- ===== LOGGED OUT ===== -->
+      <!-- LOGGED OUT -->
       <div class="header header--logged-out" data-header="logged-out">
         <nav class="navbar bg-white py-3">
           <div class="container d-flex align-items-center justify-content-between">
@@ -33,10 +33,10 @@
         </nav>
       </div>
 
-      <!-- ===== LOGGED IN ===== -->
+      <!-- LOGGED IN -->
       <div class="header header--logged-in d-none" data-header="logged-in">
         <nav class="bg-white">
-          <!-- ===== MOBILE HEADER ===== -->
+          <!-- MOBILE HEADER -->
           <div class="d-lg-none">
             <div>
               <div class="container py-3 d-flex align-items-center justify-content-between">
@@ -112,7 +112,7 @@
             </div>
           </div>
 
-          <!-- ===== DESKTOP HEADER ===== -->
+          <!-- DESKTOP HEADER -->
           <div class="d-none d-lg-block">
             <div class="container py-3 d-flex align-items-center">
               <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="index.html">
@@ -188,7 +188,7 @@
       </div>
     </header>
 
-    <!-- ===== MAIN CONTENT ===== -->
+    <!-- MAIN CONTENT -->
     <main>
       <!-- HERO -->
       <section class="sb-hero mb-5">
@@ -205,7 +205,7 @@
         </picture>
       </section>
 
-      <!-- ===== LISTING DETAILS ===== -->
+      <!-- LISTING DETAILS -->
       <section class="py-5">
         <div class="container">
           <h2 class="mb-5">Listing details</h2>
@@ -227,7 +227,18 @@
 
             <!-- INFO COLUMN -->
             <div class="col-12 col-lg-6">
-              <h3 class="listing-heading mb-3" data-listing-title>Loading…</h3>
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+                <h3 class="listing-heading mb-0" data-listing-title>Loading…</h3>
+
+                <button
+                  type="button"
+                  class="card-edit-icon-btn"
+                  aria-label="Edit this listing"
+                  data-listing-edit-owner
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
 
               <div
                 class="mb-4 d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start"
@@ -274,7 +285,7 @@
             </div>
           </div>
 
-          <!-- ===== BID AREA ===== -->
+          <!-- BID AREA -->
           <div class="row g-4 mb-5">
             <div class="col-12 col-lg-6">
               <h3 class="mb-3">Take your shot at this auction</h3>
@@ -310,7 +321,7 @@
 
           <hr class="my-5 sb-divider-strong" />
 
-          <!-- ===== DESCRIPTION + BID HISTORY ===== -->
+          <!-- DESCRIPTION + BID HISTORY -->
           <div class="row g-5">
             <div class="col-12 col-lg-6">
               <h3 class="mb-3">Item description</h3>
@@ -326,7 +337,7 @@
       </section>
     </main>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- FOOTER -->
     <footer class="sb-footer mt-auto py-4">
       <div class="container">
         <div class="row align-items-center gy-3">

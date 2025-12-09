@@ -1,8 +1,6 @@
 @use "bootstrap/scss/bootstrap" as *;
 
-// ============================
 // Search + sort strip
-// ============================
 .sb-search-strip {
   background-color: var(--sb-color-black);
   color: var(--sb-color-white);
@@ -17,9 +15,7 @@
   width: 100%;
 }
 
-// ============================
 // Global form controls
-// ============================
 .form-control,
 .form-select {
   background-color: var(--sb-color-white);
@@ -54,7 +50,7 @@
   color: var(--sb-color-black);
 }
 
-// Error state (Bootstrap .is-invalid)
+// Error state
 .form-control.is-invalid,
 .form-select.is-invalid {
   border-color: var(--sb-color-delete);
@@ -71,9 +67,7 @@
   color: var(--sb-color-delete);
 }
 
-// ============================
 // Search input group
-// ============================
 .sb-search-input-group {
   width: 100%;
 }
@@ -104,9 +98,7 @@
   border-left: 0;
 }
 
-// ============================
 // Sort select
-// ============================
 .sb-sort-select {
   width: 100%;
 
@@ -117,9 +109,7 @@
   }
 }
 
-// ============================
 // Sort column (mobile separator)
-// ============================
 .sb-sort-col {
   border-top: 2px solid var(--sb-color-white);
 
@@ -128,9 +118,7 @@
   }
 }
 
-// ============================
 // Form cards (auth + listing-edit)
-// ============================
 .sb-form-card {
   border: 2px solid var(--sb-color-black);
   border-radius: 0.3125rem;
@@ -158,9 +146,7 @@
   }
 }
 
-// ============================
 // Mobile tweaks for Form SVG
-// ============================
 @include media-breakpoint-down(md) {
   .auth-form-wrapper {
     padding-top: 9.5rem;

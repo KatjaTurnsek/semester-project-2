@@ -23,7 +23,7 @@
     right: 0;
     bottom: 0;
     height: 6px;
-    z-index: 1; // stripe sits above banner bg, but below avatar
+    z-index: 1;
 
     background-image: linear-gradient(
       to right,
@@ -51,20 +51,17 @@
   }
 }
 
-// ============================
-// Profile info strip
-// (avatar + name + bio)
-// ============================
+// Profile info strip (avatar + name + bio)
 .sb-profile-info {
   background-color: var(--sb-color-bg);
 }
 
 .sb-profile-info-inner {
   position: relative;
-  min-height: 150px; // as requested
+  min-height: 150px;
 }
 
-// Profile title (special sizing)
+// Profile title
 .sb-profile-title {
   // Mobile first
   font-size: 2.1875rem;  // 35px
@@ -80,19 +77,15 @@
 
 // Text block next to avatar
 .sb-profile-header-text {
-  // On mobile: sits below the avatar, so keep a bit of top spacing
   margin-top: 3.5rem;
 
   @include media-breakpoint-up(md) {
     margin-top: 0;
-    // push text to the right so it clears the 200x200 avatar
-    padding-left: 14rem; // ≈ 224px (200px avatar + some gap)
+    padding-left: 14rem;
   }
 }
 
-// ============================
 // Avatar styling
-// ============================
 .sb-profile-avatar {
   border-radius: 50%;
   border: 2px solid var(--sb-color-black);
@@ -101,14 +94,14 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  z-index: 3; // ensure avatar appears above banner stripe
+  z-index: 3;
 }
 
 // Mobile avatar: 100 x 100, centered
 .sb-profile-avatar--mobile {
   width: 100px;
   height: 100px;
-  top: -50px; // half above the info strip, half inside
+  top: -50px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -117,13 +110,12 @@
 .sb-profile-avatar--desktop {
   width: 200px;
   height: 200px;
-  top: -100px; // overlaps banner + info
+  top: -100px;
   left: 0;
 }
 
 #editProfileButton {
-  // Base look
-  border-radius: 0; // no corners
+  border-radius: 0;
   background-color: var(--sb-color-black);
   color: var(--sb-color-white);
   border: 2px solid var(--sb-color-black);
@@ -161,9 +153,7 @@
   }
 }
 
-// ============================
 // Profile tabs bar
-// ============================
 .sb-profile-tabs {
   width: 100%;
   border-top: 2px solid var(--sb-color-black);

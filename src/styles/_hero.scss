@@ -57,7 +57,7 @@
     );
   }
 
-  // SVG background at the bottom (from <picture>)
+  // SVG background at the bottom
   &__wave {
     position: absolute;
     left: 0;
@@ -71,7 +71,7 @@
       height: auto;
     }
 
-    // Mobile (up to md)
+    // Mobile
     @include media-breakpoint-down(md) {
       padding: 2.5rem 1.5rem 0;
 

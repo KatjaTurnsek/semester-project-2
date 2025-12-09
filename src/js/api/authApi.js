@@ -13,7 +13,8 @@ export const loginUser = async (payload) => {
     json: payload,
   });
 
-  // data will be the "data" object (with accessToken etc)
+  // "data" object
+
   saveAuth(data);
   return data;
 };

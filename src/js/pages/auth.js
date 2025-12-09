@@ -6,15 +6,11 @@ import { showAlert } from '../ui/alerts.js';
 const registerForm = document.querySelector('[data-auth="register-form"]');
 const loginForm = document.querySelector('[data-auth="login-form"]');
 
-/* ------------------------
-   One-time logout alert
-------------------------- */
+// One-time logout alert
 
 (() => {
   const raw = window.localStorage.getItem('sbAuthAlert');
-  if (!raw) {
-    return;
-  }
+  if (!raw) return;
 
   try {
     const data = JSON.parse(raw) || {};
@@ -30,52 +26,132 @@ const loginForm = document.querySelector('[data-auth="login-form"]');
   }
 })();
 
-/* ------------------------
-   Helpers: form & validation
-------------------------- */
+// Helpers: form & validation
 
 const getTrimmedField = (formData, fieldName) => String(formData.get(fieldName) || '').trim();
+const ensureDefaultFeedbackText = (feedbackEl) => {
+  if (!feedbackEl) return;
+  if (!feedbackEl.dataset.defaultText) {
+    feedbackEl.dataset.defaultText = feedbackEl.textContent || '';
+  }
+};
+
+const setFieldState = (form, fieldName, state, message) => {
+  if (!form || !fieldName) return;
+
+  const input = form.querySelector(`[name="${fieldName}"]`);
+  const feedback = form.querySelector(`[data-feedback-for="${fieldName}"]`);
+
+  if (!input) return;
+
+  input.classList.remove('is-valid', 'is-invalid');
+
+  if (feedback) {
+    ensureDefaultFeedbackText(feedback);
+    feedback.classList.remove('text-danger');
+  }
+
+  if (state === 'valid') {
+    input.classList.add('is-valid');
+
+    // Helper text stays default + neutral color
+    if (feedback && feedback.dataset.defaultText) {
+      feedback.textContent = feedback.dataset.defaultText;
+    }
+  }
+
+  if (state === 'invalid') {
+    input.classList.add('is-invalid');
+
+    if (feedback) {
+      feedback.classList.add('text-danger');
+      if (message) {
+        feedback.textContent = message;
+      }
+    }
+  }
+
+  if (state === 'clear') {
+    // remove both classes + restore helper to default
+    if (feedback && feedback.dataset.defaultText) {
+      feedback.textContent = feedback.dataset.defaultText;
+    }
+  }
+};
+
+const clearFieldsState = (form, fieldNames) => {
+  if (!form || !Array.isArray(fieldNames)) return;
+  fieldNames.forEach((name) => setFieldState(form, name, 'clear'));
+};
 
 const validateNoroffEmail = (email) => {
-  if (!email) {
-    return false;
-  }
-
-  const trimmed = String(email).trim().toLowerCase();
+  const trimmed = String(email || '')
+    .trim()
+    .toLowerCase();
   const suffix = '@stud.noroff.no';
 
-  if (trimmed.indexOf('@') === -1) {
-    return false;
-  }
-
-  if (trimmed.length < suffix.length) {
-    return false;
-  }
-
-  if (trimmed.indexOf(suffix) === trimmed.length - suffix.length) {
-    return true;
-  }
-
-  return false;
+  if (!trimmed || trimmed.indexOf('@') === -1) return false;
+  return trimmed.endsWith(suffix);
 };
 
 const buildAvatarPayload = (url, alt) => {
-  if (!url) {
-    return undefined;
-  }
+  const trimmedUrl = String(url || '').trim();
+  const trimmedAlt = String(alt || '').trim();
 
-  const avatar = { url };
-
-  if (alt) {
-    avatar.alt = alt;
-  }
-
-  return avatar;
+  if (!trimmedUrl) return undefined;
+  return trimmedAlt ? { url: trimmedUrl, alt: trimmedAlt } : { url: trimmedUrl };
 };
 
-/* ------------------------
-   REGISTER
-------------------------- */
+const validateRegisterFields = ({ name, email, password }) => {
+  const missingFields = [];
+  if (!name) missingFields.push('name');
+  if (!email) missingFields.push('email');
+  if (!password) missingFields.push('password');
+
+  if (missingFields.length > 0) {
+    return {
+      title: 'Missing fields',
+      message: 'Please fill in name, email and password.',
+      fields: missingFields,
+    };
+  }
+
+  if (!validateNoroffEmail(email)) {
+    return {
+      title: 'Invalid email',
+      message: 'Email must be a Noroff student address (…@stud.noroff.no).',
+      fields: ['email'],
+    };
+  }
+
+  if (password.length < 8) {
+    return {
+      title: 'Weak password',
+      message: 'Password must be at least 8 characters long.',
+      fields: ['password'],
+    };
+  }
+
+  return null;
+};
+
+const validateLoginFields = (email, password) => {
+  const missing = [];
+  if (!email) missing.push('email');
+  if (!password) missing.push('password');
+
+  if (missing.length > 0) {
+    return {
+      title: 'Missing fields',
+      message: 'Please enter email and password.',
+      fields: missing,
+    };
+  }
+
+  return null;
+};
+
+// REGISTER
 
 if (registerForm) {
   registerForm.addEventListener('submit', async (event) => {
@@ -88,34 +164,26 @@ if (registerForm) {
     const avatarUrl = getTrimmedField(formData, 'avatarUrl');
     const avatarAlt = getTrimmedField(formData, 'avatarAlt');
 
-    if (!name || !email || !password) {
-      // error: Missing fields
-      showAlert('error', 'Missing fields', 'Please fill in name, email and password.');
-      return;
-    }
+    // clear old states
+    clearFieldsState(registerForm, ['name', 'email', 'password']);
 
-    if (!validateNoroffEmail(email)) {
-      // error: Invalid email
-      showAlert(
-        'error',
-        'Invalid email',
-        'Email must be a Noroff student address (…@stud.noroff.no).',
+    const validationError = validateRegisterFields({ name, email, password });
+    if (validationError) {
+      // mark fields invalid
+      validationError.fields.forEach((fieldName) =>
+        setFieldState(registerForm, fieldName, 'invalid', validationError.message),
       );
+
+      showAlert('error', validationError.title, validationError.message);
       return;
     }
 
-    if (password.length < 8) {
-      // error: Weak password
-      showAlert('error', 'Weak password', 'Password must be at least 8 characters long.');
-      return;
-    }
+    // mark core fields as valid before sending
+    ['name', 'email', 'password'].forEach((fieldName) =>
+      setFieldState(registerForm, fieldName, 'valid'),
+    );
 
-    const payload = {
-      name,
-      email,
-      password,
-    };
-
+    const payload = { name, email, password };
     const avatar = buildAvatarPayload(avatarUrl, avatarAlt);
     if (avatar) {
       payload.avatar = avatar;
@@ -126,14 +194,10 @@ if (registerForm) {
     try {
       await registerUser(payload);
 
-      // success: Account created
       showAlert('success', 'Account created', 'Account created. You can now log in.');
-
-      // Go to login page after successful registration
       window.location.href = 'login.html';
     } catch (error) {
       const msg = error && error.message ? error.message : 'Could not register. Please try again.';
-      // error: Registration failed
       showAlert('error', 'Registration failed', msg);
     } finally {
       hideLoader();
@@ -141,23 +205,30 @@ if (registerForm) {
   });
 }
 
-/* ------------------------
-   LOGIN
-------------------------- */
+// LOGIN
 
 if (loginForm) {
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const formData = new globalThis.FormData(loginForm);
-    const email = String(formData.get('email') || '').trim();
-    const password = String(formData.get('password') || '').trim();
+    const email = getTrimmedField(formData, 'email');
+    const password = getTrimmedField(formData, 'password');
 
-    if (!email || !password) {
-      // error: Missing fields
-      showAlert('error', 'Missing fields', 'Please enter email and password.');
+    clearFieldsState(loginForm, ['email', 'password']);
+
+    const validationError = validateLoginFields(email, password);
+    if (validationError) {
+      validationError.fields.forEach((fieldName) =>
+        setFieldState(loginForm, fieldName, 'invalid', validationError.message),
+      );
+
+      showAlert('error', validationError.title, validationError.message);
       return;
     }
+
+    // mark both as valid before request
+    ['email', 'password'].forEach((fieldName) => setFieldState(loginForm, fieldName, 'valid'));
 
     showLoader();
 
@@ -166,14 +237,11 @@ if (loginForm) {
 
       saveAuth(auth);
 
-      // success: Welcome back
       showAlert('success', 'Welcome back', 'You are now logged in.');
-
       window.location.href = 'index.html';
     } catch (error) {
       const msg =
         error && error.message ? error.message : 'Could not log in. Please check your details.';
-      // error: Login failed
       showAlert('error', 'Login failed', msg);
     } finally {
       hideLoader();

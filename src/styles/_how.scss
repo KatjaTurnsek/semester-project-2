@@ -27,16 +27,14 @@
     opacity: 1;
   }
 
-  /* --- Cards: 2px border, 4px bottom, bg = --sb-color-bg --- */
-
+  // Cards
   .border.sb-how-card {
     border: 2px solid var(--sb-color-black) !important;
     border-bottom-width: 4px !important;
     background-color: var(--sb-color-bg);
   }
 
-  /* --- Step cards: big number behind text, centered vertically, right aligned --- */
-
+  // Step cards
   .sb-how-step {
     position: relative;
     overflow: hidden;
@@ -56,8 +54,6 @@
       pointer-events: none;
       user-select: none;
     }
-
-    /* Make actual content appear above the number */
     > * {
       position: relative;
       z-index: 1;
