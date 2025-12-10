@@ -118,9 +118,7 @@
   }
 }
 
-// Auth form layout
-
-// Base wrappers
+// Form cards (auth + listing-edit)
 .sb-form-card {
   border: 2px solid var(--sb-color-black);
   border-radius: 0.3125rem;
@@ -132,46 +130,33 @@
 }
 
 .auth-form-wrapper {
-  position: relative;
-  padding-top: 4rem;
+  padding-top: 6rem;
   max-width: 720px;
   margin-inline: auto;
-  z-index: 2;
 }
 
-// Illustration behind the form
 .auth-illustration {
-  position: absolute;
-  top: -8rem;
-  left: 0;
-  width: 110%;
+  width: 100%;
   z-index: 0;
-  pointer-events: none;
 
   img {
     width: 100%;
+    max-width: none;
     display: block;
   }
 }
 
-// Mobile
 @include media-breakpoint-down(md) {
-
   .auth-form-wrapper {
-    padding-top: 1.5rem;
-  }
-
-  .auth-illustration {
-    top: -12rem;
-    width: 160%;
-    left: -30%;
+    padding-top: 9.5rem;
   }
 }
 
 .auth-form-wrapper .card {
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
+
 
 // Button wrapper for "Add another image" on listing-edit form
 .sb-btn-add-image-wrapper {
