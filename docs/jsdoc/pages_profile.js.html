@@ -1,4 +1,32 @@
-import { getAuth, clearAuth } from '../api/httpClient.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/profile.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/profile.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getAuth, clearAuth } from '../api/httpClient.js';
 import { getProfile, getProfileBids, getProfileWins, updateProfile } from '../api/profilesApi.js';
 import { deleteListing, getListingById } from '../api/listingsApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
@@ -12,7 +40,7 @@ import { showAlert } from '../ui/alerts.js';
 const headerLoggedOut = document.querySelector('[data-header="logged-out"]');
 /** @type {HTMLElement|null} */
 const headerLoggedIn = document.querySelector('[data-header="logged-in"]');
-/** @type {NodeListOf<HTMLElement>} */
+/** @type {NodeListOf&lt;HTMLElement>} */
 const headerCreditsEls = document.querySelectorAll('[data-header-credits]');
 
 /** @type {HTMLElement|null} */
@@ -199,7 +227,7 @@ const updateProfileHero = (profile) => {
 
   if (profileBioEl) {
     const bio =
-      profile.bio && profile.bio.trim() ? profile.bio : 'This is a very short bio about me.';
+      profile.bio &amp;&amp; profile.bio.trim() ? profile.bio : 'This is a very short bio about me.';
     profileBioEl.textContent = bio;
   }
 
@@ -285,9 +313,9 @@ const hideEditSection = () => {
 const getProfileNameFromQuery = () => {
   const search = window.location.search || '';
   const withoutQuestionMark = search.startsWith('?') ? search.slice(1) : search;
-  const pairs = withoutQuestionMark.split('&').filter(Boolean);
+  const pairs = withoutQuestionMark.split('&amp;').filter(Boolean);
 
-  for (let i = 0; i < pairs.length; i += 1) {
+  for (let i = 0; i &lt; pairs.length; i += 1) {
     const [key, value] = pairs[i].split('=');
     if (key === 'name') {
       return decodeURIComponent(value || '');
@@ -425,12 +453,12 @@ const setupMyListingCardActions = (cardColEl, listingId) => {
         : [];
       const emptyMessage = document.querySelector('[data-my-listings-empty]');
 
-      if (emptyMessage && (!remainingCards || remainingCards.length === 0)) {
+      if (emptyMessage &amp;&amp; (!remainingCards || remainingCards.length === 0)) {
         emptyMessage.classList.remove('d-none');
       }
     } catch (error) {
       const msg =
-        error && error.message ? error.message : 'Could not delete this listing. Please try again.';
+        error &amp;&amp; error.message ? error.message : 'Could not delete this listing. Please try again.';
       showAlert('error', 'Delete failed', msg);
     } finally {
       hideLoader();
@@ -448,7 +476,7 @@ const getHighestBidAmount = (listing) => {
   if (!listing || !Array.isArray(listing.bids) || !listing.bids.length) return 0;
 
   return listing.bids.reduce((max, bid) => {
-    const amount = bid && typeof bid.amount === 'number' ? bid.amount : 0;
+    const amount = bid &amp;&amp; typeof bid.amount === 'number' ? bid.amount : 0;
     return amount > max ? amount : max;
   }, 0);
 };
@@ -467,7 +495,7 @@ const getHighestBidAmount = (listing) => {
  *
  * @param {Object} profile - Profile object including `listings` array.
  * @param {boolean} isOwnProfile - True if the logged-in user is viewing their own profile.
- * @returns {Promise<void>}
+ * @returns {Promise&lt;void>}
  */
 const renderMyListings = async (profile, isOwnProfile) => {
   const container = document.querySelector('#my-listings');
@@ -532,7 +560,7 @@ const renderMyListings = async (profile, isOwnProfile) => {
     }
 
     const sellerName =
-      (listing.seller && listing.seller.name) || (profile && profile.name) || 'Unknown';
+      (listing.seller &amp;&amp; listing.seller.name) || (profile &amp;&amp; profile.name) || 'Unknown';
 
     if (usernameEl) {
       usernameEl.textContent = sellerName;
@@ -540,7 +568,7 @@ const renderMyListings = async (profile, isOwnProfile) => {
     }
 
     const totalBids =
-      listing._count && typeof listing._count.bids === 'number'
+      listing._count &amp;&amp; typeof listing._count.bids === 'number'
         ? listing._count.bids
         : Array.isArray(listing.bids)
           ? listing.bids.length
@@ -563,7 +591,7 @@ const renderMyListings = async (profile, isOwnProfile) => {
     }
 
     const endsDate = parseDate(listing.endsAt);
-    const isEnded = !!endsDate && endsDate <= now;
+    const isEnded = !!endsDate &amp;&amp; endsDate &lt;= now;
 
     if (endsInEl) {
       if (isEnded) {
@@ -574,7 +602,7 @@ const renderMyListings = async (profile, isOwnProfile) => {
     }
 
     // ENDED badge for own ended listings
-    if (mediaWrapper && isEnded) {
+    if (mediaWrapper &amp;&amp; isEnded) {
       mediaWrapper.appendChild(createEndedBadge());
     }
 
@@ -582,7 +610,7 @@ const renderMyListings = async (profile, isOwnProfile) => {
       const media = Array.isArray(listing.media) ? listing.media : [];
       const first = media[0];
 
-      if (first && first.url) {
+      if (first &amp;&amp; first.url) {
         imageWrapper.innerHTML = '';
         const img = document.createElement('img');
         img.src = first.url;
@@ -594,7 +622,7 @@ const renderMyListings = async (profile, isOwnProfile) => {
     }
 
     const viewLink = col.querySelector('[data-listing-view-link]');
-    if (viewLink && listing.id) {
+    if (viewLink &amp;&amp; listing.id) {
       const url = `listing.html?id=${encodeURIComponent(listing.id)}`;
       viewLink.href = url;
       viewLink.addEventListener('click', (event) => {
@@ -642,7 +670,7 @@ const renderMyBids = (bids, wins) => {
   const winsArray = Array.isArray(wins) ? wins : [];
 
   const wonListingIds = new Set(
-    winsArray.map((listing) => (listing && listing.id ? listing.id : null)).filter(Boolean),
+    winsArray.map((listing) => (listing &amp;&amp; listing.id ? listing.id : null)).filter(Boolean),
   );
 
   if (!safeBids.length) {
@@ -665,10 +693,10 @@ const renderMyBids = (bids, wins) => {
     const card = document.createElement('article');
     card.className = 'card sb-card h-100 rounded-0';
 
-    const listing = bid && bid.listing && typeof bid.listing === 'object' ? bid.listing : null;
-    const listingTitle = (listing && listing.title) || 'Unknown listing';
-    const listingId = (listing && listing.id) || null;
-    const media = listing && Array.isArray(listing.media) ? listing.media : [];
+    const listing = bid &amp;&amp; bid.listing &amp;&amp; typeof bid.listing === 'object' ? bid.listing : null;
+    const listingTitle = (listing &amp;&amp; listing.title) || 'Unknown listing';
+    const listingId = (listing &amp;&amp; listing.id) || null;
+    const media = listing &amp;&amp; Array.isArray(listing.media) ? listing.media : [];
     const firstMedia = media[0];
 
     const mediaWrapper = document.createElement('div');
@@ -677,7 +705,7 @@ const renderMyBids = (bids, wins) => {
     const ratio = document.createElement('div');
     ratio.className = 'ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center';
 
-    if (firstMedia && firstMedia.url) {
+    if (firstMedia &amp;&amp; firstMedia.url) {
       const img = document.createElement('img');
       img.src = firstMedia.url;
       img.alt = firstMedia.alt || listingTitle || 'Listing image';
@@ -696,8 +724,8 @@ const renderMyBids = (bids, wins) => {
     mediaWrapper.appendChild(ratio);
 
     const endsDate = listing ? parseDate(listing.endsAt) : null;
-    const isEnded = !!endsDate && endsDate <= now;
-    const isWon = listingId && wonListingIds.has(listingId);
+    const isEnded = !!endsDate &amp;&amp; endsDate &lt;= now;
+    const isWon = listingId &amp;&amp; wonListingIds.has(listingId);
 
     if (isEnded) {
       mediaWrapper.appendChild(createEndedBadge());
@@ -717,7 +745,7 @@ const renderMyBids = (bids, wins) => {
     const amountP = document.createElement('p');
     amountP.className = 'mb-1';
     amountP.innerHTML =
-      '<span class="fw-semibold">Your bid:</span> ' +
+      '&lt;span class="fw-semibold">Your bid:&lt;/span> ' +
       (typeof bid.amount === 'number' ? `${bid.amount} credits` : '-');
 
     const timeP = document.createElement('p');
@@ -810,7 +838,7 @@ const renderMyWins = (wins) => {
     const ratio = document.createElement('div');
     ratio.className = 'ratio ratio-4x3 bg-light d-flex align-items-center justify-content-center';
 
-    if (firstMedia && firstMedia.url) {
+    if (firstMedia &amp;&amp; firstMedia.url) {
       const img = document.createElement('img');
       img.src = firstMedia.url;
       img.alt = firstMedia.alt || listingTitle || 'Listing image';
@@ -829,7 +857,7 @@ const renderMyWins = (wins) => {
     mediaWrapper.appendChild(ratio);
 
     const endsDate = parseDate(listing.endsAt);
-    const isEnded = !!endsDate && endsDate <= now;
+    const isEnded = !!endsDate &amp;&amp; endsDate &lt;= now;
 
     if (isEnded) {
       mediaWrapper.appendChild(createEndedBadge());
@@ -996,7 +1024,7 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
       profile.banner = mergedProfile.banner;
     } catch (error) {
       const msg =
-        error && error.message ? error.message : 'Could not update your profile. Please try again.';
+        error &amp;&amp; error.message ? error.message : 'Could not update your profile. Please try again.';
       showEditMessage(msg, 'error');
     } finally {
       hideLoader();
@@ -1017,19 +1045,19 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
  * - Renders listings, bids and wins
  * - Sets up edit profile form
  *
- * @returns {Promise<void>}
+ * @returns {Promise&lt;void>}
  */
 const initProfilePage = async () => {
   const auth = getAuth();
   const queryName = getProfileNameFromQuery();
-  const profileNameToLoad = queryName || (auth && auth.name ? auth.name : null);
+  const profileNameToLoad = queryName || (auth &amp;&amp; auth.name ? auth.name : null);
 
   if (!profileNameToLoad) {
     redirectToLogin();
     return;
   }
 
-  const isOwnProfile = !!auth && auth.name === profileNameToLoad;
+  const isOwnProfile = !!auth &amp;&amp; auth.name === profileNameToLoad;
 
   showLoader();
 
@@ -1080,3 +1108,26 @@ const initProfilePage = async () => {
 
 window.addEventListener('hashchange', activateTabFromHash);
 initProfilePage();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#BASE_API_URL">BASE_API_URL</a></li><li><a href="global.html#NOROFF_API_KEY">NOROFF_API_KEY</a></li><li><a href="global.html#PAGE_SIZE">PAGE_SIZE</a></li><li><a href="global.html#activateTab">activateTab</a></li><li><a href="global.html#activateTabFromHash">activateTabFromHash</a></li><li><a href="global.html#addBaseListingParams">addBaseListingParams</a></li><li><a href="global.html#addSortParams">addSortParams</a></li><li><a href="global.html#addToLocalStorage">addToLocalStorage</a></li><li><a href="global.html#avatarAltInput">avatarAltInput</a></li><li><a href="global.html#avatarDesktopWrapper">avatarDesktopWrapper</a></li><li><a href="global.html#avatarMobileWrapper">avatarMobileWrapper</a></li><li><a href="global.html#avatarUrlInput">avatarUrlInput</a></li><li><a href="global.html#bannerAltInput">bannerAltInput</a></li><li><a href="global.html#bannerEl">bannerEl</a></li><li><a href="global.html#bannerUrlInput">bannerUrlInput</a></li><li><a href="global.html#bioInput">bioInput</a></li><li><a href="global.html#buildApiUrl">buildApiUrl</a></li><li><a href="global.html#buildAvatarPayload">buildAvatarPayload</a></li><li><a href="global.html#buildListingsQueryString">buildListingsQueryString</a></li><li><a href="global.html#buildMediaArrayFromForm">buildMediaArrayFromForm</a></li><li><a href="global.html#buildSearchQueryString">buildSearchQueryString</a></li><li><a href="global.html#buildTagQueryString">buildTagQueryString</a></li><li><a href="global.html#buildTagsArray">buildTagsArray</a></li><li><a href="global.html#clearAuth">clearAuth</a></li><li><a href="global.html#clearEditMessage">clearEditMessage</a></li><li><a href="global.html#clearElement">clearElement</a></li><li><a href="global.html#clearError">clearError</a></li><li><a href="global.html#clearFieldsState">clearFieldsState</a></li><li><a href="global.html#clearInlineMessage">clearInlineMessage</a></li><li><a href="global.html#clearListings">clearListings</a></li><li><a href="global.html#createEndedBadge">createEndedBadge</a></li><li><a href="global.html#createListing">createListing</a></li><li><a href="global.html#createListingCard">createListingCard</a></li><li><a href="global.html#createMediaGroup">createMediaGroup</a></li><li><a href="global.html#createWonBadge">createWonBadge</a></li><li><a href="global.html#deleteListing">deleteListing</a></li><li><a href="global.html#disableBidForm">disableBidForm</a></li><li><a href="global.html#editCancelButton">editCancelButton</a></li><li><a href="global.html#editMessageEl">editMessageEl</a></li><li><a href="global.html#editProfileButton">editProfileButton</a></li><li><a href="global.html#editProfileForm">editProfileForm</a></li><li><a href="global.html#editProfileSection">editProfileSection</a></li><li><a href="global.html#ensureAlertContainer">ensureAlertContainer</a></li><li><a href="global.html#ensureDefaultFeedbackText">ensureDefaultFeedbackText</a></li><li><a href="global.html#errorMessageFrom">errorMessageFrom</a></li><li><a href="global.html#extractBidErrorMessage">extractBidErrorMessage</a></li><li><a href="global.html#fetchAndApplyProfile">fetchAndApplyProfile</a></li><li><a href="global.html#fetchListings">fetchListings</a></li><li><a href="global.html#fetchSearchListings">fetchSearchListings</a></li><li><a href="global.html#formatEndsIn">formatEndsIn</a></li><li><a href="global.html#formatTimeLeft">formatTimeLeft</a></li><li><a href="global.html#getAccessToken">getAccessToken</a></li><li><a href="global.html#getAuth">getAuth</a></li><li><a href="global.html#getCurrentUser">getCurrentUser</a></li><li><a href="global.html#getFromLocalStorage">getFromLocalStorage</a></li><li><a href="global.html#getHighestBidAmount">getHighestBidAmount</a></li><li><a href="global.html#getInitials">getInitials</a></li><li><a href="global.html#getListingById">getListingById</a></li><li><a href="global.html#getListingFormData">getListingFormData</a></li><li><a href="global.html#getListingIdFromQuery">getListingIdFromQuery</a></li><li><a href="global.html#getListings">getListings</a></li><li><a href="global.html#getOrCreateBidErrorElement">getOrCreateBidErrorElement</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProfileBids">getProfileBids</a></li><li><a href="global.html#getProfileNameFromQuery">getProfileNameFromQuery</a></li><li><a href="global.html#getProfileWins">getProfileWins</a></li><li><a href="global.html#getRelevanceScore">getRelevanceScore</a></li><li><a href="global.html#getSortedBids">getSortedBids</a></li><li><a href="global.html#getTrimmedField">getTrimmedField</a></li><li><a href="global.html#getTrimmedInputValue">getTrimmedInputValue</a></li><li><a href="global.html#goBackOrHome">goBackOrHome</a></li><li><a href="global.html#hasHeader">hasHeader</a></li><li><a href="global.html#headerAvatarEls">headerAvatarEls</a></li><li><a href="global.html#headerCreditsEls">headerCreditsEls</a></li><li><a href="global.html#headerLoggedIn">headerLoggedIn</a></li><li><a href="global.html#headerLoggedOut">headerLoggedOut</a></li><li><a href="global.html#hideEditSection">hideEditSection</a></li><li><a href="global.html#hideEndOfResults">hideEndOfResults</a></li><li><a href="global.html#hideLoader">hideLoader</a></li><li><a href="global.html#initHeader">initHeader</a></li><li><a href="global.html#initListingDetailsPage">initListingDetailsPage</a></li><li><a href="global.html#initListingEditPage">initListingEditPage</a></li><li><a href="global.html#initProfilePage">initProfilePage</a></li><li><a href="global.html#inlineMessageEl">inlineMessageEl</a></li><li><a href="global.html#isAuctionEnded">isAuctionEnded</a></li><li><a href="global.html#isListingEnded">isListingEnded</a></li><li><a href="global.html#isNewListing">isNewListing</a></li><li><a href="global.html#isNonEmptyString">isNonEmptyString</a></li><li><a href="global.html#justLoggedInFlag">justLoggedInFlag</a></li><li><a href="global.html#loaderEl">loaderEl</a></li><li><a href="global.html#loginUser">loginUser</a></li><li><a href="global.html#logoutUser">logoutUser</a></li><li><a href="global.html#normaliseMediaItem">normaliseMediaItem</a></li><li><a href="global.html#normalizeHeaders">normalizeHeaders</a></li><li><a href="global.html#normalizeToken">normalizeToken</a></li><li><a href="global.html#parseDate">parseDate</a></li><li><a href="global.html#placeBid">placeBid</a></li><li><a href="global.html#prefillFormFromListing">prefillFormFromListing</a></li><li><a href="global.html#profileBioEl">profileBioEl</a></li><li><a href="global.html#profileTitleEl">profileTitleEl</a></li><li><a href="global.html#qs">qs</a></li><li><a href="global.html#redirectToLogin">redirectToLogin</a></li><li><a href="global.html#refreshHeaderFromProfile">refreshHeaderFromProfile</a></li><li><a href="global.html#registerUser">registerUser</a></li><li><a href="global.html#removeFromLocalStorage">removeFromLocalStorage</a></li><li><a href="global.html#renderAvatarInto">renderAvatarInto</a></li><li><a href="global.html#renderBidHistory">renderBidHistory</a></li><li><a href="global.html#renderHeaderAvatarFrom">renderHeaderAvatarFrom</a></li><li><a href="global.html#renderListing">renderListing</a></li><li><a href="global.html#renderListingMedia">renderListingMedia</a></li><li><a href="global.html#renderListings">renderListings</a></li><li><a href="global.html#renderMyBids">renderMyBids</a></li><li><a href="global.html#renderMyListings">renderMyListings</a></li><li><a href="global.html#renderMyWins">renderMyWins</a></li><li><a href="global.html#renderOwnerEditButton">renderOwnerEditButton</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#safeJsonParseAuth">safeJsonParseAuth</a></li><li><a href="global.html#safeJsonParseResponse">safeJsonParseResponse</a></li><li><a href="global.html#safeJsonStringify">safeJsonStringify</a></li><li><a href="global.html#saveAuth">saveAuth</a></li><li><a href="global.html#searchListings">searchListings</a></li><li><a href="global.html#setFieldState">setFieldState</a></li><li><a href="global.html#setText">setText</a></li><li><a href="global.html#setupBidForm">setupBidForm</a></li><li><a href="global.html#setupButtonsForMode">setupButtonsForMode</a></li><li><a href="global.html#setupCancelButtons">setupCancelButtons</a></li><li><a href="global.html#setupDeleteInEditMode">setupDeleteInEditMode</a></li><li><a href="global.html#setupEditProfileForm">setupEditProfileForm</a></li><li><a href="global.html#setupFormSubmit">setupFormSubmit</a></li><li><a href="global.html#setupMediaAddButton">setupMediaAddButton</a></li><li><a href="global.html#setupMyListingCardActions">setupMyListingCardActions</a></li><li><a href="global.html#setupPreview">setupPreview</a></li><li><a href="global.html#showAlert">showAlert</a></li><li><a href="global.html#showEditMessage">showEditMessage</a></li><li><a href="global.html#showEditSection">showEditSection</a></li><li><a href="global.html#showEndOfResults">showEndOfResults</a></li><li><a href="global.html#showError">showError</a></li><li><a href="global.html#showInlineMessage">showInlineMessage</a></li><li><a href="global.html#showLoader">showLoader</a></li><li><a href="global.html#sortComparators">sortComparators</a></li><li><a href="global.html#sortConfig">sortConfig</a></li><li><a href="global.html#sortNonSearchResults">sortNonSearchResults</a></li><li><a href="global.html#sortSearchResults">sortSearchResults</a></li><li><a href="global.html#toDateTimeLocalValue">toDateTimeLocalValue</a></li><li><a href="global.html#toReadableDateTime">toReadableDateTime</a></li><li><a href="global.html#updateAvatar">updateAvatar</a></li><li><a href="global.html#updateHeaderCredits">updateHeaderCredits</a></li><li><a href="global.html#updateHeaderState">updateHeaderState</a></li><li><a href="global.html#updateListing">updateListing</a></li><li><a href="global.html#updateProfile">updateProfile</a></li><li><a href="global.html#updateProfileHero">updateProfileHero</a></li><li><a href="global.html#updateSummary">updateSummary</a></li><li><a href="global.html#validateListingData">validateListingData</a></li><li><a href="global.html#validateLoginFields">validateLoginFields</a></li><li><a href="global.html#validateNoroffEmail">validateNoroffEmail</a></li><li><a href="global.html#validateRegisterFields">validateRegisterFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 10 2025 08:27:34 GMT+0100 (centraleuropeisk normaltid)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

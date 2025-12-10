@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: api/listingsApi.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: api/listingsApi.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { request } from './httpClient.js';
+
+/**
+ * A bid placed on a listing.
+ *
+ * @typedef {Object} ListingBid
+ * @property {number} amount - Bid amount.
+ * @property {string} created - ISO timestamp for when the bid was created.
+ * @property {Object} bidder - Information about the bidder.
+ * @property {string} bidder.name - Name of the bidder.
+ */
+
+/**
+ * A listing in the StudioBid auction system.
+ *
+ * @typedef {Object} Listing
+ * @property {string} id - Listing ID.
+ * @property {string} title - Listing title.
+ * @property {string} [description] - Optional description of the listing.
+ * @property {string[]} [media] - Array of image URLs for the listing.
+ * @property {string} [endsAt] - ISO timestamp for when the auction ends.
+ * @property {Object} [seller] - Information about the seller.
+ * @property {string} [seller.name] - Seller's name.
+ * @property {Object} [_count] - Counts for related resources.
+ * @property {number} [_count.bids] - Number of bids placed on the listing.
+ * @property {ListingBid[]} [bids] - Array of bids associated with the listing.
+ */
+
+/**
+ * Get listings, with a default query suitable for the index page.
+ *
+ * If no query string is provided, it defaults to:
+ * `?_active=true&amp;_seller=true&amp;_bids=true&amp;sort=created&amp;sortOrder=desc`
+ *
+ * @param {string} [queryString] - Optional custom query string, starting with `?`.
+ * @returns {Promise&lt;Listing[]>} A promise that resolves to an array of listings.
+ */
+export const getListings = (queryString) => {
+  const defaultQuery = '?_active=true&amp;_seller=true&amp;_bids=true&amp;sort=created&amp;sortOrder=desc';
+
+  const qs = typeof queryString == 'string' &amp;&amp; queryString.length > 0 ? queryString : defaultQuery;
+
+  return request('/auction/listings' + qs);
+};
+
+/**
+ * Search listings by title/description using the search endpoint.
+ *
+ * @param {string} [queryString] - Query string, usually starting with `?q=searchTerm` and optional filters.
+ * @returns {Promise&lt;Listing[]>} A promise that resolves to an array of matching listings.
+ */
+export const searchListings = (queryString) => {
+  const qs = typeof queryString == 'string' &amp;&amp; queryString.length > 0 ? queryString : '';
+
+  return request('/auction/listings/search' + qs);
+};
+
+/**
+ * Fetch a single listing by its ID.
+ *
+ * @param {string} id - Listing ID.
+ * @param {string} [queryString] - Optional query string for includes, e.g. `"?_seller=true&amp;_bids=true"`.
+ * @returns {Promise&lt;Listing>} A promise that resolves to the requested listing.
+ */
+export const getListingById = (id, queryString) => {
+  const qs = queryString ? queryString : '';
+  return request('/auction/listings/' + id + qs);
+};
+
+/**
+ * Create a new listing.
+ *
+ * @param {Object} payload - Listing data to send to the API.
+ * @param {string} payload.title - Title of the listing.
+ * @param {string} [payload.description] - Description of the listing.
+ * @param {string[]} [payload.media] - Array of image URLs.
+ * @param {string} payload.endsAt - ISO timestamp for when the auction should end.
+ * @returns {Promise&lt;Listing>} A promise that resolves to the created listing.
+ */
+export const createListing = (payload) => {
+  return request('/auction/listings', {
+    method: 'POST',
+    json: payload,
+    auth: true,
+  });
+};
+
+/**
+ * Update an existing listing.
+ *
+ * @param {string} id - ID of the listing to update.
+ * @param {Object} payload - Partial listing data to update.
+ * @returns {Promise&lt;Listing>} A promise that resolves to the updated listing.
+ */
+export const updateListing = (id, payload) => {
+  return request('/auction/listings/' + id, {
+    method: 'PUT',
+    json: payload,
+    auth: true,
+  });
+};
+
+/**
+ * Delete a listing by ID.
+ *
+ * @param {string} id - ID of the listing to delete.
+ * @returns {Promise&lt;void>} A promise that resolves when the listing is deleted.
+ */
+export const deleteListing = (id) => {
+  return request('/auction/listings/' + id, {
+    method: 'DELETE',
+    auth: true,
+  });
+};
+
+/**
+ * Place a bid on a listing.
+ *
+ * @param {string} id - ID of the listing to bid on.
+ * @param {number} amount - Bid amount.
+ * @returns {Promise&lt;ListingBid>} A promise that resolves to the created bid data.
+ */
+export const placeBid = (id, amount) => {
+  return request('/auction/listings/' + id + '/bids', {
+    method: 'POST',
+    json: { amount },
+    auth: true,
+  });
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#BASE_API_URL">BASE_API_URL</a></li><li><a href="global.html#NOROFF_API_KEY">NOROFF_API_KEY</a></li><li><a href="global.html#PAGE_SIZE">PAGE_SIZE</a></li><li><a href="global.html#activateTab">activateTab</a></li><li><a href="global.html#activateTabFromHash">activateTabFromHash</a></li><li><a href="global.html#addBaseListingParams">addBaseListingParams</a></li><li><a href="global.html#addSortParams">addSortParams</a></li><li><a href="global.html#addToLocalStorage">addToLocalStorage</a></li><li><a href="global.html#avatarAltInput">avatarAltInput</a></li><li><a href="global.html#avatarDesktopWrapper">avatarDesktopWrapper</a></li><li><a href="global.html#avatarMobileWrapper">avatarMobileWrapper</a></li><li><a href="global.html#avatarUrlInput">avatarUrlInput</a></li><li><a href="global.html#bannerAltInput">bannerAltInput</a></li><li><a href="global.html#bannerEl">bannerEl</a></li><li><a href="global.html#bannerUrlInput">bannerUrlInput</a></li><li><a href="global.html#bioInput">bioInput</a></li><li><a href="global.html#buildApiUrl">buildApiUrl</a></li><li><a href="global.html#buildAvatarPayload">buildAvatarPayload</a></li><li><a href="global.html#buildListingsQueryString">buildListingsQueryString</a></li><li><a href="global.html#buildMediaArrayFromForm">buildMediaArrayFromForm</a></li><li><a href="global.html#buildSearchQueryString">buildSearchQueryString</a></li><li><a href="global.html#buildTagQueryString">buildTagQueryString</a></li><li><a href="global.html#buildTagsArray">buildTagsArray</a></li><li><a href="global.html#clearAuth">clearAuth</a></li><li><a href="global.html#clearEditMessage">clearEditMessage</a></li><li><a href="global.html#clearElement">clearElement</a></li><li><a href="global.html#clearError">clearError</a></li><li><a href="global.html#clearFieldsState">clearFieldsState</a></li><li><a href="global.html#clearInlineMessage">clearInlineMessage</a></li><li><a href="global.html#clearListings">clearListings</a></li><li><a href="global.html#createEndedBadge">createEndedBadge</a></li><li><a href="global.html#createListing">createListing</a></li><li><a href="global.html#createListingCard">createListingCard</a></li><li><a href="global.html#createMediaGroup">createMediaGroup</a></li><li><a href="global.html#createWonBadge">createWonBadge</a></li><li><a href="global.html#deleteListing">deleteListing</a></li><li><a href="global.html#disableBidForm">disableBidForm</a></li><li><a href="global.html#editCancelButton">editCancelButton</a></li><li><a href="global.html#editMessageEl">editMessageEl</a></li><li><a href="global.html#editProfileButton">editProfileButton</a></li><li><a href="global.html#editProfileForm">editProfileForm</a></li><li><a href="global.html#editProfileSection">editProfileSection</a></li><li><a href="global.html#ensureAlertContainer">ensureAlertContainer</a></li><li><a href="global.html#ensureDefaultFeedbackText">ensureDefaultFeedbackText</a></li><li><a href="global.html#errorMessageFrom">errorMessageFrom</a></li><li><a href="global.html#extractBidErrorMessage">extractBidErrorMessage</a></li><li><a href="global.html#fetchAndApplyProfile">fetchAndApplyProfile</a></li><li><a href="global.html#fetchListings">fetchListings</a></li><li><a href="global.html#fetchSearchListings">fetchSearchListings</a></li><li><a href="global.html#formatEndsIn">formatEndsIn</a></li><li><a href="global.html#formatTimeLeft">formatTimeLeft</a></li><li><a href="global.html#getAccessToken">getAccessToken</a></li><li><a href="global.html#getAuth">getAuth</a></li><li><a href="global.html#getCurrentUser">getCurrentUser</a></li><li><a href="global.html#getFromLocalStorage">getFromLocalStorage</a></li><li><a href="global.html#getHighestBidAmount">getHighestBidAmount</a></li><li><a href="global.html#getInitials">getInitials</a></li><li><a href="global.html#getListingById">getListingById</a></li><li><a href="global.html#getListingFormData">getListingFormData</a></li><li><a href="global.html#getListingIdFromQuery">getListingIdFromQuery</a></li><li><a href="global.html#getListings">getListings</a></li><li><a href="global.html#getOrCreateBidErrorElement">getOrCreateBidErrorElement</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProfileBids">getProfileBids</a></li><li><a href="global.html#getProfileNameFromQuery">getProfileNameFromQuery</a></li><li><a href="global.html#getProfileWins">getProfileWins</a></li><li><a href="global.html#getRelevanceScore">getRelevanceScore</a></li><li><a href="global.html#getSortedBids">getSortedBids</a></li><li><a href="global.html#getTrimmedField">getTrimmedField</a></li><li><a href="global.html#getTrimmedInputValue">getTrimmedInputValue</a></li><li><a href="global.html#goBackOrHome">goBackOrHome</a></li><li><a href="global.html#hasHeader">hasHeader</a></li><li><a href="global.html#headerAvatarEls">headerAvatarEls</a></li><li><a href="global.html#headerCreditsEls">headerCreditsEls</a></li><li><a href="global.html#headerLoggedIn">headerLoggedIn</a></li><li><a href="global.html#headerLoggedOut">headerLoggedOut</a></li><li><a href="global.html#hideEditSection">hideEditSection</a></li><li><a href="global.html#hideEndOfResults">hideEndOfResults</a></li><li><a href="global.html#hideLoader">hideLoader</a></li><li><a href="global.html#initHeader">initHeader</a></li><li><a href="global.html#initListingDetailsPage">initListingDetailsPage</a></li><li><a href="global.html#initListingEditPage">initListingEditPage</a></li><li><a href="global.html#initProfilePage">initProfilePage</a></li><li><a href="global.html#inlineMessageEl">inlineMessageEl</a></li><li><a href="global.html#isAuctionEnded">isAuctionEnded</a></li><li><a href="global.html#isListingEnded">isListingEnded</a></li><li><a href="global.html#isNewListing">isNewListing</a></li><li><a href="global.html#isNonEmptyString">isNonEmptyString</a></li><li><a href="global.html#justLoggedInFlag">justLoggedInFlag</a></li><li><a href="global.html#loaderEl">loaderEl</a></li><li><a href="global.html#loginUser">loginUser</a></li><li><a href="global.html#logoutUser">logoutUser</a></li><li><a href="global.html#normaliseMediaItem">normaliseMediaItem</a></li><li><a href="global.html#normalizeHeaders">normalizeHeaders</a></li><li><a href="global.html#normalizeToken">normalizeToken</a></li><li><a href="global.html#parseDate">parseDate</a></li><li><a href="global.html#placeBid">placeBid</a></li><li><a href="global.html#prefillFormFromListing">prefillFormFromListing</a></li><li><a href="global.html#profileBioEl">profileBioEl</a></li><li><a href="global.html#profileTitleEl">profileTitleEl</a></li><li><a href="global.html#qs">qs</a></li><li><a href="global.html#redirectToLogin">redirectToLogin</a></li><li><a href="global.html#refreshHeaderFromProfile">refreshHeaderFromProfile</a></li><li><a href="global.html#registerUser">registerUser</a></li><li><a href="global.html#removeFromLocalStorage">removeFromLocalStorage</a></li><li><a href="global.html#renderAvatarInto">renderAvatarInto</a></li><li><a href="global.html#renderBidHistory">renderBidHistory</a></li><li><a href="global.html#renderHeaderAvatarFrom">renderHeaderAvatarFrom</a></li><li><a href="global.html#renderListing">renderListing</a></li><li><a href="global.html#renderListingMedia">renderListingMedia</a></li><li><a href="global.html#renderListings">renderListings</a></li><li><a href="global.html#renderMyBids">renderMyBids</a></li><li><a href="global.html#renderMyListings">renderMyListings</a></li><li><a href="global.html#renderMyWins">renderMyWins</a></li><li><a href="global.html#renderOwnerEditButton">renderOwnerEditButton</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#safeJsonParseAuth">safeJsonParseAuth</a></li><li><a href="global.html#safeJsonParseResponse">safeJsonParseResponse</a></li><li><a href="global.html#safeJsonStringify">safeJsonStringify</a></li><li><a href="global.html#saveAuth">saveAuth</a></li><li><a href="global.html#searchListings">searchListings</a></li><li><a href="global.html#setFieldState">setFieldState</a></li><li><a href="global.html#setText">setText</a></li><li><a href="global.html#setupBidForm">setupBidForm</a></li><li><a href="global.html#setupButtonsForMode">setupButtonsForMode</a></li><li><a href="global.html#setupCancelButtons">setupCancelButtons</a></li><li><a href="global.html#setupDeleteInEditMode">setupDeleteInEditMode</a></li><li><a href="global.html#setupEditProfileForm">setupEditProfileForm</a></li><li><a href="global.html#setupFormSubmit">setupFormSubmit</a></li><li><a href="global.html#setupMediaAddButton">setupMediaAddButton</a></li><li><a href="global.html#setupMyListingCardActions">setupMyListingCardActions</a></li><li><a href="global.html#setupPreview">setupPreview</a></li><li><a href="global.html#showAlert">showAlert</a></li><li><a href="global.html#showEditMessage">showEditMessage</a></li><li><a href="global.html#showEditSection">showEditSection</a></li><li><a href="global.html#showEndOfResults">showEndOfResults</a></li><li><a href="global.html#showError">showError</a></li><li><a href="global.html#showInlineMessage">showInlineMessage</a></li><li><a href="global.html#showLoader">showLoader</a></li><li><a href="global.html#sortComparators">sortComparators</a></li><li><a href="global.html#sortConfig">sortConfig</a></li><li><a href="global.html#sortNonSearchResults">sortNonSearchResults</a></li><li><a href="global.html#sortSearchResults">sortSearchResults</a></li><li><a href="global.html#toDateTimeLocalValue">toDateTimeLocalValue</a></li><li><a href="global.html#toReadableDateTime">toReadableDateTime</a></li><li><a href="global.html#updateAvatar">updateAvatar</a></li><li><a href="global.html#updateHeaderCredits">updateHeaderCredits</a></li><li><a href="global.html#updateHeaderState">updateHeaderState</a></li><li><a href="global.html#updateListing">updateListing</a></li><li><a href="global.html#updateProfile">updateProfile</a></li><li><a href="global.html#updateProfileHero">updateProfileHero</a></li><li><a href="global.html#updateSummary">updateSummary</a></li><li><a href="global.html#validateListingData">validateListingData</a></li><li><a href="global.html#validateLoginFields">validateLoginFields</a></li><li><a href="global.html#validateNoroffEmail">validateNoroffEmail</a></li><li><a href="global.html#validateRegisterFields">validateRegisterFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 10 2025 08:27:34 GMT+0100 (centraleuropeisk normaltid)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

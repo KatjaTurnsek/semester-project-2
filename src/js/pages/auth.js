@@ -6,8 +6,16 @@ import { showAlert } from '../ui/alerts.js';
 const registerForm = document.querySelector('[data-auth="register-form"]');
 const loginForm = document.querySelector('[data-auth="login-form"]');
 
+// =========================
 // One-time logout alert
+// =========================
 
+/**
+ * Show a one-time alert after logout if there is data stored
+ * in localStorage under the key "sbAuthAlert".
+ *
+ * This runs once when the file is loaded.
+ */
 (() => {
   const raw = window.localStorage.getItem('sbAuthAlert');
   if (!raw) return;
@@ -26,9 +34,26 @@ const loginForm = document.querySelector('[data-auth="login-form"]');
   }
 })();
 
+// =========================
 // Helpers: form & validation
+// =========================
 
+/**
+ * Get a form field value as a trimmed string.
+ *
+ * @param {FormData} formData - The FormData for the form.
+ * @param {string} fieldName - Name of the field to read.
+ * @returns {string} The trimmed field value (empty string if missing).
+ */
 const getTrimmedField = (formData, fieldName) => String(formData.get(fieldName) || '').trim();
+
+/**
+ * Store the default helper text in a data attribute
+ * so it can be restored later after showing errors.
+ *
+ * @param {HTMLElement|null} feedbackEl - Helper / feedback element under the input.
+ * @returns {void}
+ */
 const ensureDefaultFeedbackText = (feedbackEl) => {
   if (!feedbackEl) return;
   if (!feedbackEl.dataset.defaultText) {
@@ -36,6 +61,18 @@ const ensureDefaultFeedbackText = (feedbackEl) => {
   }
 };
 
+/**
+ * Set the visual state for a form field (valid, invalid, or clear).
+ *
+ * - Adds/removes Bootstrap classes `is-valid` / `is-invalid`
+ * - Updates helper / feedback text and color
+ *
+ * @param {HTMLFormElement} form - Form that contains the field.
+ * @param {string} fieldName - Name attribute of the input.
+ * @param {'valid'|'invalid'|'clear'} state - New state for the field.
+ * @param {string} [message] - Error message to show when state is "invalid".
+ * @returns {void}
+ */
 const setFieldState = (form, fieldName, state, message) => {
   if (!form || !fieldName) return;
 
@@ -79,11 +116,24 @@ const setFieldState = (form, fieldName, state, message) => {
   }
 };
 
+/**
+ * Clear the visual state for several fields in a form.
+ *
+ * @param {HTMLFormElement} form - The form element.
+ * @param {string[]} fieldNames - List of field names to clear.
+ * @returns {void}
+ */
 const clearFieldsState = (form, fieldNames) => {
   if (!form || !Array.isArray(fieldNames)) return;
   fieldNames.forEach((name) => setFieldState(form, name, 'clear'));
 };
 
+/**
+ * Check if an email is a valid Noroff student email.
+ *
+ * @param {string} email - Email address to check.
+ * @returns {boolean} True if the email ends with "@stud.noroff.no".
+ */
 const validateNoroffEmail = (email) => {
   const trimmed = String(email || '')
     .trim()
@@ -94,6 +144,16 @@ const validateNoroffEmail = (email) => {
   return trimmed.endsWith(suffix);
 };
 
+/**
+ * Build an avatar payload object if a URL is provided.
+ *
+ * Used when registering a new user with an optional avatar.
+ *
+ * @param {string} url - Avatar image URL.
+ * @param {string} alt - Alternative text for the avatar image.
+ * @returns {Object|undefined} Avatar object with url (and optional alt),
+ *  or undefined if the URL is empty.
+ */
 const buildAvatarPayload = (url, alt) => {
   const trimmedUrl = String(url || '').trim();
   const trimmedAlt = String(alt || '').trim();
@@ -102,6 +162,18 @@ const buildAvatarPayload = (url, alt) => {
   return trimmedAlt ? { url: trimmedUrl, alt: trimmedAlt } : { url: trimmedUrl };
 };
 
+/**
+ * Validate the fields for the register form.
+ *
+ * Checks:
+ * - Name, email and password are filled in
+ * - Email is a Noroff student email
+ * - Password is at least 8 characters
+ *
+ * @param {{name: string, email: string, password: string}} fields - Object with form values.
+ * @returns {{title: string, message: string, fields: string[]}|null}
+ *  Error details if something is wrong, otherwise null.
+ */
 const validateRegisterFields = ({ name, email, password }) => {
   const missingFields = [];
   if (!name) missingFields.push('name');
@@ -135,6 +207,16 @@ const validateRegisterFields = ({ name, email, password }) => {
   return null;
 };
 
+/**
+ * Validate the fields for the login form.
+ *
+ * Only checks that email and password are not empty.
+ *
+ * @param {string} email - Email from the form.
+ * @param {string} password - Password from the form.
+ * @returns {{title: string, message: string, fields: string[]}|null}
+ *  Error details if something is missing, otherwise null.
+ */
 const validateLoginFields = (email, password) => {
   const missing = [];
   if (!email) missing.push('email');
@@ -151,7 +233,9 @@ const validateLoginFields = (email, password) => {
   return null;
 };
 
+// =========================
 // REGISTER
+// =========================
 
 if (registerForm) {
   registerForm.addEventListener('submit', async (event) => {
@@ -205,7 +289,9 @@ if (registerForm) {
   });
 }
 
+// =========================
 // LOGIN
+// =========================
 
 if (loginForm) {
   loginForm.addEventListener('submit', async (event) => {
@@ -235,6 +321,7 @@ if (loginForm) {
     try {
       const auth = await loginUser({ email, password });
 
+      // Save auth again here to be extra sure the user is stored
       saveAuth(auth);
 
       showAlert('success', 'Welcome back', 'You are now logged in.');

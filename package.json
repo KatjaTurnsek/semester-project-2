@@ -10,12 +10,14 @@
     "lint": "eslint src",
     "lint:css": "stylelint 'src/**/*.scss'",
     "format": "prettier . --check",
-    "format:fix": "prettier . --write"
+    "format:fix": "prettier . --write",
+    "docs": "jsdoc -c jsdoc.config.json"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
+    "jsdoc": "^4.0.5",
     "prettier": "^3.6.2",
     "sass": "^1.94.2",
     "stylelint": "^16.26.0",

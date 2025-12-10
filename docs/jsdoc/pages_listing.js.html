@@ -1,4 +1,32 @@
-import { getListingById, placeBid } from '../api/listingsApi.js';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/listing.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/listing.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getListingById, placeBid } from '../api/listingsApi.js';
 import { getAuth } from '../api/httpClient.js';
 import { getProfile } from '../api/profilesApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
@@ -19,7 +47,7 @@ import { refreshHeaderFromProfile } from '../ui/header.js';
  *
  * Shows an error alert if the ID is missing or the listing cannot be loaded.
  *
- * @returns {Promise<void>}
+ * @returns {Promise&lt;void>}
  */
 export async function initListingDetailsPage() {
   const titleEl = document.querySelector('[data-listing-title]');
@@ -40,7 +68,7 @@ export async function initListingDetailsPage() {
   showLoader();
 
   try {
-    const listing = await getListingById(id, '?_seller=true&_bids=true');
+    const listing = await getListingById(id, '?_seller=true&amp;_bids=true');
 
     if (!listing) {
       if (titleEl) {
@@ -84,9 +112,9 @@ export async function initListingDetailsPage() {
 function getListingIdFromQuery() {
   const search = window.location.search || '';
   const withoutQuestionMark = search.startsWith('?') ? search.slice(1) : search;
-  const pairs = withoutQuestionMark.split('&').filter(Boolean);
+  const pairs = withoutQuestionMark.split('&amp;').filter(Boolean);
 
-  for (let i = 0; i < pairs.length; i += 1) {
+  for (let i = 0; i &lt; pairs.length; i += 1) {
     const pair = pairs[i];
     const parts = pair.split('=');
     const key = parts[0];
@@ -144,7 +172,7 @@ function isAuctionEnded(listing) {
   if (!listing || !listing.endsAt) return false;
   const endsAt = new Date(listing.endsAt);
   if (Number.isNaN(endsAt.getTime())) return false;
-  return endsAt <= new Date();
+  return endsAt &lt;= new Date();
 }
 
 /**
@@ -154,10 +182,10 @@ function isAuctionEnded(listing) {
  * @returns {Object[]} Sorted array of bid objects.
  */
 function getSortedBids(listing) {
-  const bidsRaw = listing && Array.isArray(listing.bids) ? listing.bids : [];
+  const bidsRaw = listing &amp;&amp; Array.isArray(listing.bids) ? listing.bids : [];
   return bidsRaw.slice().sort((a, b) => {
-    const aAmount = a && typeof a.amount === 'number' ? a.amount : 0;
-    const bAmount = b && typeof b.amount === 'number' ? b.amount : 0;
+    const aAmount = a &amp;&amp; typeof a.amount === 'number' ? a.amount : 0;
+    const bAmount = b &amp;&amp; typeof b.amount === 'number' ? b.amount : 0;
     return bAmount - aAmount;
   });
 }
@@ -181,7 +209,7 @@ function formatTimeLeft(listing) {
   }
 
   const now = new Date();
-  if (endsAt <= now) {
+  if (endsAt &lt;= now) {
     return 'Auction ended';
   }
 
@@ -320,7 +348,7 @@ function renderListing(listing) {
   }
 
   const sellerName =
-    listing && listing.seller && listing.seller.name ? listing.seller.name : 'Unknown seller';
+    listing &amp;&amp; listing.seller &amp;&amp; listing.seller.name ? listing.seller.name : 'Unknown seller';
 
   setText(sellerNameEl, sellerName);
 
@@ -343,9 +371,9 @@ function renderListing(listing) {
     sellerAvatarEl.style.height = '64px';
 
     const avatarObj =
-      listing && listing.seller && listing.seller.avatar ? listing.seller.avatar : null;
-    const avatarUrl = avatarObj && avatarObj.url ? avatarObj.url : '';
-    const avatarAlt = (avatarObj && avatarObj.alt) || sellerName || 'Seller avatar';
+      listing &amp;&amp; listing.seller &amp;&amp; listing.seller.avatar ? listing.seller.avatar : null;
+    const avatarUrl = avatarObj &amp;&amp; avatarObj.url ? avatarObj.url : '';
+    const avatarAlt = (avatarObj &amp;&amp; avatarObj.alt) || sellerName || 'Seller avatar';
 
     if (avatarUrl) {
       const img = document.createElement('img');
@@ -487,12 +515,12 @@ function renderBidHistory(bids, historyEl) {
     const nameSpan = document.createElement('span');
     nameSpan.className = 'fw-semibold';
 
-    const bidderName = bid && bid.bidder && bid.bidder.name ? bid.bidder.name : 'Unknown bidder';
+    const bidderName = bid &amp;&amp; bid.bidder &amp;&amp; bid.bidder.name ? bid.bidder.name : 'Unknown bidder';
 
     nameSpan.textContent = bidderName;
     left.appendChild(nameSpan);
 
-    if (bid && bid.created) {
+    if (bid &amp;&amp; bid.created) {
       const createdDate = new Date(bid.created);
       if (!Number.isNaN(createdDate.getTime())) {
         const timeSpan = document.createElement('span');
@@ -504,7 +532,7 @@ function renderBidHistory(bids, historyEl) {
 
     const right = document.createElement('div');
     right.className = 'fw-semibold';
-    right.textContent = (bid && typeof bid.amount === 'number' ? bid.amount : 0) + ' credits';
+    right.textContent = (bid &amp;&amp; typeof bid.amount === 'number' ? bid.amount : 0) + ' credits';
 
     row.appendChild(left);
     row.appendChild(right);
@@ -555,7 +583,7 @@ function setupBidForm(listing) {
     (async () => {
       try {
         const profile = await getProfile(auth.name);
-        if (profile && typeof profile.credits === 'number') {
+        if (profile &amp;&amp; typeof profile.credits === 'number') {
           userCreditsEl.textContent = String(profile.credits);
         }
       } catch {
@@ -564,8 +592,8 @@ function setupBidForm(listing) {
     })();
   }
 
-  const sellerName = listing && listing.seller && listing.seller.name ? listing.seller.name : null;
-  if (sellerName && auth.name === sellerName) {
+  const sellerName = listing &amp;&amp; listing.seller &amp;&amp; listing.seller.name ? listing.seller.name : null;
+  if (sellerName &amp;&amp; auth.name === sellerName) {
     disableBidForm('You cannot bid on your own listing.');
     showAlert('error', 'You are the seller', 'You can’t place bids on your own listing.');
     return;
@@ -588,7 +616,7 @@ function setupBidForm(listing) {
     const amount = Number(rawValue);
     const errorEl = getOrCreateBidErrorElement(form);
 
-    if (!rawValue || Number.isNaN(amount) || amount <= 0) {
+    if (!rawValue || Number.isNaN(amount) || amount &lt;= 0) {
       errorEl.textContent = 'Please enter a valid bid amount.';
       showAlert('error', 'Invalid bid', 'Please enter a valid positive bid amount.');
       return;
@@ -602,15 +630,15 @@ function setupBidForm(listing) {
     try {
       await placeBid(listing.id, amount);
 
-      const updatedListing = await getListingById(listing.id, '?_seller=true&_bids=true');
+      const updatedListing = await getListingById(listing.id, '?_seller=true&amp;_bids=true');
       if (updatedListing) {
         renderListing(updatedListing);
       }
 
-      if (userCreditsEl && auth && auth.name) {
+      if (userCreditsEl &amp;&amp; auth &amp;&amp; auth.name) {
         try {
           const profile = await getProfile(auth.name);
-          if (profile && typeof profile.credits === 'number') {
+          if (profile &amp;&amp; typeof profile.credits === 'number') {
             userCreditsEl.textContent = String(profile.credits);
           }
         } catch {
@@ -651,13 +679,13 @@ function setupBidForm(listing) {
 function extractBidErrorMessage(error) {
   let rawMessage = '';
 
-  if (error && typeof error === 'object') {
+  if (error &amp;&amp; typeof error === 'object') {
     // @ts-ignore - runtime check only
     if (typeof error.message === 'string') {
       // @ts-ignore
       rawMessage = error.message;
       // @ts-ignore
-    } else if (Array.isArray(error.errors) && error.errors[0] && error.errors[0].message) {
+    } else if (Array.isArray(error.errors) &amp;&amp; error.errors[0] &amp;&amp; error.errors[0].message) {
       // @ts-ignore
       rawMessage = error.errors[0].message;
     }
@@ -728,3 +756,26 @@ function getOrCreateBidErrorElement(form) {
 // =========================
 
 initListingDetailsPage();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#BASE_API_URL">BASE_API_URL</a></li><li><a href="global.html#NOROFF_API_KEY">NOROFF_API_KEY</a></li><li><a href="global.html#PAGE_SIZE">PAGE_SIZE</a></li><li><a href="global.html#activateTab">activateTab</a></li><li><a href="global.html#activateTabFromHash">activateTabFromHash</a></li><li><a href="global.html#addBaseListingParams">addBaseListingParams</a></li><li><a href="global.html#addSortParams">addSortParams</a></li><li><a href="global.html#addToLocalStorage">addToLocalStorage</a></li><li><a href="global.html#avatarAltInput">avatarAltInput</a></li><li><a href="global.html#avatarDesktopWrapper">avatarDesktopWrapper</a></li><li><a href="global.html#avatarMobileWrapper">avatarMobileWrapper</a></li><li><a href="global.html#avatarUrlInput">avatarUrlInput</a></li><li><a href="global.html#bannerAltInput">bannerAltInput</a></li><li><a href="global.html#bannerEl">bannerEl</a></li><li><a href="global.html#bannerUrlInput">bannerUrlInput</a></li><li><a href="global.html#bioInput">bioInput</a></li><li><a href="global.html#buildApiUrl">buildApiUrl</a></li><li><a href="global.html#buildAvatarPayload">buildAvatarPayload</a></li><li><a href="global.html#buildListingsQueryString">buildListingsQueryString</a></li><li><a href="global.html#buildMediaArrayFromForm">buildMediaArrayFromForm</a></li><li><a href="global.html#buildSearchQueryString">buildSearchQueryString</a></li><li><a href="global.html#buildTagQueryString">buildTagQueryString</a></li><li><a href="global.html#buildTagsArray">buildTagsArray</a></li><li><a href="global.html#clearAuth">clearAuth</a></li><li><a href="global.html#clearEditMessage">clearEditMessage</a></li><li><a href="global.html#clearElement">clearElement</a></li><li><a href="global.html#clearError">clearError</a></li><li><a href="global.html#clearFieldsState">clearFieldsState</a></li><li><a href="global.html#clearInlineMessage">clearInlineMessage</a></li><li><a href="global.html#clearListings">clearListings</a></li><li><a href="global.html#createEndedBadge">createEndedBadge</a></li><li><a href="global.html#createListing">createListing</a></li><li><a href="global.html#createListingCard">createListingCard</a></li><li><a href="global.html#createMediaGroup">createMediaGroup</a></li><li><a href="global.html#createWonBadge">createWonBadge</a></li><li><a href="global.html#deleteListing">deleteListing</a></li><li><a href="global.html#disableBidForm">disableBidForm</a></li><li><a href="global.html#editCancelButton">editCancelButton</a></li><li><a href="global.html#editMessageEl">editMessageEl</a></li><li><a href="global.html#editProfileButton">editProfileButton</a></li><li><a href="global.html#editProfileForm">editProfileForm</a></li><li><a href="global.html#editProfileSection">editProfileSection</a></li><li><a href="global.html#ensureAlertContainer">ensureAlertContainer</a></li><li><a href="global.html#ensureDefaultFeedbackText">ensureDefaultFeedbackText</a></li><li><a href="global.html#errorMessageFrom">errorMessageFrom</a></li><li><a href="global.html#extractBidErrorMessage">extractBidErrorMessage</a></li><li><a href="global.html#fetchAndApplyProfile">fetchAndApplyProfile</a></li><li><a href="global.html#fetchListings">fetchListings</a></li><li><a href="global.html#fetchSearchListings">fetchSearchListings</a></li><li><a href="global.html#formatEndsIn">formatEndsIn</a></li><li><a href="global.html#formatTimeLeft">formatTimeLeft</a></li><li><a href="global.html#getAccessToken">getAccessToken</a></li><li><a href="global.html#getAuth">getAuth</a></li><li><a href="global.html#getCurrentUser">getCurrentUser</a></li><li><a href="global.html#getFromLocalStorage">getFromLocalStorage</a></li><li><a href="global.html#getHighestBidAmount">getHighestBidAmount</a></li><li><a href="global.html#getInitials">getInitials</a></li><li><a href="global.html#getListingById">getListingById</a></li><li><a href="global.html#getListingFormData">getListingFormData</a></li><li><a href="global.html#getListingIdFromQuery">getListingIdFromQuery</a></li><li><a href="global.html#getListings">getListings</a></li><li><a href="global.html#getOrCreateBidErrorElement">getOrCreateBidErrorElement</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProfileBids">getProfileBids</a></li><li><a href="global.html#getProfileNameFromQuery">getProfileNameFromQuery</a></li><li><a href="global.html#getProfileWins">getProfileWins</a></li><li><a href="global.html#getRelevanceScore">getRelevanceScore</a></li><li><a href="global.html#getSortedBids">getSortedBids</a></li><li><a href="global.html#getTrimmedField">getTrimmedField</a></li><li><a href="global.html#getTrimmedInputValue">getTrimmedInputValue</a></li><li><a href="global.html#goBackOrHome">goBackOrHome</a></li><li><a href="global.html#hasHeader">hasHeader</a></li><li><a href="global.html#headerAvatarEls">headerAvatarEls</a></li><li><a href="global.html#headerCreditsEls">headerCreditsEls</a></li><li><a href="global.html#headerLoggedIn">headerLoggedIn</a></li><li><a href="global.html#headerLoggedOut">headerLoggedOut</a></li><li><a href="global.html#hideEditSection">hideEditSection</a></li><li><a href="global.html#hideEndOfResults">hideEndOfResults</a></li><li><a href="global.html#hideLoader">hideLoader</a></li><li><a href="global.html#initHeader">initHeader</a></li><li><a href="global.html#initListingDetailsPage">initListingDetailsPage</a></li><li><a href="global.html#initListingEditPage">initListingEditPage</a></li><li><a href="global.html#initProfilePage">initProfilePage</a></li><li><a href="global.html#inlineMessageEl">inlineMessageEl</a></li><li><a href="global.html#isAuctionEnded">isAuctionEnded</a></li><li><a href="global.html#isListingEnded">isListingEnded</a></li><li><a href="global.html#isNewListing">isNewListing</a></li><li><a href="global.html#isNonEmptyString">isNonEmptyString</a></li><li><a href="global.html#justLoggedInFlag">justLoggedInFlag</a></li><li><a href="global.html#loaderEl">loaderEl</a></li><li><a href="global.html#loginUser">loginUser</a></li><li><a href="global.html#logoutUser">logoutUser</a></li><li><a href="global.html#normaliseMediaItem">normaliseMediaItem</a></li><li><a href="global.html#normalizeHeaders">normalizeHeaders</a></li><li><a href="global.html#normalizeToken">normalizeToken</a></li><li><a href="global.html#parseDate">parseDate</a></li><li><a href="global.html#placeBid">placeBid</a></li><li><a href="global.html#prefillFormFromListing">prefillFormFromListing</a></li><li><a href="global.html#profileBioEl">profileBioEl</a></li><li><a href="global.html#profileTitleEl">profileTitleEl</a></li><li><a href="global.html#qs">qs</a></li><li><a href="global.html#redirectToLogin">redirectToLogin</a></li><li><a href="global.html#refreshHeaderFromProfile">refreshHeaderFromProfile</a></li><li><a href="global.html#registerUser">registerUser</a></li><li><a href="global.html#removeFromLocalStorage">removeFromLocalStorage</a></li><li><a href="global.html#renderAvatarInto">renderAvatarInto</a></li><li><a href="global.html#renderBidHistory">renderBidHistory</a></li><li><a href="global.html#renderHeaderAvatarFrom">renderHeaderAvatarFrom</a></li><li><a href="global.html#renderListing">renderListing</a></li><li><a href="global.html#renderListingMedia">renderListingMedia</a></li><li><a href="global.html#renderListings">renderListings</a></li><li><a href="global.html#renderMyBids">renderMyBids</a></li><li><a href="global.html#renderMyListings">renderMyListings</a></li><li><a href="global.html#renderMyWins">renderMyWins</a></li><li><a href="global.html#renderOwnerEditButton">renderOwnerEditButton</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#safeJsonParseAuth">safeJsonParseAuth</a></li><li><a href="global.html#safeJsonParseResponse">safeJsonParseResponse</a></li><li><a href="global.html#safeJsonStringify">safeJsonStringify</a></li><li><a href="global.html#saveAuth">saveAuth</a></li><li><a href="global.html#searchListings">searchListings</a></li><li><a href="global.html#setFieldState">setFieldState</a></li><li><a href="global.html#setText">setText</a></li><li><a href="global.html#setupBidForm">setupBidForm</a></li><li><a href="global.html#setupButtonsForMode">setupButtonsForMode</a></li><li><a href="global.html#setupCancelButtons">setupCancelButtons</a></li><li><a href="global.html#setupDeleteInEditMode">setupDeleteInEditMode</a></li><li><a href="global.html#setupEditProfileForm">setupEditProfileForm</a></li><li><a href="global.html#setupFormSubmit">setupFormSubmit</a></li><li><a href="global.html#setupMediaAddButton">setupMediaAddButton</a></li><li><a href="global.html#setupMyListingCardActions">setupMyListingCardActions</a></li><li><a href="global.html#setupPreview">setupPreview</a></li><li><a href="global.html#showAlert">showAlert</a></li><li><a href="global.html#showEditMessage">showEditMessage</a></li><li><a href="global.html#showEditSection">showEditSection</a></li><li><a href="global.html#showEndOfResults">showEndOfResults</a></li><li><a href="global.html#showError">showError</a></li><li><a href="global.html#showInlineMessage">showInlineMessage</a></li><li><a href="global.html#showLoader">showLoader</a></li><li><a href="global.html#sortComparators">sortComparators</a></li><li><a href="global.html#sortConfig">sortConfig</a></li><li><a href="global.html#sortNonSearchResults">sortNonSearchResults</a></li><li><a href="global.html#sortSearchResults">sortSearchResults</a></li><li><a href="global.html#toDateTimeLocalValue">toDateTimeLocalValue</a></li><li><a href="global.html#toReadableDateTime">toReadableDateTime</a></li><li><a href="global.html#updateAvatar">updateAvatar</a></li><li><a href="global.html#updateHeaderCredits">updateHeaderCredits</a></li><li><a href="global.html#updateHeaderState">updateHeaderState</a></li><li><a href="global.html#updateListing">updateListing</a></li><li><a href="global.html#updateProfile">updateProfile</a></li><li><a href="global.html#updateProfileHero">updateProfileHero</a></li><li><a href="global.html#updateSummary">updateSummary</a></li><li><a href="global.html#validateListingData">validateListingData</a></li><li><a href="global.html#validateLoginFields">validateLoginFields</a></li><li><a href="global.html#validateNoroffEmail">validateNoroffEmail</a></li><li><a href="global.html#validateRegisterFields">validateRegisterFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 10 2025 08:27:34 GMT+0100 (centraleuropeisk normaltid)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

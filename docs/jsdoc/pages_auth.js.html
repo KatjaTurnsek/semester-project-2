@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/auth.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/auth.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { registerUser, loginUser } from '../api/authApi.js';
+import { saveAuth } from '../api/httpClient.js';
+import { showLoader, hideLoader } from '../ui/loader.js';
+import { showAlert } from '../ui/alerts.js';
+
+const registerForm = document.querySelector('[data-auth="register-form"]');
+const loginForm = document.querySelector('[data-auth="login-form"]');
+
+// =========================
+// One-time logout alert
+// =========================
+
+/**
+ * Show a one-time alert after logout if there is data stored
+ * in localStorage under the key "sbAuthAlert".
+ *
+ * This runs once when the file is loaded.
+ */
+(() => {
+  const raw = window.localStorage.getItem('sbAuthAlert');
+  if (!raw) return;
+
+  try {
+    const data = JSON.parse(raw) || {};
+    const type = data.type || 'success';
+    const title = data.title || 'Logged out';
+    const message = data.message || 'You have been logged out of StudioBid.';
+
+    showAlert(type, title, message);
+  } catch {
+    // ignore parse errors
+  } finally {
+    window.localStorage.removeItem('sbAuthAlert');
+  }
+})();
+
+// =========================
+// Helpers: form &amp; validation
+// =========================
+
+/**
+ * Get a form field value as a trimmed string.
+ *
+ * @param {FormData} formData - The FormData for the form.
+ * @param {string} fieldName - Name of the field to read.
+ * @returns {string} The trimmed field value (empty string if missing).
+ */
+const getTrimmedField = (formData, fieldName) => String(formData.get(fieldName) || '').trim();
+
+/**
+ * Store the default helper text in a data attribute
+ * so it can be restored later after showing errors.
+ *
+ * @param {HTMLElement|null} feedbackEl - Helper / feedback element under the input.
+ * @returns {void}
+ */
+const ensureDefaultFeedbackText = (feedbackEl) => {
+  if (!feedbackEl) return;
+  if (!feedbackEl.dataset.defaultText) {
+    feedbackEl.dataset.defaultText = feedbackEl.textContent || '';
+  }
+};
+
+/**
+ * Set the visual state for a form field (valid, invalid, or clear).
+ *
+ * - Adds/removes Bootstrap classes `is-valid` / `is-invalid`
+ * - Updates helper / feedback text and color
+ *
+ * @param {HTMLFormElement} form - Form that contains the field.
+ * @param {string} fieldName - Name attribute of the input.
+ * @param {'valid'|'invalid'|'clear'} state - New state for the field.
+ * @param {string} [message] - Error message to show when state is "invalid".
+ * @returns {void}
+ */
+const setFieldState = (form, fieldName, state, message) => {
+  if (!form || !fieldName) return;
+
+  const input = form.querySelector(`[name="${fieldName}"]`);
+  const feedback = form.querySelector(`[data-feedback-for="${fieldName}"]`);
+
+  if (!input) return;
+
+  input.classList.remove('is-valid', 'is-invalid');
+
+  if (feedback) {
+    ensureDefaultFeedbackText(feedback);
+    feedback.classList.remove('text-danger');
+  }
+
+  if (state === 'valid') {
+    input.classList.add('is-valid');
+
+    // Helper text stays default + neutral color
+    if (feedback &amp;&amp; feedback.dataset.defaultText) {
+      feedback.textContent = feedback.dataset.defaultText;
+    }
+  }
+
+  if (state === 'invalid') {
+    input.classList.add('is-invalid');
+
+    if (feedback) {
+      feedback.classList.add('text-danger');
+      if (message) {
+        feedback.textContent = message;
+      }
+    }
+  }
+
+  if (state === 'clear') {
+    // remove both classes + restore helper to default
+    if (feedback &amp;&amp; feedback.dataset.defaultText) {
+      feedback.textContent = feedback.dataset.defaultText;
+    }
+  }
+};
+
+/**
+ * Clear the visual state for several fields in a form.
+ *
+ * @param {HTMLFormElement} form - The form element.
+ * @param {string[]} fieldNames - List of field names to clear.
+ * @returns {void}
+ */
+const clearFieldsState = (form, fieldNames) => {
+  if (!form || !Array.isArray(fieldNames)) return;
+  fieldNames.forEach((name) => setFieldState(form, name, 'clear'));
+};
+
+/**
+ * Check if an email is a valid Noroff student email.
+ *
+ * @param {string} email - Email address to check.
+ * @returns {boolean} True if the email ends with "@stud.noroff.no".
+ */
+const validateNoroffEmail = (email) => {
+  const trimmed = String(email || '')
+    .trim()
+    .toLowerCase();
+  const suffix = '@stud.noroff.no';
+
+  if (!trimmed || trimmed.indexOf('@') === -1) return false;
+  return trimmed.endsWith(suffix);
+};
+
+/**
+ * Build an avatar payload object if a URL is provided.
+ *
+ * Used when registering a new user with an optional avatar.
+ *
+ * @param {string} url - Avatar image URL.
+ * @param {string} alt - Alternative text for the avatar image.
+ * @returns {Object|undefined} Avatar object with url (and optional alt),
+ *  or undefined if the URL is empty.
+ */
+const buildAvatarPayload = (url, alt) => {
+  const trimmedUrl = String(url || '').trim();
+  const trimmedAlt = String(alt || '').trim();
+
+  if (!trimmedUrl) return undefined;
+  return trimmedAlt ? { url: trimmedUrl, alt: trimmedAlt } : { url: trimmedUrl };
+};
+
+/**
+ * Validate the fields for the register form.
+ *
+ * Checks:
+ * - Name, email and password are filled in
+ * - Email is a Noroff student email
+ * - Password is at least 8 characters
+ *
+ * @param {{name: string, email: string, password: string}} fields - Object with form values.
+ * @returns {{title: string, message: string, fields: string[]}|null}
+ *  Error details if something is wrong, otherwise null.
+ */
+const validateRegisterFields = ({ name, email, password }) => {
+  const missingFields = [];
+  if (!name) missingFields.push('name');
+  if (!email) missingFields.push('email');
+  if (!password) missingFields.push('password');
+
+  if (missingFields.length > 0) {
+    return {
+      title: 'Missing fields',
+      message: 'Please fill in name, email and password.',
+      fields: missingFields,
+    };
+  }
+
+  if (!validateNoroffEmail(email)) {
+    return {
+      title: 'Invalid email',
+      message: 'Email must be a Noroff student address (…@stud.noroff.no).',
+      fields: ['email'],
+    };
+  }
+
+  if (password.length &lt; 8) {
+    return {
+      title: 'Weak password',
+      message: 'Password must be at least 8 characters long.',
+      fields: ['password'],
+    };
+  }
+
+  return null;
+};
+
+/**
+ * Validate the fields for the login form.
+ *
+ * Only checks that email and password are not empty.
+ *
+ * @param {string} email - Email from the form.
+ * @param {string} password - Password from the form.
+ * @returns {{title: string, message: string, fields: string[]}|null}
+ *  Error details if something is missing, otherwise null.
+ */
+const validateLoginFields = (email, password) => {
+  const missing = [];
+  if (!email) missing.push('email');
+  if (!password) missing.push('password');
+
+  if (missing.length > 0) {
+    return {
+      title: 'Missing fields',
+      message: 'Please enter email and password.',
+      fields: missing,
+    };
+  }
+
+  return null;
+};
+
+// =========================
+// REGISTER
+// =========================
+
+if (registerForm) {
+  registerForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new globalThis.FormData(registerForm);
+    const name = getTrimmedField(formData, 'name');
+    const email = getTrimmedField(formData, 'email');
+    const password = getTrimmedField(formData, 'password');
+    const avatarUrl = getTrimmedField(formData, 'avatarUrl');
+    const avatarAlt = getTrimmedField(formData, 'avatarAlt');
+
+    // clear old states
+    clearFieldsState(registerForm, ['name', 'email', 'password']);
+
+    const validationError = validateRegisterFields({ name, email, password });
+    if (validationError) {
+      // mark fields invalid
+      validationError.fields.forEach((fieldName) =>
+        setFieldState(registerForm, fieldName, 'invalid', validationError.message),
+      );
+
+      showAlert('error', validationError.title, validationError.message);
+      return;
+    }
+
+    // mark core fields as valid before sending
+    ['name', 'email', 'password'].forEach((fieldName) =>
+      setFieldState(registerForm, fieldName, 'valid'),
+    );
+
+    const payload = { name, email, password };
+    const avatar = buildAvatarPayload(avatarUrl, avatarAlt);
+    if (avatar) {
+      payload.avatar = avatar;
+    }
+
+    showLoader();
+
+    try {
+      await registerUser(payload);
+
+      showAlert('success', 'Account created', 'Account created. You can now log in.');
+      window.location.href = 'login.html';
+    } catch (error) {
+      const msg = error &amp;&amp; error.message ? error.message : 'Could not register. Please try again.';
+      showAlert('error', 'Registration failed', msg);
+    } finally {
+      hideLoader();
+    }
+  });
+}
+
+// =========================
+// LOGIN
+// =========================
+
+if (loginForm) {
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new globalThis.FormData(loginForm);
+    const email = getTrimmedField(formData, 'email');
+    const password = getTrimmedField(formData, 'password');
+
+    clearFieldsState(loginForm, ['email', 'password']);
+
+    const validationError = validateLoginFields(email, password);
+    if (validationError) {
+      validationError.fields.forEach((fieldName) =>
+        setFieldState(loginForm, fieldName, 'invalid', validationError.message),
+      );
+
+      showAlert('error', validationError.title, validationError.message);
+      return;
+    }
+
+    // mark both as valid before request
+    ['email', 'password'].forEach((fieldName) => setFieldState(loginForm, fieldName, 'valid'));
+
+    showLoader();
+
+    try {
+      const auth = await loginUser({ email, password });
+
+      // Save auth again here to be extra sure the user is stored
+      saveAuth(auth);
+
+      showAlert('success', 'Welcome back', 'You are now logged in.');
+      window.location.href = 'index.html';
+    } catch (error) {
+      const msg =
+        error &amp;&amp; error.message ? error.message : 'Could not log in. Please check your details.';
+      showAlert('error', 'Login failed', msg);
+    } finally {
+      hideLoader();
+    }
+  });
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#BASE_API_URL">BASE_API_URL</a></li><li><a href="global.html#NOROFF_API_KEY">NOROFF_API_KEY</a></li><li><a href="global.html#PAGE_SIZE">PAGE_SIZE</a></li><li><a href="global.html#activateTab">activateTab</a></li><li><a href="global.html#activateTabFromHash">activateTabFromHash</a></li><li><a href="global.html#addBaseListingParams">addBaseListingParams</a></li><li><a href="global.html#addSortParams">addSortParams</a></li><li><a href="global.html#addToLocalStorage">addToLocalStorage</a></li><li><a href="global.html#avatarAltInput">avatarAltInput</a></li><li><a href="global.html#avatarDesktopWrapper">avatarDesktopWrapper</a></li><li><a href="global.html#avatarMobileWrapper">avatarMobileWrapper</a></li><li><a href="global.html#avatarUrlInput">avatarUrlInput</a></li><li><a href="global.html#bannerAltInput">bannerAltInput</a></li><li><a href="global.html#bannerEl">bannerEl</a></li><li><a href="global.html#bannerUrlInput">bannerUrlInput</a></li><li><a href="global.html#bioInput">bioInput</a></li><li><a href="global.html#buildApiUrl">buildApiUrl</a></li><li><a href="global.html#buildAvatarPayload">buildAvatarPayload</a></li><li><a href="global.html#buildListingsQueryString">buildListingsQueryString</a></li><li><a href="global.html#buildMediaArrayFromForm">buildMediaArrayFromForm</a></li><li><a href="global.html#buildSearchQueryString">buildSearchQueryString</a></li><li><a href="global.html#buildTagQueryString">buildTagQueryString</a></li><li><a href="global.html#buildTagsArray">buildTagsArray</a></li><li><a href="global.html#clearAuth">clearAuth</a></li><li><a href="global.html#clearEditMessage">clearEditMessage</a></li><li><a href="global.html#clearElement">clearElement</a></li><li><a href="global.html#clearError">clearError</a></li><li><a href="global.html#clearFieldsState">clearFieldsState</a></li><li><a href="global.html#clearInlineMessage">clearInlineMessage</a></li><li><a href="global.html#clearListings">clearListings</a></li><li><a href="global.html#createEndedBadge">createEndedBadge</a></li><li><a href="global.html#createListing">createListing</a></li><li><a href="global.html#createListingCard">createListingCard</a></li><li><a href="global.html#createMediaGroup">createMediaGroup</a></li><li><a href="global.html#createWonBadge">createWonBadge</a></li><li><a href="global.html#deleteListing">deleteListing</a></li><li><a href="global.html#disableBidForm">disableBidForm</a></li><li><a href="global.html#editCancelButton">editCancelButton</a></li><li><a href="global.html#editMessageEl">editMessageEl</a></li><li><a href="global.html#editProfileButton">editProfileButton</a></li><li><a href="global.html#editProfileForm">editProfileForm</a></li><li><a href="global.html#editProfileSection">editProfileSection</a></li><li><a href="global.html#ensureAlertContainer">ensureAlertContainer</a></li><li><a href="global.html#ensureDefaultFeedbackText">ensureDefaultFeedbackText</a></li><li><a href="global.html#errorMessageFrom">errorMessageFrom</a></li><li><a href="global.html#extractBidErrorMessage">extractBidErrorMessage</a></li><li><a href="global.html#fetchAndApplyProfile">fetchAndApplyProfile</a></li><li><a href="global.html#fetchListings">fetchListings</a></li><li><a href="global.html#fetchSearchListings">fetchSearchListings</a></li><li><a href="global.html#formatEndsIn">formatEndsIn</a></li><li><a href="global.html#formatTimeLeft">formatTimeLeft</a></li><li><a href="global.html#getAccessToken">getAccessToken</a></li><li><a href="global.html#getAuth">getAuth</a></li><li><a href="global.html#getCurrentUser">getCurrentUser</a></li><li><a href="global.html#getFromLocalStorage">getFromLocalStorage</a></li><li><a href="global.html#getHighestBidAmount">getHighestBidAmount</a></li><li><a href="global.html#getInitials">getInitials</a></li><li><a href="global.html#getListingById">getListingById</a></li><li><a href="global.html#getListingFormData">getListingFormData</a></li><li><a href="global.html#getListingIdFromQuery">getListingIdFromQuery</a></li><li><a href="global.html#getListings">getListings</a></li><li><a href="global.html#getOrCreateBidErrorElement">getOrCreateBidErrorElement</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProfileBids">getProfileBids</a></li><li><a href="global.html#getProfileNameFromQuery">getProfileNameFromQuery</a></li><li><a href="global.html#getProfileWins">getProfileWins</a></li><li><a href="global.html#getRelevanceScore">getRelevanceScore</a></li><li><a href="global.html#getSortedBids">getSortedBids</a></li><li><a href="global.html#getTrimmedField">getTrimmedField</a></li><li><a href="global.html#getTrimmedInputValue">getTrimmedInputValue</a></li><li><a href="global.html#goBackOrHome">goBackOrHome</a></li><li><a href="global.html#hasHeader">hasHeader</a></li><li><a href="global.html#headerAvatarEls">headerAvatarEls</a></li><li><a href="global.html#headerCreditsEls">headerCreditsEls</a></li><li><a href="global.html#headerLoggedIn">headerLoggedIn</a></li><li><a href="global.html#headerLoggedOut">headerLoggedOut</a></li><li><a href="global.html#hideEditSection">hideEditSection</a></li><li><a href="global.html#hideEndOfResults">hideEndOfResults</a></li><li><a href="global.html#hideLoader">hideLoader</a></li><li><a href="global.html#initHeader">initHeader</a></li><li><a href="global.html#initListingDetailsPage">initListingDetailsPage</a></li><li><a href="global.html#initListingEditPage">initListingEditPage</a></li><li><a href="global.html#initProfilePage">initProfilePage</a></li><li><a href="global.html#inlineMessageEl">inlineMessageEl</a></li><li><a href="global.html#isAuctionEnded">isAuctionEnded</a></li><li><a href="global.html#isListingEnded">isListingEnded</a></li><li><a href="global.html#isNewListing">isNewListing</a></li><li><a href="global.html#isNonEmptyString">isNonEmptyString</a></li><li><a href="global.html#justLoggedInFlag">justLoggedInFlag</a></li><li><a href="global.html#loaderEl">loaderEl</a></li><li><a href="global.html#loginUser">loginUser</a></li><li><a href="global.html#logoutUser">logoutUser</a></li><li><a href="global.html#normaliseMediaItem">normaliseMediaItem</a></li><li><a href="global.html#normalizeHeaders">normalizeHeaders</a></li><li><a href="global.html#normalizeToken">normalizeToken</a></li><li><a href="global.html#parseDate">parseDate</a></li><li><a href="global.html#placeBid">placeBid</a></li><li><a href="global.html#prefillFormFromListing">prefillFormFromListing</a></li><li><a href="global.html#profileBioEl">profileBioEl</a></li><li><a href="global.html#profileTitleEl">profileTitleEl</a></li><li><a href="global.html#qs">qs</a></li><li><a href="global.html#redirectToLogin">redirectToLogin</a></li><li><a href="global.html#refreshHeaderFromProfile">refreshHeaderFromProfile</a></li><li><a href="global.html#registerUser">registerUser</a></li><li><a href="global.html#removeFromLocalStorage">removeFromLocalStorage</a></li><li><a href="global.html#renderAvatarInto">renderAvatarInto</a></li><li><a href="global.html#renderBidHistory">renderBidHistory</a></li><li><a href="global.html#renderHeaderAvatarFrom">renderHeaderAvatarFrom</a></li><li><a href="global.html#renderListing">renderListing</a></li><li><a href="global.html#renderListingMedia">renderListingMedia</a></li><li><a href="global.html#renderListings">renderListings</a></li><li><a href="global.html#renderMyBids">renderMyBids</a></li><li><a href="global.html#renderMyListings">renderMyListings</a></li><li><a href="global.html#renderMyWins">renderMyWins</a></li><li><a href="global.html#renderOwnerEditButton">renderOwnerEditButton</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#safeJsonParseAuth">safeJsonParseAuth</a></li><li><a href="global.html#safeJsonParseResponse">safeJsonParseResponse</a></li><li><a href="global.html#safeJsonStringify">safeJsonStringify</a></li><li><a href="global.html#saveAuth">saveAuth</a></li><li><a href="global.html#searchListings">searchListings</a></li><li><a href="global.html#setFieldState">setFieldState</a></li><li><a href="global.html#setText">setText</a></li><li><a href="global.html#setupBidForm">setupBidForm</a></li><li><a href="global.html#setupButtonsForMode">setupButtonsForMode</a></li><li><a href="global.html#setupCancelButtons">setupCancelButtons</a></li><li><a href="global.html#setupDeleteInEditMode">setupDeleteInEditMode</a></li><li><a href="global.html#setupEditProfileForm">setupEditProfileForm</a></li><li><a href="global.html#setupFormSubmit">setupFormSubmit</a></li><li><a href="global.html#setupMediaAddButton">setupMediaAddButton</a></li><li><a href="global.html#setupMyListingCardActions">setupMyListingCardActions</a></li><li><a href="global.html#setupPreview">setupPreview</a></li><li><a href="global.html#showAlert">showAlert</a></li><li><a href="global.html#showEditMessage">showEditMessage</a></li><li><a href="global.html#showEditSection">showEditSection</a></li><li><a href="global.html#showEndOfResults">showEndOfResults</a></li><li><a href="global.html#showError">showError</a></li><li><a href="global.html#showInlineMessage">showInlineMessage</a></li><li><a href="global.html#showLoader">showLoader</a></li><li><a href="global.html#sortComparators">sortComparators</a></li><li><a href="global.html#sortConfig">sortConfig</a></li><li><a href="global.html#sortNonSearchResults">sortNonSearchResults</a></li><li><a href="global.html#sortSearchResults">sortSearchResults</a></li><li><a href="global.html#toDateTimeLocalValue">toDateTimeLocalValue</a></li><li><a href="global.html#toReadableDateTime">toReadableDateTime</a></li><li><a href="global.html#updateAvatar">updateAvatar</a></li><li><a href="global.html#updateHeaderCredits">updateHeaderCredits</a></li><li><a href="global.html#updateHeaderState">updateHeaderState</a></li><li><a href="global.html#updateListing">updateListing</a></li><li><a href="global.html#updateProfile">updateProfile</a></li><li><a href="global.html#updateProfileHero">updateProfileHero</a></li><li><a href="global.html#updateSummary">updateSummary</a></li><li><a href="global.html#validateListingData">validateListingData</a></li><li><a href="global.html#validateLoginFields">validateLoginFields</a></li><li><a href="global.html#validateNoroffEmail">validateNoroffEmail</a></li><li><a href="global.html#validateRegisterFields">validateRegisterFields</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Dec 10 2025 08:27:34 GMT+0100 (centraleuropeisk normaltid)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
