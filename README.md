@@ -2,7 +2,7 @@
 
 A concept auction platform for Noroff Front-End Development
 
-![StudioBid preview](./images/semester-project2-preview.jpg)
+![StudioBid preview](./public/images/semester-project2-preview.jpg)
 
 StudioBid is a fictional auction site where students can sell creative gear and bid on items posted by others. The goal of this project was to plan, design and build a fully functional, responsive auction platform using a modern CSS framework, the Noroff Auction API, and clean, maintainable JavaScript.
 
