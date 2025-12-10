@@ -118,7 +118,9 @@
   }
 }
 
-// Form cards (auth + listing-edit)
+// Auth form layout
+
+// Base wrappers
 .sb-form-card {
   border: 2px solid var(--sb-color-black);
   border-radius: 0.3125rem;
@@ -130,37 +132,45 @@
 }
 
 .auth-form-wrapper {
-  padding-top: 6rem;
+  position: relative;
+  padding-top: 4rem;
   max-width: 720px;
-  margin-inline: auto; 
+  margin-inline: auto;
+  z-index: 2;
 }
 
+// Illustration behind the form
 .auth-illustration {
+  position: absolute;
+  top: -8rem;
+  left: 0;
+  width: 110%;
   z-index: 0;
-  width: 100%;
+  pointer-events: none;
 
   img {
     width: 100%;
-    max-width: none;
     display: block;
   }
 }
 
-// Mobile tweaks for Form SVG
+// Mobile
 @include media-breakpoint-down(md) {
+
   .auth-form-wrapper {
-    padding-top: 9.5rem;
+    padding-top: 1.5rem;
   }
 
   .auth-illustration {
-    top: -2.5rem;
-    width: 100%;
+    top: -12rem;
+    width: 160%;
+    left: -30%;
   }
 }
 
 .auth-form-wrapper .card {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 // Button wrapper for "Add another image" on listing-edit form
