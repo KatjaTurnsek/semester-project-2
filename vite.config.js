@@ -2,11 +2,18 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   base: '/semester-project-2/',
-  css: {
-    preprocessorOptions: {
-      scss: {
-        // Hide deprecation warnings coming from node_modules (e.g. Bootstrap SCSS)
-        quietDeps: true,
+
+  build: {
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        register: 'register.html',
+        login: 'login.html',
+        profile: 'profile.html',
+        listing: 'listing.html',
+        'listing-edit': 'listing-edit.html',
+        how: 'how.html',
+        404: '404.html',
       },
     },
   },
