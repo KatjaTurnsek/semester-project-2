@@ -48,7 +48,7 @@ import { request } from './httpClient.js';
 const buildProfileUrl = (name, queryString) => {
   const encodedName = encodeURIComponent(String(name || ''));
   const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : '';
-  return '/auction/profiles/' + encodedName + qs;
+  return `/auction/profiles/${encodedName}${qs}`;
 };
 
 /**
@@ -60,7 +60,7 @@ const buildProfileUrl = (name, queryString) => {
  */
 const buildProfileMediaUrl = (name) => {
   const encodedName = encodeURIComponent(String(name || ''));
-  return '/auction/profiles/' + encodedName + '/media';
+  return `/auction/profiles/${encodedName}/media`;
 };
 
 /**
@@ -74,7 +74,7 @@ const buildProfileMediaUrl = (name) => {
 const buildProfileBidsUrl = (name, queryString) => {
   const encodedName = encodeURIComponent(String(name || ''));
   const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : '';
-  return '/auction/profiles/' + encodedName + '/bids' + qs;
+  return `/auction/profiles/${encodedName}/bids${qs}`;
 };
 
 /**
@@ -88,7 +88,7 @@ const buildProfileBidsUrl = (name, queryString) => {
 const buildProfileWinsUrl = (name, queryString) => {
   const encodedName = encodeURIComponent(String(name || ''));
   const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : '';
-  return '/auction/profiles/' + encodedName + '/wins' + qs;
+  return `/auction/profiles/${encodedName}/wins${qs}`;
 };
 
 /**
@@ -129,7 +129,7 @@ export const updateAvatar = async (name, avatar) => {
  * @returns {Promise<Profile>} A promise that resolves to the updated profile.
  */
 export const updateProfile = async (name, payload) => {
-  const url = buildProfileUrl(name, '');
+  const url = buildProfileUrl(name);
   const data = await request(url, {
     method: 'PUT',
     json: payload,

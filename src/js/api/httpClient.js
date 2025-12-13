@@ -269,7 +269,7 @@ export const request = async (path, options = {}) => {
   const headers = {
     ...baseHeaders,
     'X-Noroff-API-Key': NOROFF_API_KEY,
-    ...(auth && token && { Authorization: 'Bearer ' + token }),
+    ...(auth && token && { Authorization: `Bearer ${token}` }),
     ...(shouldSendJson && { 'Content-Type': 'application/json' }),
   };
 

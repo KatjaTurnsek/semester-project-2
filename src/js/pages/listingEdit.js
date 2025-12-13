@@ -54,6 +54,30 @@ const getTrimmedInputValue = (input) => {
   return String(input.value || '').trim();
 };
 
+/**
+ * Normalize media item from API into { url, alt }.
+ * API may return media as strings or as objects.
+ *
+ * @param {string|Object|null} item
+ * @returns {{url: string, alt: string}}
+ */
+const normaliseMediaItem = (item) => {
+  if (!item) return { url: '', alt: '' };
+
+  if (typeof item === 'string') {
+    return { url: item, alt: '' };
+  }
+
+  if (typeof item === 'object') {
+    return {
+      url: item.url || '',
+      alt: item.alt || '',
+    };
+  }
+
+  return { url: '', alt: '' };
+};
+
 // =========================
 // Tags + media helpers
 // =========================
@@ -101,10 +125,8 @@ const buildMediaArrayFromForm = (form) => {
     const alt = getTrimmedInputValue(altInput);
 
     if (url) {
-      const obj = { url: url };
-      if (alt) {
-        obj.alt = alt;
-      }
+      const obj = { url };
+      if (alt) obj.alt = alt;
       media.push(obj);
     }
   });
@@ -159,7 +181,6 @@ const inlineMessageEl = qs('[data-listing-edit-message]');
  */
 const clearInlineMessage = () => {
   if (!inlineMessageEl) return;
-
   inlineMessageEl.textContent = '';
   inlineMessageEl.className = 'alert d-none';
 };
@@ -175,12 +196,8 @@ const showInlineMessage = (text, type) => {
   if (!inlineMessageEl) return;
 
   let extraClass = 'alert-info';
-
-  if (type === 'error') {
-    extraClass = 'alert-danger';
-  } else if (type === 'success') {
-    extraClass = 'alert-success';
-  }
+  if (type === 'error') extraClass = 'alert-danger';
+  if (type === 'success') extraClass = 'alert-success';
 
   inlineMessageEl.textContent = text;
   inlineMessageEl.className = 'alert ' + extraClass;
@@ -230,7 +247,8 @@ const goBackOrHome = () => {
  * @returns {HTMLElement|null} The newly created media group element, or null.
  */
 const createMediaGroup = (container, templateGroup, index, mediaItem) => {
-  if (!container || !templateGroup || !index) return null;
+  if (!container || !templateGroup) return null;
+  if (typeof index !== 'number' || index < 1) return null;
 
   const clone = templateGroup.cloneNode(true);
   clone.setAttribute('data-media-group', String(index));
@@ -244,24 +262,23 @@ const createMediaGroup = (container, templateGroup, index, mediaItem) => {
   const urlId = 'mediaUrl' + index;
   const altId = 'mediaAlt' + index;
 
+  const url = mediaItem && mediaItem.url ? mediaItem.url : '';
+  const alt = mediaItem && mediaItem.alt ? mediaItem.alt : '';
+
   if (urlInput) {
     urlInput.id = urlId;
     urlInput.name = 'mediaUrl' + index;
-    urlInput.value = mediaItem && mediaItem.url ? mediaItem.url : '';
+    urlInput.value = url;
   }
 
   if (altInput) {
     altInput.id = altId;
     altInput.name = 'mediaAlt' + index;
-    altInput.value = mediaItem && mediaItem.alt ? mediaItem.alt : '';
+    altInput.value = alt;
   }
 
-  if (urlLabel) {
-    urlLabel.setAttribute('for', urlId);
-  }
-  if (altLabel) {
-    altLabel.setAttribute('for', altId);
-  }
+  if (urlLabel) urlLabel.setAttribute('for', urlId);
+  if (altLabel) altLabel.setAttribute('for', altId);
 
   container.appendChild(clone);
   return clone;
@@ -300,40 +317,35 @@ const prefillFormFromListing = (listing) => {
     endsAtInput.value = toDateTimeLocalValue(listing.endsAt);
   }
 
-  // Prefill ALL media items
+  // Prefill ALL media items (supports string or object)
+  const rawMedia = Array.isArray(listing.media) ? listing.media.filter(Boolean) : [];
+  const media = rawMedia.map(normaliseMediaItem).filter((m) => m.url);
 
-  const media = Array.isArray(listing.media) ? listing.media.filter(Boolean) : [];
   const container = qs('#mediaFieldsContainer');
   const firstGroup = container ? container.querySelector('.sb-media-group') : null;
 
   if (!container || !firstGroup) return;
 
+  // Remove any extra groups that may be present from previous usage
+  const extraGroups = container.querySelectorAll('.sb-media-group:not(:first-child)');
+  extraGroups.forEach((group) => group.remove());
+
+  const firstUrlInput = firstGroup.querySelector('[data-media-url]');
+  const firstAltInput = firstGroup.querySelector('[data-media-alt]');
+
   if (!media.length) {
-    // No media: leave first group empty
-    const urlInput = firstGroup.querySelector('[data-media-url]');
-    const altInput = firstGroup.querySelector('[data-media-alt]');
-    if (urlInput) urlInput.value = '';
-    if (altInput) altInput.value = '';
+    if (firstUrlInput) firstUrlInput.value = '';
+    if (firstAltInput) firstAltInput.value = '';
     return;
   }
 
   // Fill first group with first media item
-
-  const firstItem = media[0] || {};
-  const firstUrlInput = firstGroup.querySelector('[data-media-url]');
-  const firstAltInput = firstGroup.querySelector('[data-media-alt]');
-  if (firstUrlInput) firstUrlInput.value = firstItem.url || '';
-  if (firstAltInput) firstAltInput.value = firstItem.alt || '';
-
-  // Remove any extra groups that may be present from previous usage
-
-  const extraGroups = container.querySelectorAll('.sb-media-group:not(:first-child)');
-  extraGroups.forEach((group) => group.remove());
+  if (firstUrlInput) firstUrlInput.value = media[0].url || '';
+  if (firstAltInput) firstAltInput.value = media[0].alt || '';
 
   // Add remaining media items as new groups
-
   for (let i = 1; i < media.length; i += 1) {
-    const index = i + 1; // since first is 1
+    const index = i + 1; // first is 1
     createMediaGroup(container, firstGroup, index, media[i]);
   }
 };
@@ -354,12 +366,8 @@ const setupButtonsForMode = (isEditMode) => {
   const createButtonsRow = qs('#createModeButtons');
   const editButtonsRow = qs('#editModeButtons');
 
-  if (createButtonsRow) {
-    createButtonsRow.classList.toggle('d-none', isEditMode);
-  }
-  if (editButtonsRow) {
-    editButtonsRow.classList.toggle('d-none', !isEditMode);
-  }
+  if (createButtonsRow) createButtonsRow.classList.toggle('d-none', isEditMode);
+  if (editButtonsRow) editButtonsRow.classList.toggle('d-none', !isEditMode);
 };
 
 // =========================
@@ -369,11 +377,7 @@ const setupButtonsForMode = (isEditMode) => {
 /**
  * Set up the delete button in edit mode.
  *
- * - Confirms with the user
- * - Calls the delete listing API
- * - Redirects to profile page afterwards
- *
- * @param {string|null} listingId - ID of the listing being edited.
+ * @param {string|null} listingId
  * @returns {void}
  */
 const setupDeleteInEditMode = (listingId) => {
@@ -383,7 +387,12 @@ const setupDeleteInEditMode = (listingId) => {
   const deleteBtn = editButtonsRow.querySelector('.btn-danger');
   if (!deleteBtn) return;
 
-  deleteBtn.addEventListener('click', async () => {
+  if (deleteBtn.dataset.boundDelete === '1') return;
+  deleteBtn.dataset.boundDelete = '1';
+
+  deleteBtn.addEventListener('click', async (event) => {
+    event.preventDefault();
+
     const confirmed = window.confirm('Are you sure you want to delete this listing?');
     if (!confirmed) return;
 
@@ -392,7 +401,6 @@ const setupDeleteInEditMode = (listingId) => {
 
     try {
       await deleteListing(listingId);
-
       showAlert('success', 'Listing deleted', 'Your listing has been deleted.');
 
       setTimeout(() => {
@@ -415,7 +423,6 @@ const setupDeleteInEditMode = (listingId) => {
 
 /**
  * Set up cancel buttons for both create and edit modes.
- * Clicking cancel will navigate back or to the homepage.
  *
  * @returns {void}
  */
@@ -425,7 +432,8 @@ const setupCancelButtons = () => {
 
   if (createButtonsRow) {
     const cancelBtn = createButtonsRow.querySelector('.btn-dark:not([type="submit"])');
-    if (cancelBtn) {
+    if (cancelBtn && cancelBtn.dataset.boundCancel !== '1') {
+      cancelBtn.dataset.boundCancel = '1';
       cancelBtn.addEventListener('click', (event) => {
         event.preventDefault();
         goBackOrHome();
@@ -435,7 +443,8 @@ const setupCancelButtons = () => {
 
   if (editButtonsRow) {
     const cancelBtn = editButtonsRow.querySelector('.btn-outline-dark');
-    if (cancelBtn) {
+    if (cancelBtn && cancelBtn.dataset.boundCancel !== '1') {
+      cancelBtn.dataset.boundCancel = '1';
       cancelBtn.addEventListener('click', (event) => {
         event.preventDefault();
         goBackOrHome();
@@ -451,8 +460,6 @@ const setupCancelButtons = () => {
 /**
  * Set up the "Add another image" button.
  *
- * Each click will clone the first media group and increment the index.
- *
  * @returns {void}
  */
 const setupMediaAddButton = () => {
@@ -463,9 +470,13 @@ const setupMediaAddButton = () => {
   const firstGroup = container.querySelector('.sb-media-group');
   if (!firstGroup) return;
 
+  if (addBtn.dataset.boundAdd === '1') return;
+  addBtn.dataset.boundAdd = '1';
+
   let count = container.querySelectorAll('.sb-media-group').length || 1;
 
-  addBtn.addEventListener('click', () => {
+  addBtn.addEventListener('click', (event) => {
+    event.preventDefault();
     count += 1;
     createMediaGroup(container, firstGroup, count, null);
   });
@@ -476,11 +487,7 @@ const setupMediaAddButton = () => {
 // =========================
 
 /**
- * Set up the live preview card for the listing:
- * - Updates title as the user types
- * - Updates the first preview image based on the first media URL + alt
- *
- * @param {Object} auth - Current auth object (contains user name).
+ * @param {Object} auth
  * @returns {void}
  */
 const setupPreview = (auth) => {
@@ -492,7 +499,6 @@ const setupPreview = (auth) => {
   const firstUrlInput = mediaContainer ? mediaContainer.querySelector('[data-media-url]') : null;
   const firstAltInput = mediaContainer ? mediaContainer.querySelector('[data-media-alt]') : null;
 
-  const previewImageWrapper = qs('[data-preview-image-wrapper]');
   const previewImageEl = qs('[data-preview-img]');
   const previewPlaceholderEl = qs('[data-preview-placeholder]');
 
@@ -507,43 +513,42 @@ const setupPreview = (auth) => {
   };
 
   const updatePreviewImage = () => {
-    if (!previewImageWrapper || !previewImageEl || !firstUrlInput) return;
+    if (!previewImageEl || !firstUrlInput) return;
 
     const url = getTrimmedInputValue(firstUrlInput);
     const altFromInput = firstAltInput ? getTrimmedInputValue(firstAltInput) : '';
-    const fallbackAlt = previewTitleEl ? previewTitleEl.textContent : 'Listing image';
+    const fallbackAlt = previewTitleEl ? String(previewTitleEl.textContent || '').trim() : '';
     const alt = altFromInput || fallbackAlt || 'Listing image';
 
     if (url) {
       previewImageEl.src = url;
       previewImageEl.alt = alt;
       previewImageEl.classList.remove('d-none');
-      if (previewPlaceholderEl) {
-        previewPlaceholderEl.classList.add('d-none');
-      }
+      if (previewPlaceholderEl) previewPlaceholderEl.classList.add('d-none');
     } else {
       previewImageEl.src = '';
       previewImageEl.alt = '';
       previewImageEl.classList.add('d-none');
-      if (previewPlaceholderEl) {
-        previewPlaceholderEl.classList.remove('d-none');
-      }
+      if (previewPlaceholderEl) previewPlaceholderEl.classList.remove('d-none');
     }
   };
 
-  if (titleInput && previewTitleEl) {
+  if (titleInput && previewTitleEl && titleInput.dataset.boundPreviewTitle !== '1') {
+    titleInput.dataset.boundPreviewTitle = '1';
     titleInput.addEventListener('input', updatePreviewTitle);
-    updatePreviewTitle();
   }
 
-  if (firstUrlInput) {
+  if (firstUrlInput && firstUrlInput.dataset.boundPreviewUrl !== '1') {
+    firstUrlInput.dataset.boundPreviewUrl = '1';
     firstUrlInput.addEventListener('input', updatePreviewImage);
   }
-  if (firstAltInput) {
+
+  if (firstAltInput && firstAltInput.dataset.boundPreviewAlt !== '1') {
+    firstAltInput.dataset.boundPreviewAlt = '1';
     firstAltInput.addEventListener('input', updatePreviewImage);
   }
 
-  // For edit mode after prefill
+  updatePreviewTitle();
   updatePreviewImage();
 };
 
@@ -552,10 +557,7 @@ const setupPreview = (auth) => {
 // =========================
 
 /**
- * Read all main fields from the listing form.
- *
  * @returns {{title: string, description: string, tagsRaw: string, endsAtRaw: string}}
- *  Object with trimmed form values.
  */
 const getListingFormData = () => {
   const titleInput = qs('#listingTitle');
@@ -563,24 +565,17 @@ const getListingFormData = () => {
   const tagsInput = qs('#listingTags');
   const endsAtInput = qs('#listingEndsAt');
 
-  const title = getTrimmedInputValue(titleInput);
-  const description = getTrimmedInputValue(descriptionInput);
-  const tagsRaw = getTrimmedInputValue(tagsInput);
-  const endsAtRaw = getTrimmedInputValue(endsAtInput);
-
-  return { title: title, description: description, tagsRaw: tagsRaw, endsAtRaw: endsAtRaw };
+  return {
+    title: getTrimmedInputValue(titleInput),
+    description: getTrimmedInputValue(descriptionInput),
+    tagsRaw: getTrimmedInputValue(tagsInput),
+    endsAtRaw: getTrimmedInputValue(endsAtInput),
+  };
 };
 
 /**
- * Validate the listing form data.
- *
- * Checks:
- * - Title, description and end time are filled in
- * - End time is a valid date
- * - End time is in the future
- *
- * @param {{title: string, description: string, endsAtRaw: string}} data - Listing form data.
- * @returns {string|null} Error message if invalid, otherwise null.
+ * @param {{title: string, description: string, endsAtRaw: string}} data
+ * @returns {string|null}
  */
 const validateListingData = ({ title, description, endsAtRaw }) => {
   if (!title || !description || !endsAtRaw) {
@@ -592,8 +587,7 @@ const validateListingData = ({ title, description, endsAtRaw }) => {
     return 'Please choose a valid end date and time.';
   }
 
-  const now = new Date();
-  if (endsAtDate <= now) {
+  if (endsAtDate <= new Date()) {
     return 'Auction end time must be in the future.';
   }
 
@@ -605,20 +599,17 @@ const validateListingData = ({ title, description, endsAtRaw }) => {
 // =========================
 
 /**
- * Set up the submit handler for the listing form.
- *
- * Handles both:
- * - Create mode (no listingId)
- * - Edit mode (existing listingId, only owner can edit)
- *
- * @param {boolean} isEditMode - True if editing an existing listing.
- * @param {string|null} listingId - Listing ID, or null in create mode.
- * @param {string|null} listingOwnerName - Name of the listing owner.
+ * @param {boolean} isEditMode
+ * @param {string|null} listingId
+ * @param {string|null} listingOwnerName
  * @returns {void}
  */
 const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
   const form = qs('[data-listing-edit-form]');
   if (!form) return;
+
+  if (form.dataset.boundSubmit === '1') return;
+  form.dataset.boundSubmit = '1';
 
   const submitBtnCreateRow = qs('#createModeButtons button[type="submit"]');
   const submitBtnEditRow = qs('#editModeButtons button[type="submit"]');
@@ -632,9 +623,7 @@ const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
     if (!currentAuth || !currentAuth.name) {
       clearAuth();
       showAlert('error', 'Login required', 'You must be logged in to create or edit listings.');
-      setTimeout(() => {
-        redirectToLogin();
-      }, 800);
+      setTimeout(() => redirectToLogin(), 800);
       return;
     }
 
@@ -654,20 +643,16 @@ const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
     const endsAtDate = new Date(endsAtRaw);
 
     const payload = {
-      title: title,
-      description: description,
+      title,
+      description,
       endsAt: endsAtDate.toISOString(),
     };
 
     const tags = buildTagsArray(tagsRaw);
-    if (tags) {
-      payload.tags = tags;
-    }
+    if (tags) payload.tags = tags;
 
     const media = buildMediaArrayFromForm(form);
-    if (media) {
-      payload.media = media;
-    }
+    if (media) payload.media = media;
 
     const submitBtn = isEditMode ? submitBtnEditRow : submitBtnCreateRow;
     if (submitBtn) {
@@ -722,12 +707,6 @@ const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
 // =========================
 
 /**
- * Initialize the listing create/edit page.
- *
- * - Requires the user to be logged in
- * - Checks if we are in create or edit mode (based on URL id)
- * - In edit mode: loads listing, checks ownership, pre-fills the form
- *
  * @returns {Promise<void>}
  */
 const initListingEditPage = async () => {
@@ -735,9 +714,7 @@ const initListingEditPage = async () => {
 
   if (!auth || !auth.name) {
     showAlert('error', 'Login required', 'You must be logged in to create or edit listings.');
-    setTimeout(() => {
-      redirectToLogin();
-    }, 800);
+    setTimeout(() => redirectToLogin(), 800);
     return;
   }
 
@@ -745,7 +722,6 @@ const initListingEditPage = async () => {
   const isEditMode = !!listingId;
 
   const titleHeadingEl = qs('#listingFormTitle');
-
   if (titleHeadingEl) {
     titleHeadingEl.textContent = isEditMode ? 'Edit listing' : 'Create a new listing';
   }
@@ -759,8 +735,6 @@ const initListingEditPage = async () => {
     setupFormSubmit(false, null, null);
     return;
   }
-
-  // Edit mode: load listing and check owner
 
   showLoader();
 
@@ -798,7 +772,11 @@ const initListingEditPage = async () => {
 };
 
 // =========================
-// Run
+// Run (no refresh needed)
 // =========================
 
-initListingEditPage();
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', initListingEditPage);
+} else {
+  initListingEditPage();
+}

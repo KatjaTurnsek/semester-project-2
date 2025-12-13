@@ -7,11 +7,20 @@ let alertContainer = null;
 
 /**
  * Ensure there is a shared alert container in the DOM.
+ * Re-uses an existing container if it already exists (important for dev reload / duplicate script runs).
  *
  * @returns {HTMLDivElement} The alert container element.
  */
 const ensureAlertContainer = () => {
-  if (alertContainer) return alertContainer;
+  // If we already have a cached container and it still exists in the DOM, use it
+  if (alertContainer && document.body.contains(alertContainer)) return alertContainer;
+
+  // Re-use an existing container if one is already present
+  const existing = document.querySelector('.sb-alert-container');
+  if (existing && existing.nodeType === 1 && existing.tagName === 'DIV') {
+    alertContainer = /** @type {HTMLDivElement} */ (existing);
+    return alertContainer;
+  }
 
   const el = document.createElement('div');
   el.className = 'sb-alert-container';
@@ -45,6 +54,7 @@ export const showAlert = (type, title, message, options = {}) => {
 
   const el = document.createElement('div');
   el.className = 'sb-alert sb-alert--' + safeType;
+  el.setAttribute('role', 'alert');
 
   const icon = document.createElement('div');
   icon.className = 'sb-alert__icon';
@@ -67,12 +77,18 @@ export const showAlert = (type, title, message, options = {}) => {
   closeBtn.type = 'button';
   closeBtn.className = 'sb-alert__close';
   closeBtn.setAttribute('aria-label', 'Close notification');
-  closeBtn.innerHTML = '&times;';
+  closeBtn.textContent = '×';
 
-  closeBtn.addEventListener('click', () => {
+  const dismiss = () => {
+    // Guard against double-dismiss
+    if (!el.isConnected) return;
     el.classList.remove('sb-alert--visible');
-    window.setTimeout(() => el.remove(), 200);
-  });
+    window.setTimeout(() => {
+      if (el.isConnected) el.remove();
+    }, 200);
+  };
+
+  closeBtn.addEventListener('click', dismiss);
 
   el.appendChild(icon);
   el.appendChild(content);
@@ -87,8 +103,7 @@ export const showAlert = (type, title, message, options = {}) => {
 
   if (timeout > 0) {
     window.setTimeout(() => {
-      el.classList.remove('sb-alert--visible');
-      window.setTimeout(() => el.remove(), 200);
+      dismiss();
     }, timeout);
   }
 };

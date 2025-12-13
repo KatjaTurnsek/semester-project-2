@@ -5,50 +5,16 @@ import { showLoader, hideLoader } from '../ui/loader.js';
 import { showAlert } from '../ui/alerts.js';
 
 // =========================
-// DOM references
+// Small DOM helper (safe query)
 // =========================
 
-/** @type {HTMLElement|null} */
-const headerLoggedOut = document.querySelector('[data-header="logged-out"]');
-/** @type {HTMLElement|null} */
-const headerLoggedIn = document.querySelector('[data-header="logged-in"]');
-/** @type {NodeListOf<HTMLElement>} */
-const headerCreditsEls = document.querySelectorAll('[data-header-credits]');
-
-/** @type {HTMLElement|null} */
-const bannerEl = document.querySelector('.sb-profile-banner');
-/** @type {HTMLElement|null} */
-const profileTitleEl = document.querySelector('.sb-profile-title');
-/** @type {HTMLElement|null} */
-const profileBioEl = document.querySelector('.sb-profile-header-text p');
-
-/** @type {HTMLElement|null} */
-const avatarMobileWrapper = document.querySelector('.sb-profile-avatar--mobile');
-/** @type {HTMLElement|null} */
-const avatarDesktopWrapper = document.querySelector('.sb-profile-avatar--desktop');
-
-/** @type {HTMLButtonElement|null} */
-const editProfileButton = document.querySelector('#editProfileButton');
-/** @type {HTMLElement|null} */
-const editProfileSection = document.querySelector('[data-profile-edit-section]');
-/** @type {HTMLFormElement|null} */
-const editProfileForm = document.querySelector('[data-profile-edit-form]');
-/** @type {HTMLElement|null} */
-const editMessageEl = document.querySelector('[data-profile-edit-message]');
-
-/** @type {HTMLInputElement|null} */
-const avatarUrlInput = document.querySelector('#profileAvatarUrl');
-/** @type {HTMLInputElement|null} */
-const avatarAltInput = document.querySelector('#profileAvatarAlt');
-/** @type {HTMLInputElement|null} */
-const bannerUrlInput = document.querySelector('#profileBannerUrl');
-/** @type {HTMLInputElement|null} */
-const bannerAltInput = document.querySelector('#profileBannerAlt');
-/** @type {HTMLTextAreaElement|null} */
-const bioInput = document.querySelector('#profileBio');
-
-/** @type {HTMLButtonElement|null} */
-const editCancelButton = document.querySelector('[data-profile-edit="cancel"]');
+/**
+ * Shorthand for `document.querySelector`.
+ *
+ * @param {string} selector - CSS selector string.
+ * @returns {Element|null} First matching element or null.
+ */
+const qs = (selector) => document.querySelector(selector);
 
 // =========================
 // Small helpers
@@ -104,10 +70,6 @@ const createWonBadge = (position = 'end') => {
 /**
  * Get initials from a full name.
  *
- * Examples:
- * - "Katja Turnsek" -> "KT"
- * - "Katja" -> "KA"
- *
  * @param {string} name - Full name string.
  * @returns {string} Initials or "?" if not available.
  */
@@ -131,153 +93,6 @@ const getInitials = (name) => {
 };
 
 /**
- * Render a profile avatar (image or initials) into a wrapper element.
- *
- * @param {HTMLElement|null} wrapper - Target container for the avatar.
- * @param {Object} profile - Profile object from the API.
- * @returns {void}
- */
-const renderAvatarInto = (wrapper, profile) => {
-  if (!wrapper || !profile) return;
-
-  wrapper.innerHTML = '';
-
-  const avatar = profile.avatar || {};
-  const avatarUrl = avatar.url || '';
-  const avatarAlt = avatar.alt || profile.name || 'Profile avatar';
-
-  if (avatarUrl) {
-    const img = document.createElement('img');
-    img.src = avatarUrl;
-    img.alt = avatarAlt;
-    img.className = 'img-fluid rounded-circle';
-    wrapper.appendChild(img);
-  } else {
-    const span = document.createElement('span');
-    span.textContent = getInitials(profile.name);
-    span.className = 'fw-semibold';
-    wrapper.appendChild(span);
-  }
-};
-
-/**
- * Update header visibility and credits based on the loaded profile.
- *
- * @param {Object} profile - Profile object from the API.
- * @returns {void}
- */
-const updateHeaderState = (profile) => {
-  if (!profile) return;
-
-  if (headerLoggedOut) headerLoggedOut.classList.add('d-none');
-  if (headerLoggedIn) headerLoggedIn.classList.remove('d-none');
-
-  const credits = typeof profile.credits === 'number' ? profile.credits : 0;
-
-  headerCreditsEls.forEach((el) => {
-    if (!el) return;
-    el.textContent = 'Credits: ' + credits;
-  });
-};
-
-/**
- * Update the profile hero area:
- * - Title (name)
- * - Bio text
- * - Banner background image
- * - Mobile and desktop avatar
- *
- * @param {Object} profile - Profile object from the API.
- * @returns {void}
- */
-const updateProfileHero = (profile) => {
-  if (!profile) return;
-
-  if (profileTitleEl) {
-    profileTitleEl.textContent = profile.name || 'My Profile';
-  }
-
-  if (profileBioEl) {
-    const bio =
-      profile.bio && profile.bio.trim() ? profile.bio : 'This is a very short bio about me.';
-    profileBioEl.textContent = bio;
-  }
-
-  if (bannerEl) {
-    const banner = profile.banner || {};
-    const bannerUrl = banner.url || '';
-
-    if (bannerUrl) {
-      bannerEl.style.backgroundImage = `url("${bannerUrl}")`;
-      bannerEl.style.backgroundSize = 'cover';
-      bannerEl.style.backgroundPosition = 'center';
-    } else {
-      bannerEl.style.backgroundImage = '';
-    }
-  }
-
-  renderAvatarInto(avatarMobileWrapper, profile);
-  renderAvatarInto(avatarDesktopWrapper, profile);
-};
-
-/**
- * Clear the inline profile edit message.
- *
- * @returns {void}
- */
-const clearEditMessage = () => {
-  if (!editMessageEl) return;
-  editMessageEl.textContent = '';
-  editMessageEl.className = 'alert d-none';
-};
-
-/**
- * Show a feedback message when editing the profile.
- * Uses the global floating alerts instead of inline text.
- *
- * @param {string} text - Message text.
- * @param {'info'|'success'|'error'} [type] - Message type.
- * @returns {void}
- */
-const showEditMessage = (text, type) => {
-  if (editMessageEl) {
-    editMessageEl.textContent = '';
-    editMessageEl.className = 'alert d-none';
-  }
-
-  let alertType = 'info';
-  let title = 'Notice';
-
-  if (type === 'success') {
-    alertType = 'success';
-    title = 'All set!';
-  } else if (type === 'error') {
-    alertType = 'error';
-    title = 'Something went wrong';
-  }
-
-  showAlert(alertType, title, text);
-};
-
-/**
- * Show the profile edit section.
- *
- * @returns {void}
- */
-const showEditSection = () => {
-  if (editProfileSection) editProfileSection.classList.remove('d-none');
-};
-
-/**
- * Hide the profile edit section.
- *
- * @returns {void}
- */
-const hideEditSection = () => {
-  if (editProfileSection) editProfileSection.classList.add('d-none');
-};
-
-/**
  * Get the profile name from the URL query string (`?name=...`).
  *
  * @returns {string|null} Profile name or null if not present.
@@ -295,6 +110,89 @@ const getProfileNameFromQuery = () => {
   }
 
   return null;
+};
+
+// =========================
+// Confirm helper (no window.alert/confirm)
+// =========================
+
+/**
+ * Ask the user to confirm an action.
+ * Uses Bootstrap Modal if available, otherwise falls back to window.confirm.
+ *
+ * @param {string} message - Confirmation message.
+ * @param {Object} [options]
+ * @param {string} [options.title] - Modal title.
+ * @param {string} [options.confirmText] - Confirm button text.
+ * @param {string} [options.cancelText] - Cancel button text.
+ * @returns {Promise<boolean>} True if confirmed, otherwise false.
+ */
+const confirmAction = (message, options = {}) => {
+  const title = options.title || 'Confirm';
+  const confirmText = options.confirmText || 'Yes, delete';
+  const cancelText = options.cancelText || 'Cancel';
+
+  // @ts-ignore
+  const BootstrapModal = window.bootstrap && window.bootstrap.Modal ? window.bootstrap.Modal : null;
+  if (!BootstrapModal) {
+    return Promise.resolve(window.confirm(message));
+  }
+
+  return new Promise((resolve) => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = `
+      <div class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-0">
+            <div class="modal-header">
+              <h5 class="modal-title">${title}</h5>
+              <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="mb-0">${message}</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-dark rounded-0" data-action="cancel">${cancelText}</button>
+              <button type="button" class="btn btn-dark rounded-0" data-action="confirm">${confirmText}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const modalEl = wrapper.querySelector('.modal');
+    const closeBtn = wrapper.querySelector('.btn-close');
+    const cancelBtn = wrapper.querySelector('[data-action="cancel"]');
+    const confirmBtn = wrapper.querySelector('[data-action="confirm"]');
+
+    if (!modalEl || !cancelBtn || !confirmBtn || !closeBtn) {
+      resolve(window.confirm(message));
+      return;
+    }
+
+    document.body.appendChild(wrapper);
+
+    const modal = new BootstrapModal(modalEl, { backdrop: 'static' });
+
+    let settled = false;
+    const done = (val) => {
+      if (settled) return;
+      settled = true;
+      resolve(val);
+      modal.hide();
+    };
+
+    confirmBtn.addEventListener('click', () => done(true));
+    cancelBtn.addEventListener('click', () => done(false));
+    closeBtn.addEventListener('click', () => done(false));
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      wrapper.remove();
+      if (!settled) resolve(false);
+    });
+
+    modal.show();
+  });
 };
 
 // =========================
@@ -339,10 +237,6 @@ const activateTab = (paneId) => {
 /**
  * Activate the correct tab based on the URL hash.
  *
- * - #my-bids -> bids tab
- * - #my-listings -> active listings tab
- * - #my-wins -> wins tab
- *
  * @returns {void}
  */
 const activateTabFromHash = () => {
@@ -358,18 +252,126 @@ const activateTabFromHash = () => {
 };
 
 // =========================
+// Rendering helpers
+// =========================
+
+/**
+ * Render a profile avatar (image or initials) into a wrapper element.
+ *
+ * @param {HTMLElement|null} wrapper - Target container for the avatar.
+ * @param {Object} profile - Profile object from the API.
+ * @returns {void}
+ */
+const renderAvatarInto = (wrapper, profile) => {
+  if (!wrapper || !profile) return;
+
+  wrapper.innerHTML = '';
+
+  const avatar = profile.avatar || {};
+  const avatarUrl = avatar.url || '';
+  const avatarAlt = avatar.alt || profile.name || 'Profile avatar';
+
+  if (avatarUrl) {
+    const img = document.createElement('img');
+    img.src = avatarUrl;
+    img.alt = avatarAlt;
+    img.className = 'img-fluid rounded-circle';
+    wrapper.appendChild(img);
+  } else {
+    const span = document.createElement('span');
+    span.textContent = getInitials(profile.name);
+    span.className = 'fw-semibold';
+    wrapper.appendChild(span);
+  }
+};
+
+/**
+ * Update header visibility and credits based on the loaded profile.
+ *
+ * @param {Object} profile - Profile object from the API.
+ * @param {HTMLElement|null} headerLoggedOut
+ * @param {HTMLElement|null} headerLoggedIn
+ * @param {NodeListOf<HTMLElement>} headerCreditsEls
+ * @returns {void}
+ */
+const updateHeaderState = (profile, headerLoggedOut, headerLoggedIn, headerCreditsEls) => {
+  if (!profile) return;
+
+  if (headerLoggedOut) headerLoggedOut.classList.add('d-none');
+  if (headerLoggedIn) headerLoggedIn.classList.remove('d-none');
+
+  const credits = typeof profile.credits === 'number' ? profile.credits : 0;
+
+  headerCreditsEls.forEach((el) => {
+    if (!el) return;
+    el.textContent = `Credits: ${credits}`;
+  });
+};
+
+/**
+ * Update the profile hero area.
+ *
+ * @param {Object} profile
+ * @param {HTMLElement|null} bannerEl
+ * @param {HTMLElement|null} profileTitleEl
+ * @param {HTMLElement|null} profileBioEl
+ * @param {HTMLElement|null} avatarMobileWrapper
+ * @param {HTMLElement|null} avatarDesktopWrapper
+ * @returns {void}
+ */
+const updateProfileHero = (
+  profile,
+  bannerEl,
+  profileTitleEl,
+  profileBioEl,
+  avatarMobileWrapper,
+  avatarDesktopWrapper,
+) => {
+  if (!profile) return;
+
+  if (profileTitleEl) {
+    profileTitleEl.textContent = profile.name || 'My Profile';
+  }
+
+  if (profileBioEl) {
+    const bio =
+      profile.bio && profile.bio.trim() ? profile.bio : 'This is a very short bio about me.';
+    profileBioEl.textContent = bio;
+  }
+
+  if (bannerEl) {
+    const banner = profile.banner || {};
+    const bannerUrl = banner.url || '';
+
+    if (bannerUrl) {
+      bannerEl.style.backgroundImage = `url("${bannerUrl}")`;
+      bannerEl.style.backgroundSize = 'cover';
+      bannerEl.style.backgroundPosition = 'center';
+    } else {
+      bannerEl.style.backgroundImage = '';
+    }
+  }
+
+  renderAvatarInto(avatarMobileWrapper, profile);
+  renderAvatarInto(avatarDesktopWrapper, profile);
+};
+
+// =========================
 // Active listings – card actions
 // =========================
 
 /**
  * Wire actions for an "My listing" card (edit, delete, view).
  *
- * @param {HTMLElement|null} cardColEl - Column element that holds the card.
- * @param {string|null} listingId - Listing id.
+ * @param {HTMLElement|null} cardColEl
+ * @param {string|null} listingId
  * @returns {void}
  */
 const setupMyListingCardActions = (cardColEl, listingId) => {
   if (!cardColEl || !listingId) return;
+
+  if (cardColEl.dataset.boundActions === '1') return;
+  cardColEl.dataset.boundActions = '1';
 
   const editIconBtn = cardColEl.querySelector('[data-edit-listing-btn]');
   const footerEditBtn = cardColEl.querySelector('[data-listing-edit-link]');
@@ -408,7 +410,12 @@ const setupMyListingCardActions = (cardColEl, listingId) => {
   deleteBtn.addEventListener('click', async (event) => {
     event.preventDefault();
 
-    const confirmed = window.confirm('Are you sure you want to delete this listing?');
+    const confirmed = await confirmAction('Are you sure you want to delete this listing?', {
+      title: 'Delete listing?',
+      confirmText: 'Yes, delete',
+      cancelText: 'Cancel',
+    });
+
     if (!confirmed) return;
 
     showLoader();
@@ -441,8 +448,8 @@ const setupMyListingCardActions = (cardColEl, listingId) => {
 /**
  * Get the highest bid amount from a listing object.
  *
- * @param {Object} listing - Listing data with a `bids` array.
- * @returns {number} Highest bid amount or 0.
+ * @param {Object} listing
+ * @returns {number}
  */
 const getHighestBidAmount = (listing) => {
   if (!listing || !Array.isArray(listing.bids) || !listing.bids.length) return 0;
@@ -460,13 +467,8 @@ const getHighestBidAmount = (listing) => {
 /**
  * Render "My listings" cards for the profile.
  *
- * - Clones a template card
- * - Fills title, seller, bids, highest bid, end time, image
- * - Adds ENDED badge for ended auctions
- * - Binds edit/delete actions for own profile
- *
- * @param {Object} profile - Profile object including `listings` array.
- * @param {boolean} isOwnProfile - True if the logged-in user is viewing their own profile.
+ * @param {Object} profile
+ * @param {boolean} isOwnProfile
  * @returns {Promise<void>}
  */
 const renderMyListings = async (profile, isOwnProfile) => {
@@ -481,7 +483,6 @@ const renderMyListings = async (profile, isOwnProfile) => {
 
   const listings = Array.isArray(profile.listings) ? profile.listings : [];
 
-  // Clear previous rendered cards (keep template)
   row.querySelectorAll('.col:not([data-my-listing-template])').forEach((col) => col.remove());
 
   if (!listings.length) {
@@ -491,7 +492,6 @@ const renderMyListings = async (profile, isOwnProfile) => {
 
   if (emptyMessage) emptyMessage.classList.add('d-none');
 
-  // Fetch detailed info (bids, endsAt)
   const detailedListings = await Promise.all(
     listings.map(async (listing) => {
       if (!listing || !listing.id) return listing;
@@ -573,7 +573,6 @@ const renderMyListings = async (profile, isOwnProfile) => {
       }
     }
 
-    // ENDED badge for own ended listings
     if (mediaWrapper && isEnded) {
       mediaWrapper.appendChild(createEndedBadge());
     }
@@ -626,8 +625,8 @@ const renderMyListings = async (profile, isOwnProfile) => {
 /**
  * Render the "My bids" section.
  *
- * @param {Array} bids - Array of bid objects including `listing`.
- * @param {Array} wins - Array of listings the user has won.
+ * @param {Array} bids
+ * @param {Array} wins
  * @returns {void}
  */
 const renderMyBids = (bids, wins) => {
@@ -699,13 +698,8 @@ const renderMyBids = (bids, wins) => {
     const isEnded = !!endsDate && endsDate <= now;
     const isWon = listingId && wonListingIds.has(listingId);
 
-    if (isEnded) {
-      mediaWrapper.appendChild(createEndedBadge());
-    }
-
-    if (isWon) {
-      mediaWrapper.appendChild(createWonBadge('end'));
-    }
+    if (isEnded) mediaWrapper.appendChild(createEndedBadge());
+    if (isWon) mediaWrapper.appendChild(createWonBadge('end'));
 
     const body = document.createElement('div');
     body.className = 'card-body';
@@ -716,16 +710,24 @@ const renderMyBids = (bids, wins) => {
 
     const amountP = document.createElement('p');
     amountP.className = 'mb-1';
-    amountP.innerHTML =
-      '<span class="fw-semibold">Your bid:</span> ' +
-      (typeof bid.amount === 'number' ? `${bid.amount} credits` : '-');
+
+    const label = document.createElement('span');
+    label.className = 'fw-semibold';
+    label.textContent = 'Your bid:';
+
+    const amountText = document.createTextNode(
+      ` ${typeof bid.amount === 'number' ? `${bid.amount} credits` : '-'}`,
+    );
+
+    amountP.appendChild(label);
+    amountP.appendChild(amountText);
 
     const timeP = document.createElement('p');
     timeP.className = 'mb-0 text-muted small';
 
     const createdDate = parseDate(bid.created);
     if (createdDate) {
-      timeP.textContent = 'Placed on ' + createdDate.toLocaleString();
+      timeP.textContent = `Placed on ${createdDate.toLocaleString()}`;
     }
 
     body.appendChild(titleEl);
@@ -764,7 +766,7 @@ const renderMyBids = (bids, wins) => {
 /**
  * Render the "My wins" section.
  *
- * @param {Array} wins - Array of listing objects that the user has won.
+ * @param {Array} wins
  * @returns {void}
  */
 const renderMyWins = (wins) => {
@@ -848,7 +850,7 @@ const renderMyWins = (wins) => {
     infoP.className = 'mb-0 text-muted small';
 
     if (endsDate) {
-      infoP.textContent = 'Ended on ' + endsDate.toLocaleString();
+      infoP.textContent = `Ended on ${endsDate.toLocaleString()}`;
     }
 
     body.appendChild(titleEl);
@@ -884,18 +886,63 @@ const renderMyWins = (wins) => {
 // =========================
 
 /**
- * Set up the profile edit form:
- * - Only available on own profile
- * - Fills existing values on open
- * - Validates that at least one field is changed
- * - Calls the update profile API
+ * Set up the profile edit form.
  *
- * @param {Object} profile - Current profile object.
- * @param {string|null} authName - Logged-in user name.
- * @param {boolean} isOwnProfile - True if viewing own profile.
+ * @param {Object} profile
+ * @param {string|null} authName
+ * @param {boolean} isOwnProfile
  * @returns {void}
  */
 const setupEditProfileForm = (profile, authName, isOwnProfile) => {
+  const editProfileButton = /** @type {HTMLButtonElement|null} */ (qs('#editProfileButton'));
+  const editProfileSection = /** @type {HTMLElement|null} */ (qs('[data-profile-edit-section]'));
+  const editProfileForm = /** @type {HTMLFormElement|null} */ (qs('[data-profile-edit-form]'));
+  const editMessageEl = /** @type {HTMLElement|null} */ (qs('[data-profile-edit-message]'));
+
+  const avatarUrlInput = /** @type {HTMLInputElement|null} */ (qs('#profileAvatarUrl'));
+  const avatarAltInput = /** @type {HTMLInputElement|null} */ (qs('#profileAvatarAlt'));
+  const bannerUrlInput = /** @type {HTMLInputElement|null} */ (qs('#profileBannerUrl'));
+  const bannerAltInput = /** @type {HTMLInputElement|null} */ (qs('#profileBannerAlt'));
+  const bioInput = /** @type {HTMLTextAreaElement|null} */ (qs('#profileBio'));
+
+  const editCancelButton = /** @type {HTMLButtonElement|null} */ (
+    qs('[data-profile-edit="cancel"]')
+  );
+
+  const clearEditMessage = () => {
+    if (!editMessageEl) return;
+    editMessageEl.textContent = '';
+    editMessageEl.className = 'alert d-none';
+  };
+
+  const showEditMessage = (text, type) => {
+    if (editMessageEl) {
+      editMessageEl.textContent = '';
+      editMessageEl.className = 'alert d-none';
+    }
+
+    let alertType = 'info';
+    let title = 'Notice';
+
+    if (type === 'success') {
+      alertType = 'success';
+      title = 'All set!';
+    } else if (type === 'error') {
+      alertType = 'error';
+      title = 'Something went wrong';
+    }
+
+    showAlert(alertType, title, text);
+  };
+
+  const showEditSection = () => {
+    if (editProfileSection) editProfileSection.classList.remove('d-none');
+  };
+
+  const hideEditSection = () => {
+    if (editProfileSection) editProfileSection.classList.add('d-none');
+  };
+
   if (!isOwnProfile) {
     if (editProfileButton) editProfileButton.classList.add('d-none');
     if (editProfileSection) editProfileSection.classList.add('d-none');
@@ -903,6 +950,9 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
   }
 
   if (!editProfileButton || !editProfileForm) return;
+
+  if (editProfileForm.dataset.boundProfileEdit === '1') return;
+  editProfileForm.dataset.boundProfileEdit = '1';
 
   const fillFormFromProfile = (p) => {
     if (!p) return;
@@ -917,14 +967,18 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
     if (bioInput) bioInput.value = p.bio || '';
   };
 
-  editProfileButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    clearEditMessage();
-    fillFormFromProfile(profile);
-    showEditSection();
-  });
+  if (editProfileButton.dataset.boundClick !== '1') {
+    editProfileButton.dataset.boundClick = '1';
+    editProfileButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      clearEditMessage();
+      fillFormFromProfile(profile);
+      showEditSection();
+    });
+  }
 
-  if (editCancelButton) {
+  if (editCancelButton && editCancelButton.dataset.boundClick !== '1') {
+    editCancelButton.dataset.boundClick = '1';
     editCancelButton.addEventListener('click', (event) => {
       event.preventDefault();
       clearEditMessage();
@@ -985,9 +1039,23 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
         bio: typeof updatedProfile.bio === 'string' ? updatedProfile.bio : profile.bio,
       };
 
-      updateProfileHero(mergedProfile);
-      hideEditSection();
+      // Update UI
+      const bannerEl = qs('.sb-profile-banner');
+      const profileTitleEl = qs('.sb-profile-title');
+      const profileBioEl = qs('.sb-profile-header-text p');
+      const avatarMobileWrapper = qs('.sb-profile-avatar--mobile');
+      const avatarDesktopWrapper = qs('.sb-profile-avatar--desktop');
 
+      updateProfileHero(
+        mergedProfile,
+        bannerEl,
+        profileTitleEl,
+        profileBioEl,
+        avatarMobileWrapper,
+        avatarDesktopWrapper,
+      );
+
+      hideEditSection();
       showEditMessage('Your profile has been updated successfully.', 'success');
 
       profile.name = mergedProfile.name;
@@ -1011,15 +1079,21 @@ const setupEditProfileForm = (profile, authName, isOwnProfile) => {
 /**
  * Initialize the profile page.
  *
- * - Decides which profile to load (from query or auth)
- * - Loads profile, bids and wins (for own profile)
- * - Updates header and hero
- * - Renders listings, bids and wins
- * - Sets up edit profile form
- *
  * @returns {Promise<void>}
  */
 const initProfilePage = async () => {
+  const headerLoggedOut = /** @type {HTMLElement|null} */ (qs('[data-header="logged-out"]'));
+  const headerLoggedIn = /** @type {HTMLElement|null} */ (qs('[data-header="logged-in"]'));
+  const headerCreditsEls = /** @type {NodeListOf<HTMLElement>} */ (
+    document.querySelectorAll('[data-header-credits]')
+  );
+
+  const bannerEl = /** @type {HTMLElement|null} */ (qs('.sb-profile-banner'));
+  const profileTitleEl = /** @type {HTMLElement|null} */ (qs('.sb-profile-title'));
+  const profileBioEl = /** @type {HTMLElement|null} */ (qs('.sb-profile-header-text p'));
+  const avatarMobileWrapper = /** @type {HTMLElement|null} */ (qs('.sb-profile-avatar--mobile'));
+  const avatarDesktopWrapper = /** @type {HTMLElement|null} */ (qs('.sb-profile-avatar--desktop'));
+
   const auth = getAuth();
   const queryName = getProfileNameFromQuery();
   const profileNameToLoad = queryName || (auth && auth.name ? auth.name : null);
@@ -1055,10 +1129,17 @@ const initProfilePage = async () => {
     }
 
     if (isOwnProfile) {
-      updateHeaderState(profile);
+      updateHeaderState(profile, headerLoggedOut, headerLoggedIn, headerCreditsEls);
     }
 
-    updateProfileHero(profile);
+    updateProfileHero(
+      profile,
+      bannerEl,
+      profileTitleEl,
+      profileBioEl,
+      avatarMobileWrapper,
+      avatarDesktopWrapper,
+    );
     await renderMyListings(profile, isOwnProfile);
     renderMyBids(bids, wins);
     renderMyWins(wins);
@@ -1078,5 +1159,20 @@ const initProfilePage = async () => {
   }
 };
 
-window.addEventListener('hashchange', activateTabFromHash);
-initProfilePage();
+// =========================
+// Safe run (no refresh needed)
+// =========================
+
+const bindProfilePage = () => {
+  if (document.body && document.body.dataset.boundProfilePage === '1') return;
+  if (document.body) document.body.dataset.boundProfilePage = '1';
+
+  window.addEventListener('hashchange', activateTabFromHash);
+  initProfilePage();
+};
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', bindProfilePage);
+} else {
+  bindProfilePage();
+}

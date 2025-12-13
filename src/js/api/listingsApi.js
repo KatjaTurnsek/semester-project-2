@@ -38,9 +38,9 @@ import { request } from './httpClient.js';
 export const getListings = (queryString) => {
   const defaultQuery = '?_active=true&_seller=true&_bids=true&sort=created&sortOrder=desc';
 
-  const qs = typeof queryString == 'string' && queryString.length > 0 ? queryString : defaultQuery;
+  const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : defaultQuery;
 
-  return request('/auction/listings' + qs);
+  return request(`/auction/listings${qs}`);
 };
 
 /**
@@ -50,9 +50,9 @@ export const getListings = (queryString) => {
  * @returns {Promise<Listing[]>} A promise that resolves to an array of matching listings.
  */
 export const searchListings = (queryString) => {
-  const qs = typeof queryString == 'string' && queryString.length > 0 ? queryString : '';
+  const qs = typeof queryString === 'string' && queryString.length > 0 ? queryString : '';
 
-  return request('/auction/listings/search' + qs);
+  return request(`/auction/listings/search${qs}`);
 };
 
 /**
@@ -64,7 +64,7 @@ export const searchListings = (queryString) => {
  */
 export const getListingById = (id, queryString) => {
   const qs = queryString ? queryString : '';
-  return request('/auction/listings/' + id + qs);
+  return request(`/auction/listings/${id}${qs}`);
 };
 
 /**
@@ -93,7 +93,7 @@ export const createListing = (payload) => {
  * @returns {Promise<Listing>} A promise that resolves to the updated listing.
  */
 export const updateListing = (id, payload) => {
-  return request('/auction/listings/' + id, {
+  return request(`/auction/listings/${id}`, {
     method: 'PUT',
     json: payload,
     auth: true,
@@ -107,7 +107,7 @@ export const updateListing = (id, payload) => {
  * @returns {Promise<void>} A promise that resolves when the listing is deleted.
  */
 export const deleteListing = (id) => {
-  return request('/auction/listings/' + id, {
+  return request(`/auction/listings/${id}`, {
     method: 'DELETE',
     auth: true,
   });
@@ -121,7 +121,7 @@ export const deleteListing = (id) => {
  * @returns {Promise<ListingBid>} A promise that resolves to the created bid data.
  */
 export const placeBid = (id, amount) => {
-  return request('/auction/listings/' + id + '/bids', {
+  return request(`/auction/listings/${id}/bids`, {
     method: 'POST',
     json: { amount },
     auth: true,

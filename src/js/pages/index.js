@@ -1,3 +1,4 @@
+import { getAuth } from '../api/httpClient.js';
 import { getListings, searchListings } from '../api/listingsApi.js';
 import { showLoader, hideLoader } from '../ui/loader.js';
 import { showAlert } from '../ui/alerts.js';
@@ -11,6 +12,9 @@ const searchInput = document.querySelector('#listingSearch');
 const sortSelect = document.querySelector('#sortBy');
 const errorEl = document.querySelector('[data-listings-error]');
 const summaryEl = document.querySelector('[data-listings-summary]');
+
+const auth = getAuth();
+const isLoggedIn = !!(auth && auth.name);
 
 /**
  * Number of listings to show per page.
@@ -521,7 +525,25 @@ const createListingCard = (listing) => {
 
   if (sellerEl) {
     sellerEl.textContent = sellerName;
-    sellerEl.href = 'profile.html?name=' + encodeURIComponent(sellerName);
+
+    const isAnchor = String(sellerEl.tagName || '').toLowerCase() === 'a';
+
+    if (isLoggedIn && isAnchor) {
+      sellerEl.setAttribute('href', 'profile.html?name=' + encodeURIComponent(sellerName));
+    } else if (!isLoggedIn && isAnchor) {
+      const span = document.createElement('span');
+
+      span.className = sellerEl.className
+        .split(' ')
+        .filter((c) => c && c !== 'card-username-link')
+        .join(' ');
+
+      span.textContent = sellerName;
+
+      span.style.cursor = 'default';
+
+      sellerEl.replaceWith(span);
+    }
   }
 
   if (bidsEl) {
@@ -731,37 +753,42 @@ const fetchListings = async (append) => {
 };
 
 // =======================
-// Event wiring
+// Event wiring (guarded)
 // =======================
 
-if (searchForm && searchInput) {
-  searchForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
+const bindIndexEventsOnce = () => {
+  if (document.body && document.body.dataset.sbIndexBound === '1') return;
+  if (document.body) document.body.dataset.sbIndexBound = '1';
 
-    const value = String(searchInput.value || '').trim();
-    currentSearch = value;
-    currentPage = 1;
+  if (searchForm && searchInput) {
+    searchForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
 
-    await fetchListings(false);
-  });
-}
+      const value = String(searchInput.value || '').trim();
+      currentSearch = value;
+      currentPage = 1;
 
-if (sortSelect) {
-  sortSelect.addEventListener('change', async () => {
-    const value = sortSelect.value || '';
-    currentSort = value;
-    currentPage = 1;
+      await fetchListings(false);
+    });
+  }
 
-    await fetchListings(false);
-  });
-}
+  if (sortSelect) {
+    sortSelect.addEventListener('change', async () => {
+      const value = sortSelect.value || '';
+      currentSort = value;
+      currentPage = 1;
 
-if (loadMoreBtn) {
-  loadMoreBtn.addEventListener('click', async () => {
-    currentPage = currentPage + 1;
-    await fetchListings(true);
-  });
-}
+      await fetchListings(false);
+    });
+  }
+
+  if (loadMoreBtn) {
+    loadMoreBtn.addEventListener('click', async () => {
+      currentPage = currentPage + 1;
+      await fetchListings(true);
+    });
+  }
+};
 
 // =======================
 // Post-login welcome toast
@@ -782,12 +809,18 @@ if (justLoggedInFlag === '1') {
 }
 
 // =======================
-// Initial load
+// Initial load (DOM-safe)
 // =======================
 
-/**
- * Immediately load the first page of listings when the script runs.
- */
-(async () => {
+const initIndexPage = async () => {
+  if (!listingsContainer || !listingTemplateCol) return;
+
+  bindIndexEventsOnce();
   await fetchListings(false);
-})();
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initIndexPage);
+} else {
+  initIndexPage();
+}

@@ -56,15 +56,17 @@ export async function initListingDetailsPage() {
 
     renderListing(listing);
     setupBidForm(listing);
-  } catch {
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'We could not load this listing right now. Please try again.';
+
     if (titleEl) {
       titleEl.textContent = 'Failed to load listing';
     }
-    showAlert(
-      'error',
-      'Something went wrong',
-      'We could not load this listing right now. Please try again.',
-    );
+
+    showAlert('error', 'Something went wrong', message);
   } finally {
     hideLoader();
   }
@@ -191,7 +193,7 @@ function formatTimeLeft(listing) {
   const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
   const minutes = totalMinutes % 60;
 
-  return 'Ends in ' + days + 'd ' + hours + 'h ' + minutes + 'm';
+  return `Ends in ${days}d ${hours}h ${minutes}m`;
 }
 
 /**
@@ -201,7 +203,7 @@ function formatTimeLeft(listing) {
  *
  * @param {string|Object|null} item - Raw media item from the API.
  * @param {string} fallbackAlt - Fallback alt text.
- * @returns {Object|null} Normalized media object or null if invalid.
+ * @returns {{url:string, alt:string}|null} Normalized media object or null if invalid.
  */
 function normaliseMediaItem(item, fallbackAlt) {
   if (!item) return null;
@@ -210,13 +212,17 @@ function normaliseMediaItem(item, fallbackAlt) {
     return { url: item, alt: fallbackAlt };
   }
 
-  const url = item.url || '';
-  if (!url) return null;
+  if (item && typeof item === 'object') {
+    const url = item.url || '';
+    if (!url) return null;
 
-  return {
-    url,
-    alt: item.alt || fallbackAlt,
-  };
+    return {
+      url,
+      alt: item.alt || fallbackAlt,
+    };
+  }
+
+  return null;
 }
 
 // =========================
@@ -255,7 +261,7 @@ function renderOwnerEditButton(listing) {
   btn.addEventListener('click', (event) => {
     event.preventDefault();
     if (!listing.id) return;
-    window.location.href = 'listing-edit.html?id=' + encodeURIComponent(listing.id);
+    window.location.href = `listing-edit.html?id=${encodeURIComponent(listing.id)}`;
   });
 }
 
@@ -324,10 +330,27 @@ function renderListing(listing) {
 
   setText(sellerNameEl, sellerName);
 
+  const auth = getAuth();
+  const isLoggedIn = !!(auth && auth.name);
+
   if (sellerLinkEl) {
-    sellerLinkEl.setAttribute('href', 'profile.html?name=' + encodeURIComponent(sellerName));
+    const isAnchor = String(sellerLinkEl.tagName || '').toLowerCase() === 'a';
+
+    if (isLoggedIn && isAnchor) {
+      sellerLinkEl.setAttribute('href', `profile.html?name=${encodeURIComponent(sellerName)}`);
+      if (!sellerLinkEl.textContent || !sellerLinkEl.textContent.trim()) {
+        sellerLinkEl.textContent = 'View seller profile';
+      } else {
+        sellerLinkEl.textContent = sellerLinkEl.textContent.trim();
+      }
+      sellerLinkEl.classList.remove('d-none');
+    } else if (!isLoggedIn && isAnchor) {
+      sellerLinkEl.classList.add('d-none');
+      sellerLinkEl.removeAttribute('href');
+    }
   }
 
+  // Seller avatar (supports string or object shape)
   if (sellerAvatarEl) {
     clearElement(sellerAvatarEl);
 
@@ -342,10 +365,17 @@ function renderListing(listing) {
     sellerAvatarEl.style.width = '64px';
     sellerAvatarEl.style.height = '64px';
 
-    const avatarObj =
-      listing && listing.seller && listing.seller.avatar ? listing.seller.avatar : null;
-    const avatarUrl = avatarObj && avatarObj.url ? avatarObj.url : '';
-    const avatarAlt = (avatarObj && avatarObj.alt) || sellerName || 'Seller avatar';
+    const avatarRaw = listing?.seller?.avatar ?? null;
+
+    let avatarUrl = '';
+    let avatarAlt = sellerName || 'Seller avatar';
+
+    if (typeof avatarRaw === 'string') {
+      avatarUrl = avatarRaw;
+    } else if (avatarRaw && typeof avatarRaw === 'object') {
+      avatarUrl = avatarRaw.url || '';
+      avatarAlt = avatarRaw.alt || avatarAlt;
+    }
 
     if (avatarUrl) {
       const img = document.createElement('img');
@@ -369,7 +399,7 @@ function renderListing(listing) {
   const highestBid = bids.length > 0 ? bids[0].amount : null;
 
   setText(bidCountEl, String(bids.length));
-  setText(highestBidEl, highestBid ? highestBid + ' credits' : 'No bids yet');
+  setText(highestBidEl, highestBid ? `${highestBid} credits` : 'No bids yet');
 
   if (timeLeftEl) {
     const endsAt = listing.endsAt ? new Date(listing.endsAt) : null;
@@ -378,7 +408,7 @@ function renderListing(listing) {
       timeLeftEl.textContent = 'Unknown end time';
     } else if (isAuctionEnded(listing)) {
       timeLeftEl.textContent = 'Auction ended';
-      disableBidForm('This auction has ended.');
+      // NOTE: do NOT disable the form here (setupBidForm handles it)
     } else {
       timeLeftEl.textContent = formatTimeLeft(listing);
     }
@@ -504,7 +534,9 @@ function renderBidHistory(bids, historyEl) {
 
     const right = document.createElement('div');
     right.className = 'fw-semibold';
-    right.textContent = (bid && typeof bid.amount === 'number' ? bid.amount : 0) + ' credits';
+
+    const amount = bid && typeof bid.amount === 'number' ? bid.amount : 0;
+    right.textContent = `${amount} credits`;
 
     row.appendChild(left);
     row.appendChild(right);
@@ -581,6 +613,10 @@ function setupBidForm(listing) {
     return;
   }
 
+  // Avoid double-binding submit handler if setupBidForm is called after re-render
+  if (form.dataset.boundSubmit === '1') return;
+  form.dataset.boundSubmit = '1';
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -605,6 +641,8 @@ function setupBidForm(listing) {
       const updatedListing = await getListingById(listing.id, '?_seller=true&_bids=true');
       if (updatedListing) {
         renderListing(updatedListing);
+        // Re-check seller/ended state after refresh
+        setupBidForm(updatedListing);
       }
 
       if (userCreditsEl && auth && auth.name) {
