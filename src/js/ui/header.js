@@ -17,8 +17,8 @@ const headerAvatarEls = document.querySelectorAll('[data-header-avatar]');
  * Get initials from a name string.
  *
  * Examples:
- * - "Katja Turnsek" -> "KT"
- * - "Katja" -> "KA"
+ * - "Katja Turnsek" "KT"
+ * - "Katja" "KA"
  *
  * @param {string} name - Full name of the user.
  * @returns {string} Uppercase initials or "?".

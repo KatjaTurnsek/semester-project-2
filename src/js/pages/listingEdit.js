@@ -85,7 +85,7 @@ const normaliseMediaItem = (item) => {
 /**
  * Build an array of tags from a comma-separated string.
  *
- * Example: "camera, lens, vintage" -> ["camera", "lens", "vintage"]
+ * Example: "camera, lens, vintage" ["camera", "lens", "vintage"]
  *
  * @param {string} tagsRaw - Raw tags string from the form.
  * @returns {string[]|undefined} Array of tags, or undefined if none.

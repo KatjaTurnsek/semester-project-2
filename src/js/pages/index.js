@@ -809,7 +809,7 @@ if (justLoggedInFlag === '1') {
 }
 
 // =======================
-// Initial load (DOM-safe)
+// Initial load
 // =======================
 
 const initIndexPage = async () => {
