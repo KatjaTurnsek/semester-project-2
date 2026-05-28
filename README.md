@@ -1,22 +1,27 @@
-# StudioBid, Semester Project 2
+# StudioBid — Semester Project 2
 
-A concept auction platform for Noroff Front-End Development
+An auction platform built for Noroff Semester Project 2.
 
 ![StudioBid preview](./public/images/semester-project2-preview.jpg)
 
-StudioBid is a fictional auction site where students can sell creative gear and bid on items posted by others. The goal of this project was to plan, design and build a fully functional, responsive auction platform using a modern CSS framework, the Noroff Auction API, and clean, maintainable JavaScript.
+StudioBid is a fictional auction site where students can sell creative gear and bid on items posted by others. The goal was to plan, design, and build a fully functional, responsive auction platform using a modern CSS framework, the Noroff Auction API, and clean, maintainable JavaScript.
+
+## Links
+
+- Live demo: [StudioBid](https://KatjaTurnsek.github.io/semester-project-2/)
+- GitHub repo: https://github.com/KatjaTurnsek/semester-project-2
 
 ## Project Brief Requirements
 
-This project fulfils the core learning outcomes of Semester Project 2:
+This project fulfils the core learning outcomes of Semester Project 2.
 
 ### Build an interactive auction application
 
-- User registration & login
-- Authentication handling (token storage, logout, protected routes)
-- Create, update & delete listings
-- Upload multiple images + alt text
-- Place bids (with validation and real-time updates)
+- User registration and login
+- Authentication handling, including token storage, logout, and protected routes
+- Create, update, and delete listings
+- Upload multiple images with alt text
+- Place bids with validation and updated UI feedback
 
 ### Fetch and render real API data
 
@@ -24,15 +29,15 @@ This project fulfils the core learning outcomes of Semester Project 2:
 - Active listings feed
 - Single listing view
 - Bid history
-- User profile: credits, avatar, listings, bids, wins
+- User profile: credits, avatar, listings, bids, and wins
 
 ### Use a CSS framework
 
-StudioBid is fully built with **Bootstrap 5 and custom Sass** (design tokens, layout, utility overrides).
+StudioBid is built with **Bootstrap 5** and custom **Sass** for design tokens, layout, and utility overrides.
 
 ### Follow best practices
 
-- Clean module-based JavaScript
+- Module-based JavaScript
 - Error handling and loaders
 - Form validation
 - Accessible components
@@ -47,29 +52,29 @@ StudioBid is fully built with **Bootstrap 5 and custom Sass** (design tokens, la
 - Responsive card grid
 - Live “Ends in…” countdown
 - NEW / ENDED / WON badges
-- Highest bid displayed on-card
+- Highest bid displayed on listing cards
 
 ### Create & Edit Listings
 
 - Dynamic form with image groups
 - Live card preview
-- Edit mode vs create mode
+- Edit mode and create mode
 - Delete listing with confirmation
 - Tag support
 
 ### Bidding System
 
 - Validates bid amount
-- Updates UI instantly
+- Updates UI after bids
 - Displays bid history
 - Prevents users from bidding on their own listings
-- Requires login
+- Requires login before bidding
 
 ### User Profile
 
-- Avatar and banner (with alt text)
+- Avatar and banner with alt text
 - Bio field
-- Credits display (mobile and desktop headers)
+- Credits display in mobile and desktop headers
 - My Listings
 - My Bids
 - My Wins
@@ -77,12 +82,22 @@ StudioBid is fully built with **Bootstrap 5 and custom Sass** (design tokens, la
 
 ### Authentication
 
-- Register (Noroff email validation)
+- Register with Noroff email validation
 - Login
 - Logout
 - Protected pages
-- Success/error alerts
-- Input-level validation (green/red states)
+- Success, error, and info alerts
+- Input-level validation with visual states
+
+## Portfolio 2 Improvements
+
+For Portfolio 2, I reviewed StudioBid as a professional portfolio project and improved the user feedback system.
+
+Before the update, some normal guidance messages were shown as red error alerts. For example, when a visitor needed to log in before placing a bid, this was shown like a system error. I changed these messages to informational alerts instead, while keeping real failures, such as invalid bids or failed API requests, as error messages.
+
+I also adjusted the alert styling so the new info messages look consistent with the existing alert design.
+
+**Improvement commit:** https://github.com/KatjaTurnsek/semester-project-2/commit/9e7d5a5
 
 ## Structure (simplified)
 
@@ -105,7 +120,9 @@ studio-bid/
 └─ package.json
 ```
 
-## Getting Started (Local)
+## Getting Started
+
+Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/KatjaTurnsek/semester-project-2.git
@@ -120,11 +137,11 @@ npm run dev
 npm run build
 ```
 
-Then commit & push your changes to main. GitHub Pages will serve the built site from your configured build output.
+The project is deployed with GitHub Pages using the configured deployment workflow.
 
-## ⚙️ Configuration
+## Configuration
 
-Defaults to https://v2.api.noroff.dev. Optional .env:
+Defaults to `https://v2.api.noroff.dev`. Optional `.env`:
 
 ```dotenv
 VITE_API_BASE="https://v2.api.noroff.dev"
@@ -134,30 +151,30 @@ VITE_API_BASE="https://v2.api.noroff.dev"
 
 StudioBid uses the **Noroff Auction API v2**:
 
-- [https://docs.noroff.dev/docs/v2/auction-house/listings](https://docs.noroff.dev/docs/v2/auction-house/listings)
-- [https://docs.noroff.dev/docs/v2/auction-house/profiles](https://docs.noroff.dev/docs/v2/auction-house/profiles)
+- [Auction listings](https://docs.noroff.dev/docs/v2/auction-house/listings)
+- [Auction profiles](https://docs.noroff.dev/docs/v2/auction-house/profiles)
 
-**Endpoints used:**
+Endpoints used:
 
-- /auction/listings
-- /auction/listings/:id
-- /auction/profiles/:name
-- /auction/profiles/:name/listings
-- /auction/auth/register
-- /auction/auth/login
-- /auction/bids
+- `/auction/listings`
+- `/auction/listings/:id`
+- `/auction/profiles/:name`
+- `/auction/profiles/:name/listings`
+- `/auction/auth/register`
+- `/auction/auth/login`
+- `/auction/bids`
 
 ## Validation & UX
 
-- All forms include inline validation (red/green states)
-- Accessible labels and alt texts
+- Forms include inline validation
+- Accessible labels and alt text
 - Semantic HTML
 - Loader components for slow API responses
-- Error messages displayed consistently across pages
+- Success, error, and info messages displayed consistently across pages
 
 ## Accessibility & SEO
 
-- Alt text required for all images
+- Alt text for images
 - Sufficient color contrast
 - Focus-visible styles
 - ARIA labels where appropriate
@@ -165,12 +182,8 @@ StudioBid uses the **Noroff Auction API v2**:
 - Meta descriptions on all pages
 - Lazy-loaded images where useful
 
-## Live Demo
-
-[StudioBid](https://KatjaTurnsek.github.io/semester-project-2/)
-
 ## Author
 
-** Katja Turnšek **
-Frontend Development Student
+**Katja Turnšek**  
+Front-End Development Student  
 [Portfolio Website](https://katjaturnsek.github.io/portfolio/)
