@@ -40,7 +40,6 @@ $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
 @use "./footer";
 @use "./loader";
 
-
 // CSS variables
 :root {
   // Brand colors
@@ -63,13 +62,21 @@ $studio-font-stack: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
   --sb-button-height-desktop-md: 50px;
   --sb-button-height-mobile-md: 45px;
 
-  // "Danger & Delete" states
+  // Danger & delete states
   --sb-color-delete: #dc3545;
   --sb-color-delete-light: #eba8af;
 
-  // "Success" states
+  // Success states
   --sb-color-success: #198754;
   --sb-color-success-light: #B1CDC0;
+
+  // Info states
+  --sb-color-info-dark: #1f5f5b;
+  --sb-color-info-light: #ACDDD9;
+
+  // Warning states
+  --sb-color-warning: #664d03;
+  --sb-color-warning-light: #fff3cd;
 }
 
 // Base styling
@@ -270,14 +277,15 @@ body {
   min-width: 280px;
   max-width: 360px;
 
-  // Less vertical padding
   padding: 0.6rem 0.9rem;
   border-radius: 0.5rem;
   position: relative;
 
   opacity: 0;
   transform: translateY(-8px);
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  transition:
+    opacity 0.2s ease-out,
+    transform 0.2s ease-out;
 }
 
 // Left color bar
@@ -313,6 +321,16 @@ body {
   content: "✕";
 }
 
+.sb-alert--info .sb-alert__icon::before {
+  content: "i";
+  font-weight: 700;
+}
+
+.sb-alert--warning .sb-alert__icon::before {
+  content: "!";
+  font-weight: 700;
+}
+
 // Content
 .sb-alert__content {
   flex: 1 1 auto;
@@ -330,6 +348,9 @@ body {
 
 // Close button + vertical divider
 .sb-alert__close {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -345,8 +366,8 @@ body {
   content: "";
   position: absolute;
   left: 0;
-  top: 0.15rem;
-  bottom: 0.15rem;
+  top: 0.1rem;
+  bottom: 0.1rem;
   width: 1px;
   background-color: currentColor;
 }
@@ -374,4 +395,22 @@ body {
 
 .sb-alert--error::before {
   background-color: var(--sb-color-delete);
+}
+
+.sb-alert--info {
+  background-color: var(--sb-color-info-light);
+  color: var(--sb-color-info-dark);
+}
+
+.sb-alert--info::before {
+  background-color: var(--sb-color-info-dark);
+}
+
+.sb-alert--warning {
+  background-color: var(--sb-color-warning-light);
+  color: var(--sb-color-warning);
+}
+
+.sb-alert--warning::before {
+  background-color: var(--sb-color-warning);
 }

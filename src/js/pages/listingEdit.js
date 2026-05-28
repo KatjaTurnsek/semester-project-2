@@ -317,7 +317,6 @@ const prefillFormFromListing = (listing) => {
     endsAtInput.value = toDateTimeLocalValue(listing.endsAt);
   }
 
-  // Prefill ALL media items (supports string or object)
   const rawMedia = Array.isArray(listing.media) ? listing.media.filter(Boolean) : [];
   const media = rawMedia.map(normaliseMediaItem).filter((m) => m.url);
 
@@ -326,7 +325,6 @@ const prefillFormFromListing = (listing) => {
 
   if (!container || !firstGroup) return;
 
-  // Remove any extra groups that may be present from previous usage
   const extraGroups = container.querySelectorAll('.sb-media-group:not(:first-child)');
   extraGroups.forEach((group) => group.remove());
 
@@ -339,13 +337,11 @@ const prefillFormFromListing = (listing) => {
     return;
   }
 
-  // Fill first group with first media item
   if (firstUrlInput) firstUrlInput.value = media[0].url || '';
   if (firstAltInput) firstAltInput.value = media[0].alt || '';
 
-  // Add remaining media items as new groups
   for (let i = 1; i < media.length; i += 1) {
-    const index = i + 1; // first is 1
+    const index = i + 1;
     createMediaGroup(container, firstGroup, index, media[i]);
   }
 };
@@ -622,7 +618,7 @@ const setupFormSubmit = (isEditMode, listingId, listingOwnerName) => {
 
     if (!currentAuth || !currentAuth.name) {
       clearAuth();
-      showAlert('error', 'Login required', 'You must be logged in to create or edit listings.');
+      showAlert('info', 'Login required', 'You must be logged in to create or edit listings.');
       setTimeout(() => redirectToLogin(), 800);
       return;
     }
@@ -713,7 +709,7 @@ const initListingEditPage = async () => {
   const auth = getAuth();
 
   if (!auth || !auth.name) {
-    showAlert('error', 'Login required', 'You must be logged in to create or edit listings.');
+    showAlert('info', 'Login required', 'You must be logged in to create or edit listings.');
     setTimeout(() => redirectToLogin(), 800);
     return;
   }

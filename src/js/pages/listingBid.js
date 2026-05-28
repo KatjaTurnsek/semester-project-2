@@ -40,7 +40,7 @@ export function setupBidForm(listing) {
     }
 
     disableBidForm('Login to place a bid.');
-    showAlert('error', 'Login required', 'Log in with your student account to place a bid.');
+    showAlert('info', 'Login required', 'Log in with your student account to place a bid.');
     return;
   }
 
@@ -60,16 +60,17 @@ export function setupBidForm(listing) {
   }
 
   const sellerName = listing && listing.seller && listing.seller.name ? listing.seller.name : null;
+
   if (sellerName && auth.name === sellerName) {
     disableBidForm('You cannot bid on your own listing.');
-    showAlert('error', 'You are the seller', 'You can’t place bids on your own listing.');
+    showAlert('info', 'You are the seller', 'You can’t place bids on your own listing.');
     return;
   }
 
   if (isAuctionEnded(listing)) {
     disableBidForm('This auction has ended.');
     showAlert(
-      'error',
+      'info',
       'Auction ended',
       'This auction has already ended and no new bids can be placed.',
     );
@@ -101,6 +102,7 @@ export function setupBidForm(listing) {
       await placeBid(listing.id, amount);
 
       const updatedListing = await getListingById(listing.id, '?_seller=true&_bids=true');
+
       if (updatedListing) {
         renderListing(updatedListing);
         // Re-check seller/ended state after refresh
